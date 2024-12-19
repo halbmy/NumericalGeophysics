@@ -1,0 +1,288 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 6: Finite Elements"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+# jupyter: python3 
+--- 
+# Finite Differences
+
+## Recap Finite Differences
+
+* elliptic (Poisson) or parabolic PDE problems
+* replace partial differential operators $\partial$ by finite differences $\Delta$
+* transfer PDE into a matrix-vector equation $\vb A \vb u = \vb b$
+* finite-difference stencil spatial or temporal
+* spatial derivative $\Rightarrow$ stiffness $\vb A$, temporal $\Rightarrow$ mass matrix $\vb M$
+* time-stepping explicit, implicit or mixed (stable & accurate)
+* accuracy depends on discretization, parameter contrast
+
+## Helmholtz equations
+
+e.g. from Fourier assumption $u=u_0 e^{\imath\omega t}$
+
+$$ \div (a\grad u) + k^2 u = f $$
+
+* Poisson operator assembled in stiffness matrix $\vb A$
+* additional terms with $u_i$ $\Rightarrow$ mass matrix $\vb M$
+
+$$ \Rightarrow \vb A + \vb M = \vb b $$
+
+## Hyberbolic equations 
+
+Acoustic wave equation in 1D
+$$ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
+
+$u$..pressure/velocity/displacement, $c$..velocity
+
+Damped (mixed parabolic-hyperbolic) wave equation
+$$ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
+
+
+## Discretization
+
+:::: {.columns}
+::: {.column}
+$$ \pdv[2]{u}{t}^{n} \approx \frac{u^{n+1}-u^n}{\Delta t} - \frac{u^{n}-u^{n-1}}{\Delta t}
+$$
+
+$$ = \frac{u^{n+1}+u^{n-1}-2 u^n}{\Delta t^2} = c^2\pdv[2]{u}{x}^n $$
+
+
+$$ u^{n+1} = c^2 \Delta t^2 \pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} $$
+
+<!-- \frac{1}{\Delta t}  -->
+
+$$ \vb M \vb u^{n+1} = (\vb A + 2\vb M) \vb u^n - \vb M \vb u^{n-1} $$ 
+:::
+::: {.column}
+![Second derivative](pics/dtsecond.svg)
+:::
+::::
+
+## Example: velocity distribution
+
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: true
+import numpy as np
+import matplotlib.pyplot as plt
+x=np.arange(0, 600.01, 0.5)
+c = 1.0*np.ones_like(x) # velocity in m/s
+c[100:300] = 1 + np.arange(0,0.5,0.0025) 
+c[900:1100] = 0.5  # low velocity zone
+
+# Plot velocity distribution.
+plt.plot(x,c,'k')
+plt.xlabel('x [m]')
+plt.ylabel('c [m/s]')
+plt.grid()
+```
+
+
+## Initial displacement
+
+Derivative of Gaussian (Ricker wavelet)
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: true
+l=5.0
+
+# Initial displacement field [m].
+u=(x-300.0)*np.exp(-(x-300.0)**2/l**2) 
+# Plot initial displacement field.
+plt.plot(x,u,'k')
+plt.xlabel('x [m]')
+plt.ylabel('u [m]')
+plt.title('initial displacement field')
+plt.show()
+```
+
+## Time propagation
+
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: true
+u_last=u
+dt = 0.5
+ddu = np.zeros_like(u)
+dx = np.diff(x)
+for i in range(100):
+    dudx = np.diff(u)/dx
+    ddu[1:-1] = np.diff(dudx)/dx[:-1]
+    u_next = 2*u-u_last+ddu*c**2 * dt**2 
+    u_last = u
+    u = u_next
+  
+plt.plot(x,u,'k')
+```
+
+## {background-video="notebooks/wave.mp4" background-video-loop="true"}
+
+# The Finite Element Method
+
+## History and background
+
+* [1943] Courant: Variational Method
+* [1956] Turner, Clough, Martin, Topp: Stiffness
+* [1960] Clough: Finite Elements for static elasticity
+* [1970-80] extension to structural, thermic and fluid dynamics
+* [1990] computational improvements 
+* now main method for almost all PDE types
+
+Geophysics: Poisson equation in 1970s, revival in 1990s and predominant in 2000s up to now
+
+## Variational formulation of Poisson equation
+
+$$ -\div a \grad u = f $$
+
+::: {.fragment}
+Multiplication with test function $w$ and integration $\Rightarrow$ weak form
+
+$$ -\int_\Omega w \div a \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::
+
+::: {.fragment}
+$$ \div(b\vb c) = b\div \vb c + \grad b \cdot \vb c $$
+:::
+
+::: {.fragment}
+$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::
+
+## Variational formulation of Poisson equation
+
+$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega $$
+
+::: {.fragment}
+use Gauss' law $\int_\Omega \div \vb A = \int_\Gamma \vb A \cdot \vb n$
+
+$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Gamma a w \grad u \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
+:::
+
+::: {.fragment}
+Let $u$ be constructed by shape functions $v$: $u=\sum_i u_i v_i$
+
+$$ \int_\Omega a \grad w \cdot \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
+:::
+
+## Galerkin's method
+
+$$ \int_\Omega a \grad w \vdot \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
+
+::: {.fragment}
+Test functions the same as shape (trial) functions $w\in  v_i$
+
+$$ \int_\Omega a \grad v_j \vdot \grad v_i \dd\Omega - \int_\Gamma a v_j \grad v_i \vdot \vb n \dd\Gamma = \int_\Omega f v_j \dd\Omega $$
+:::
+
+::: {.fragment}
+* choose $v_i$ so that $\grad v_i$ is simple and $\grad v_i \vdot \grad v_j$ mostly 0
+* divide subsurface in sub-volumes $\Omega_i$ with constant $a_i$ (& $\grad v_j$)
+:::
+
+## Hat functions 
+
+![](pics/shapefunctions1d.svg){width="100%"}
+
+## Gradients for hat functions
+Every element is surrounded by two nodes "carrying" a hat. 
+The gradients are piece-wise constant $\pm 1/\Delta x_i$
+
+Neighboring functions $v_i$ & $v_{i+1}$ only meet between $x_i$ & $x_{i+1}$
+
+$$ \int_\Omega a \grad v_i \vdot \grad v_{i+1} \dd\Omega = \int_{x_i}^{x_{i+1}} a \grad v_i \vdot \grad v_{i+1} \dd\Omega = -\frac{a_i}{\Delta x_i^2} \Delta x_i = -\frac{a_i}{\Delta x_i}$$ 
+
+$$ -\int_\Omega a \grad v_i \vdot \grad v_i \dd\Omega = \frac{a_{i-1}}{\Delta x_{i-1}^2}\Delta x_{i-1} + \frac{a_i}{\Delta x_i^2}\Delta x_i = \frac{a_{i-1}}{\Delta x_{i-1}} + \frac{a_i}{\Delta x_i} $$
+
+<!-- $$ -\int_\Omega a \grad v_i \vdot \grad v_{i+2} \dd\Omega = 0 $$ -->
+
+## Integration
+
+Let's write it up for the first 
+
+$$ \int u_0 a v_0' v_0' + \int u_1 a v_0' v_1' = \int v_0 f $$
+
+$$ \int u_0 a v_0' v_1' + \int u_1 a v_1' v_1' + \int a u_2 v_2' v_1' = \int v_1 f $$
+
+<!-- $$ \int u_1 v_1' v_2' + \int u_2 v_2' v_2' + \int u_3 v_3' v_2' = \int v_1 f $$ -->
+
+$$ u_{i-1} a_{i-1} \int\limits_{x_{i-1}}^{x_{i}} v_i' v_{i-1}' + 
+   u_i a_{i-1} \int\limits_{x_{i-1}}^{x_{i}} v_i' v_i' + 
+   u_i a_i \int\limits_{x_{i}}^{x_{i+1}} v_i' v_i' + 
+   u_{i+1} a_{i} \int\limits_{x_{i}}^{x_{i+1}} v_i' v_{i+1}' $$
+
+
+# System (stiffness) matrix
+
+Matrix integrating gradient of base functions for neighbors
+$A$ 
+$$ \vb A_{i, i+1} = -\frac{a_i}{\Delta x_i^2} \vdot \Delta x_i = -\frac{a_i}{\Delta x_i} $$
+
+$$ A_{i,i} = \int_\Omega a \grad v_i \cdot \grad v_i \dd\Omega = -A_{i,i+1} - A_{i+1,i}  $$
+
+$\Rightarrow$ matrix-vector equation $\vb A \vb u = \vb b$ with conductances in $\vb A$
+<!-- $\Rightarrow$ -->
+
+## Boundary conditions
+
+second term
+$$ - \int_\Gamma a v_j \grad v_i \cdot \vb n \dd\Gamma $$
+
+$$ [a v_i v_j']_{x_0}^{x_N} = a_{N-1} u_N v'_N - a_0 u_0 v'_0 $$
+
+Homogeneous Neumann automatically 
+
+## Right-hand side vector
+
+The right-hand-side vector $b=\int v_i f \dd\Omega$ also scales with $\Delta x$
+
+e.g. $f=\div \vb j_s$ $\Rightarrow$ 
+$b=\int v_i \div \vb j_s \dd\Omega = \int_\Gamma v_i \vb j_S \cdot \vb n$
+
+system identical to FD for $\Delta x=$const
+
+:::{.callout-tip icon="false" title="Difference of FE to FD"} 
+Any source function $f(x)$ can be integrated on the whole space!
+:::
+
+## Solution
+
+$\vb u$ holds the coefficient $u_i$ creating $u(x)=\sum u_i v_i(x)$
+
+:::{.callout-tip icon="false" title="Difference of FE to FD"} 
+$u$ is described on the whole space and approximates the solution, not the PDE!
+:::
+
+Hat functions: $u_i$ potentials on nodes, $u$ piece-wise linear
+
+:::{.callout-tip icon="false" title="Generality of FE"} 
+Arbitrary base functions $v_i$ can be used to describe $u$
+:::

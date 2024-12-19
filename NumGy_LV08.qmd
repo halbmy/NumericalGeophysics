@@ -1,0 +1,149 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 8: 2D Helmholtz equation"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+# jupyter: python3 
+--- 
+## Recap 
+
+* finite differences approximate partial derivatives
+* finite elements approximate solution $\Rightarrow$ preferred
+* spatial discretization determines accuracy of solution
+* different time-stepping approaches, implicit and mixed schemes most accurate and stable
+* tasks for report on 1D instationary heat equation with periodic boundary conditions
+
+
+# Helmholtz equation in 2D
+
+## Maxwells equations
+
+* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field 
+$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$ 
+* Ampere's law: time-varying magnetic fields induce electric field
+$$ \curl\vb E = -\pdv{\vb B}{t}$$ 
+* $\div\vb D = \varrho$ (charge $\Rightarrow$), $\div\vb B = 0$ (no magnetic charge)
+* material laws $\vb D = \epsilon \vb E$ and $\vb B = \mu \vb H$
+
+## Maxwell in frequency domain
+
+$$\vb E = \vb E_0 e^{\imath\omega t} \qq{or} \vb H = \vb H_0 e^{\imath\omega t}$$
+
+$$ \curl \vb H = \imath\omega\epsilon\vb E + \vb \sigma E $$
+
+$$ \curl\vb E = -\imath\omega\mu\vb H$$ 
+
+## Helmholtz equation
+
+see also [Theory EM](https://ruboerner.github.io/ThEM/mtfields.html)
+
+take curl of one of the equations and insert in the other
+
+$$ \curl\curl \vb E + \imath\omega\mu\sigma\vb E - \omega^2\mu\epsilon \vb E = \curl \vb j_s$$ 
+
+$$ \curl \rho \curl \vb H + \imath\omega\mu\vb H - \omega^2\mu\epsilon\rho \vb H=0$$ 
+
+## Quasi-static approximation
+
+Assume: $\omega^2\mu\epsilon<\omega\mu\sigma$,  no sources ($\div\vb j_s=0$), + vector identity 
+$$\curl\curl \vb F = \grad \div \vb F - \grad^2 \vb F$$
+leads with $\div \vb E=0=\div\vb B$ to the vector Helmholtz PDE
+
+$$-\grad^2 \vb E + \imath\omega\mu\sigma \vb E=0$$
+
+$$-\div \rho \vb H + \imath\omega\mu \vb H=0$$
+
+## Variational form
+
+$$-\grad^2 u + \imath\omega\mu\sigma u = f$$
+
+$$ -\int_\Omega w \grad^2 u \dd\Omega + \int_\Omega w \imath\omega\mu\sigma u \dd\Omega = \int_\Omega w f \dd\Omega $$
+
+Gauss's integral law
+
+$$\int_\Omega \grad w \cdot \grad u \dd\Omega + \imath\omega \int_\Omega  \mu\sigma w u \dd\Omega = \int_\Omega w f \dd\Omega $$
+
+## Weak formulation
+
+$u=\sum_i u_i \vb v_i$ and $w_i\in {v_i}$ leads to 
+
+$$\int_\Omega \grad v_i \cdot \grad v_j \dd\Omega + \imath\omega \int_\Omega \mu\sigma v_i v_j \dd\Omega = \int_\Omega v_i f \dd\Omega $$
+
+$$\braket{\grad v_i}{\grad v_j} + \imath\omega \braket{v_i}{\mu\sigma v_j} = \braket{v_i}{f}  \qq{inner product}$$
+
+
+## Complex or real-valued?
+
+The complex valued system
+
+$$\vb A+\imath\vb M = \vb u = b$$
+
+can be transferred into a doubled real-valued system
+
+$$\mqty(A & -M\\M & A) \mqty(u_r\\ u_i) = \mqty(b_r\\ b_i) $$
+
+
+## Secondary field approach
+
+Consider the field to consist of a primary (background) and an secondary (anomalous) field $F=F_0+F_a$
+
+solution for $F_0$ known, e.g. analytically or 1D (semi-analytically)
+
+$\Rightarrow$ form equations for $F_a$, because
+
+* $F_a$ is weaker or smoother (e.g. $F_0\propto 1/$ at sources)
+* boundary conditions easier to set (e.g. homogeneous Dirichlet)
+
+
+
+## Secondary field Helmholtz equation
+
+The equation $-\grad^2 F - k^2 F = 0$ is solved by the primary field for $k_0$:
+
+$-\grad^2 F_0 - k_0^2 F_0=0$ and the total field for $k_0+\delta k$:
+
+$$ -\grad^2 (F_0+F_a) -(k_0^2+\delta k^2) (F_0+F_a) = 0 $$
+
+$$ -\grad^2 F_a - k^2 F_a = \delta k^2 F_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous terms
+:::
+
+## Secondary field for EM
+
+Maxwells equations $k^2=-\imath\omega\mu\sigma$
+
+$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
+
+leads to
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous conductivities and increase with primary field
+:::

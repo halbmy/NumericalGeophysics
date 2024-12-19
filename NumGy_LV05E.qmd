@@ -1,0 +1,151 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 5: Timestepping"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+# jupyter: python3 
+--- 
+# Recap Poisson equation
+
+## Recap
+
+* [x] solve the Poisson equation for arbitrary $x$ and $a$
+* [x] sources and $a$ contrasts cause curvature in $u$<br>
+  * positive source or $a$ increase $\Rightarrow$ negative u" $\Rightarrow$ maximum
+  * single $f$ $\Rightarrow$ piecewise linear, full $f$ $\Rightarrow$ parabola
+* [x] Dirichlet BC determine shift (& slope if double)
+* [x] Neumann BC determine slope of $u$
+* [x] accuracy (compare analytical) depends on discretization
+* [ ] now go for instationary (parabolic) problem by time stepping
+  * curvature in $u$ causes negative change of $u$
+
+# Time stepping
+
+## Time stepping - explicit method
+
+$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
+
+Finite-difference approximation
+
+$$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T^n}{z} $$
+
+## Explicit
+
+:::: {.columns}
+::: {.column}
+Start $T^0$ with initial condition (e.g. 0)
+
+Update field by 
+$$ T^{n+1} = T^n + a \pdv[2]{T^n}{z} \cdot \Delta t$$
+
+E.g. by using the matrix $A$
+:::
+::: {.column}
+![Forward stencil](pics/dtforward.svg)
+:::
+::::
+
+## Implicit methods
+
+:::: {.columns}
+::: {.column}
+$$ \pdv{T}{t}^{n+1} \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T}{z} ^{n+1} $$
+
+$$ \frac{1}{\Delta t} T^{n+1} - a \pdv[2]{T}{z} ^{n+1} = \frac{1}{\Delta t} T^n $$
+
+$$ (\vb M - \vb A) \vb u^{n+1} = \vb M \vb u^n $$ 
+
+$\vb M$ - mass matrix
+:::
+::: {.column}
+![Backward stencil](pics/dtbackward.svg)
+:::
+::::
+
+## Mixed - Crank-Nicholson method
+
+$$ \pdv{T}{t}^{n+1/2} \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$
+
+:::: {.columns}
+::: {.column width="60%"}
+$$ \frac{2}{\Delta t} T^{n+1} - a \pdv[2]{T^{n+1}}{z} = 
+   \frac{2}{\Delta t} T^n + a \pdv[2]{T^n}{z} $$
+
+$$ (2\vb M - \vb A) \vb u^{n+1} = (2\vb M + \vb A) \vb u^n $$ 
+
+<!-- $$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$ -->
+:::
+::: {.column width="40%"}
+![Mixed forward/backward stencil](pics/dtmixed.svg)
+:::
+::::
+
+## Stability of time-stepping schemes
+
+Consider Newton cooling problem
+
+$$ \dv{T}{t} = -\frac{T}{\tau} $$
+
+with solution $$ T(t)=T_0 \exp(-t/\tau) $$
+
+## Explicit
+
+$$ T_{i+1} = T_i - \frac{dt}{\tau} T_i = T_i (1-\frac{dt}{\tau}) = T_0 (1-\frac{dt}{\tau})^{i+1} $$
+
+$T_{i+1} < T_i$ requires $0\le 1-dt/\tau<1$
+
+$$\Rightarrow 0 < dt \le \tau $$
+
+## Implicit
+
+$$ \frac{T_{i+1}-T_i}{dt} = -\frac{T_{i+1}}{\tau} $$
+
+$$ T_{i+1} = T_i \frac{1}{1+dt/\tau} $$
+
+$$ 0 \le \frac{1}{1+dt/\tau} < 1 $$
+
+unconditionally stable (but maybe still inaccurate)
+
+## Mixed
+
+$$ \frac{T_{i+1}-T_i}{dt} = -\frac{T_{i+1}+T_i}{2\tau} $$
+
+$$ T_{i+1} (1+dt/2\tau) = T_i (1-dt/2\tau) $$
+
+$$ T_{i+1} = T_i \frac{1-dt/2\tau}{1+dt/2\tau} $$
+
+always stable and decreasing for $dt<2\tau$
+
+## Tasks instationary heat equation
+
+* setup a discretization and compute the stiffness matrix $A$ for some $a$
+* choose an initial condition (e.g. homogeneous)
+* choose a time step $\Delta t$ and perform the explicit method using the surface temperature as upper boundary condition
+* change the spatial/temporal discretization and observe the solution
+* setup mass matrix and implement the implicit method for diff. $\Delta t$
+* implement the Crank-Nicholson method and compare all three
+* compare the solutions with the analytical solution

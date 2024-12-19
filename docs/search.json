@@ -4,589 +4,359 @@
     "href": "index.html",
     "title": "Numerical methods in geophysics",
     "section": "",
-    "text": "1 Numerical methods in geophysics",
+    "text": "Prerequisites\nHere are the lecture notes for the 2024/2025 module Numerical Simulation methods in Geophysics. These notes are tailored for Master’s students of Geophysics or Geoinformatics at the Institute of Geophysics and Geoinformatics, TU Bergakademie Freiberg.\nYou can access all the materials on the GitHub repository https://github.com/halbmy/NumGy.\nEnjoy studying!",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical methods in geophysics</span>"
+      "Prerequisites"
     ]
   },
   {
-    "objectID": "NumGy_LV01.html",
-    "href": "NumGy_LV01.html",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
+    "objectID": "index.html#background",
+    "href": "index.html#background",
+    "title": "Numerical methods in geophysics",
+    "section": "Background",
+    "text": "Background\nWhile this course was around already since 2000 in Freiberg, it did not meet the general title before I started and I found no text book about learning the background of the simulation methods being increasingly used in geophysics, particularly solving partial differential equations by own codes and understanding the physics by doing so. I aim at all common PDE types from elliptic, parabolic to hyperbolic, going from 1D to 2D and 3D, from Finite Differences to Finite Elements and Finite Volumes.",
+    "crumbs": [
+      "Prerequisites"
+    ]
+  },
+  {
+    "objectID": "index.html#code",
+    "href": "index.html#code",
+    "title": "Numerical methods in geophysics",
+    "section": "Code",
+    "text": "Code\nThe website’s course material includes sections with embedded Python code.\nYou can easily copy the code and execute it in a compatible Python runtime environment.\nFor an optimal experience, we recommend installing Python via miniforge.\nMoreover, you have the freedom to explore your own concepts and delve deeper into the course content by creating your personalized Jupyter notebooks. You can utilize use either Visual Studio Code or Jupyterlab\nThe material was created by Quarto.\nWorking with Jupyter Notebooks in Visual Studio Code is exceptionally straightforward.",
+    "crumbs": [
+      "Prerequisites"
+    ]
+  },
+  {
+    "objectID": "index.html#self-study",
+    "href": "index.html#self-study",
+    "title": "Numerical methods in geophysics",
+    "section": "Self study",
+    "text": "Self study\nThere are individual small tasks for self-study that are scattered throughout the lecture.\n\n\n\n\n\n\nSelf study\n\n\n\nYou can easily identify these callouts.",
+    "crumbs": [
+      "Prerequisites"
+    ]
+  },
+  {
+    "objectID": "index.html#recommended-reading",
+    "href": "index.html#recommended-reading",
+    "title": "Numerical methods in geophysics",
+    "section": "Recommended Reading",
+    "text": "Recommended Reading\nThe most important source of supplementary information is the book by @ward1988electromagnetic.",
+    "crumbs": [
+      "Prerequisites"
+    ]
+  },
+  {
+    "objectID": "index.html#license",
+    "href": "index.html#license",
+    "title": "Numerical methods in geophysics",
+    "section": "License",
+    "text": "License\nThis material is licensed under the Creative Commons License.",
+    "crumbs": [
+      "Prerequisites"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html",
+    "href": "01_introduction.html",
+    "title": "1  Introduction",
     "section": "",
-    "text": "3 Introduction",
+    "text": "1.1 Differential operators",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV01.html#content",
-    "href": "NumGy_LV01.html#content",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "3.1 Content",
-    "text": "3.1 Content\n\nSome introduction\nPartial differential equations in geophysics\nFinite Differences\nNumerical integration\nIntegral equations and Method of Moments\nSolving linear systems\nFinite element method\nFinite Volume method\nHigh-performance computing",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#schedule",
-    "href": "NumGy_LV01.html#schedule",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "3.2 Schedule",
-    "text": "3.2 Schedule\n\nLectures Wednesday, 11:30, MEI-2122 \\(\\Rightarrow\\) Meeting room MEI-211\n14 slots : 16.10., 23.10., 30.10., 06.11., (13.11.), 27.11., 04.12., 11.12., 18.12., 08.01., 15.01., 22.01., 28.01., 05.02.\nExercises Thursday, 08:00-09:30, CIP pool MEI1203a\n14 slots : 17.10., 24.10., 07.11., 14.11., 21.11., 28.11., 05.12., 12.12., 19.12., 09.01., 16.01., 23.01., 29.01., 06.02.\nGrade: submitting a report including codes",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#what-should-you-know-already",
-    "href": "NumGy_LV01.html#what-should-you-know-already",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "3.3 What should you know already?",
-    "text": "3.3 What should you know already?\n\nHigher mathematics: differential equations, algebra (1.-2. BSc)\nExperimental and theoretical physics: governing equations\nNumerics for engineers (2. BSc)\nProgramming (1. BSc), Software development (3. BSc)\nGeophysics: feeling for physical fields & methods\nElectromagnetics (5. BSc), Theory EM,\nnow: Scientific programming, HPC, seismic imaging",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#topics-to-be-covered",
-    "href": "NumGy_LV01.html#topics-to-be-covered",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "3.4 Topics to be covered",
-    "text": "3.4 Topics to be covered\n\nrecap on partial differential equations\n(1D) heat equation: stationary and instationary (Geothermics course)\n2D: magnetotellurics\n3D DC modelling (content of Spitzer videos)\n2D ground-penetrating radar (EM) and pressure waves (seismics)\nexcurse to hydrodynamic modelling\nmodelling the Eikonal equation (the travelling saleman)\nexercises: code FD & FE by hand, use packages to obtain feeling",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#literature",
-    "href": "NumGy_LV01.html#literature",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "3.5 Literature",
-    "text": "3.5 Literature\n\nHaber (2015): Computational methods geophysical electromagnetics\nMorra (2018): Pythonic Geodynamics - Implementations for fast computing, frei verfügbar unter https://doi.org/10.1007/978-3-319-55682-6, zum Eintauchen ins Programmieren (MSc)\nWarnick: Numerical Methods for Engineering : An Introduction Using MATLAB® and Computational Electromagnetics Examples Link\nIgel (2007): Numerical modelling in geophysics, short course https://www.geophysik.uni-muenchen.de/~igel/nmg-short/ https://www.geophysik.uni-muenchen.de/~igel/downloads/\nLogg et al. (2011): Automated Solution of Differential Equations by the Finite Element Method: Link\nPress (2007): Numerical recipes: the art of scientific computing, https://numerical.recipes/book.html",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#further-links",
-    "href": "NumGy_LV01.html#further-links",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "3.6 Further links",
-    "text": "3.6 Further links\n\npyGIMLi: Python Geophysical Inversion and Modelling Library https://pygimli.org\nGeoscience.XYZ: https://geosci.xyz\nFenics handbook\nTheory of electromagnetics https://ruboerner.github.io/ThEM/",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#differential-operators",
-    "href": "NumGy_LV01.html#differential-operators",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.1 Differential operators",
-    "text": "4.1 Differential operators\n\nsingle derivative in space \\(\\pdv{x}\\) or time \\(\\pdv t\\)\ngradient \\(\\grad=(\\pdv x, \\pdv y, \\pdv z)^T\\)\ndivergence \\(\\div \\vb F = \\pdv{F_x}{x} + \\pdv{F_y}{y} + \\pdv{F_z}{z}\\)\n\n\n\n\nGauss’: what’s in (volume) comes out (surface) \\[\\int_V \\div\\vb F\\ dV = \\iint_S \\vb F \\vdot \\vb n\\ dS\\]\n\n\n\n\nGauss’s theorem in EM",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#curl-rotation",
-    "href": "NumGy_LV01.html#curl-rotation",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.2 Curl (rotation)",
-    "text": "4.2 Curl (rotation)\n\ncurl \\(\\curl \\vb F = (\\pdv{F_z}{y}-\\pdv{F_y}{z}, \\pdv{F_x}{z}-\\pdv{F_z}{x}, \\pdv{F_y}{x}-\\pdv{F_x}{y})^T\\)\n\n\n\n\nStoke: what goes around comes around \\[\\int_S \\curl \\vb F \\vdot \\vb dS = \\iint_S \\vb F \\vdot \\vb dl\\]\n\n\n\n\nStokes’ theorem in EM\n\n\n\n\n\n\n\ncurls have no divergence: \\(\\div (\\curl \\vb F)=0\\)\n\n\n\n\npotential fields have no curl \\(\\curl (\\grad u)=0\\)",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#numerical-simulation",
-    "href": "NumGy_LV01.html#numerical-simulation",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.3 Numerical simulation",
-    "text": "4.3 Numerical simulation\nMostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities\nPDE Types (\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(\\nabla^2 u=f\\)\nparabolic PDE \\(\\nabla^2 u - a \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(\\nabla^2 u - c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#poisson-equation",
-    "href": "NumGy_LV01.html#poisson-equation",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.4 Poisson equation",
-    "text": "4.4 Poisson equation\npotential field \\(u\\) generates field \\(\\vec{F}=-\\nabla u\\)\ncauses some flow \\(\\vec{j}=a \\vec{F}\\)\n\\(a\\) is some sort of conductivity (electric, hydraulic, thermal)\ncontinuity of flow: divergence of total current \\(\\vb j + \\vb j_s\\) is zero\n\\[ \\div (a \\nabla u) = - \\div \\vb j_s \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#darcys-law",
-    "href": "NumGy_LV01.html#darcys-law",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.5 Darcy’s law",
-    "text": "4.5 Darcy’s law\n\n\nvolumetric flow rate \\(Q\\) caused by gradient of pressure \\(p\\)\n\\[ Q = \\frac{k A}{\\mu L} \\Delta p \\]\n\\[\\vb q = -\\frac{k}{\\mu} \\nabla p \\]\n\\[\\div\\vb q = -\\div (k/\\mu \\grad p) = 0\\]\n\n\n\n\nDarcy’s law",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#the-heat-equation-in-1d",
-    "href": "NumGy_LV01.html#the-heat-equation-in-1d",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.6 The heat equation in 1D",
-    "text": "4.6 The heat equation in 1D\nsought: Temperature \\(T\\) as a function of space and time\nheat flux density \\(\\vb q = \\lambda\\grad T\\)\n\\(q\\) in W/m², \\(\\lambda\\) - heat conductivity/diffusivity in W/(m.K)\nFourier’s law: \\(\\pdv{T}{t} - a \\nabla^2 T = s\\) (\\(s\\) - heat source)\ntemperature conduction \\(a=\\frac{\\lambda}{\\rho c}\\) (\\(\\rho\\) - density, \\(c\\) - heat capacity)",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#stokes-equation",
-    "href": "NumGy_LV01.html#stokes-equation",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.7 Stokes equation",
-    "text": "4.7 Stokes equation\n\\[ \\mu \\nabla^2 \\vb v - \\grad p + f = 0 \\]\n\\[\\div\\vb v = 0 \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#navier-stokes-equations",
-    "href": "NumGy_LV01.html#navier-stokes-equations",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.8 Navier-Stokes equations",
-    "text": "4.8 Navier-Stokes equations\n(incompressible, uniform viscosity)\n\\[ \\pdv{\\vb u}{t} +(\\vb u \\vdot \\grad) \\vb u = \\nu \\nabla^2 \\vb u - 1/\\rho \\grad p + f \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#maxwells-equations",
-    "href": "NumGy_LV01.html#maxwells-equations",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.9 Maxwell’s equations",
-    "text": "4.9 Maxwell’s equations\n\nFaraday’s law: currents & varying electric fields \\(\\Rightarrow\\) magnetic field \\[ \\curl \\vb H = \\pdv{\\vb D}{t} + \\vb j \\]\nAmpere’s law: time-varying magnetic fields induce electric field \\[ \\curl\\vb E = -\\pdv{\\vb B}{t}\\]\n\\(\\div\\vb D = \\varrho\\) (charge \\(\\Rightarrow\\)), \\(\\div\\vb B = 0\\) (no magnetic charge)\nmaterial laws \\(\\vb D = \\epsilon \\vb E\\) and \\(\\vec B = \\mu \\vb H\\)",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#helmholtz-equations",
-    "href": "NumGy_LV01.html#helmholtz-equations",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.10 Helmholtz equations",
-    "text": "4.10 Helmholtz equations\n\\[ \\nabla^2 u + k^2 u = f \\]\nresults from wavenumber decomposition of diffusion or wave equations\napproach: \\(\\vb F = \\vb{F_0}e^{\\imath\\omega t} \\quad\\Rightarrow\\quad \\pdv{\\vb F}{t}=\\imath\\omega\\vb F \\quad\\Rightarrow\\quad \\pdv[2]{\\vb F}{t}=-\\omega^2\\vb F\\)\n\\[ \\nabla^2 \\vb F - a \\nabla_t \\vb F - c^2 \\nabla^2_t \\vb F = 0 \\]\n\\[ \\Rightarrow \\nabla^2\\vb F - a\\imath\\omega\\vb F + c^2 \\omega^2\\vb F = 0 \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#the-eikonal-equation",
-    "href": "NumGy_LV01.html#the-eikonal-equation",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.11 The eikonal equation",
-    "text": "4.11 The eikonal equation\nDescribes first-arrival times \\(t\\) as a function of velocity (\\(v\\)) or slowness (\\(s\\))\n\\[ |\\grad t| = s = 1/v \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV01.html#taylor-expansion",
-    "href": "NumGy_LV01.html#taylor-expansion",
-    "title": "2  Numerical Simulation Methods in Geophysics, Part 1: Foundations",
-    "section": "4.12 Taylor expansion",
-    "text": "4.12 Taylor expansion",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 1: Foundations</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html",
-    "href": "NumGy_LV02.html",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
+    "objectID": "01_introduction.html#differential-operators",
+    "href": "01_introduction.html#differential-operators",
+    "title": "1  Introduction",
     "section": "",
-    "text": "4 Some mathematical background",
+    "text": "single derivative in space \\(\\pdv{x}\\) or time \\(\\pdv t\\)\ngradient \\(\\grad=(\\pdv x, \\pdv y, \\pdv z)^T\\)\ndivergence \\(\\div \\vb F = \\pdv{F_x}{x} + \\pdv{F_y}{y} + \\pdv{F_z}{z}\\)\n\n\n\n\nGauss’: what’s in (volume) comes out (surface) \\[\\int_V \\div\\vb F\\ dV = \\iint_S \\vb F \\vdot \\vb n\\ dS\\]\n\n\n\n\nGauss’s theorem in EM",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#differential-operators",
-    "href": "NumGy_LV02.html#differential-operators",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "4.1 Differential operators",
-    "text": "4.1 Differential operators\n\nsingle derivative in space \\(\\pdv{x}\\) or time \\(\\pdv t\\)\ngradient \\(\\grad=(\\pdv x, \\pdv y, \\pdv z)^T\\)\ndivergence \\(\\div \\vb F = \\pdv{F_x}{x} + \\pdv{F_y}{y} + \\pdv{F_z}{z}\\)\n\n\n\n\nGauss’: what’s in (volume) comes out (surface) \\[\\int_V \\div\\vb F\\ dV = \\iint_S \\vb F \\vdot \\vb n\\ dS\\]\n\n\n\n\nGauss’s theorem in EM",
+    "objectID": "01_introduction.html#curl-rotation",
+    "href": "01_introduction.html#curl-rotation",
+    "title": "1  Introduction",
+    "section": "1.2 Curl (rotation)",
+    "text": "1.2 Curl (rotation)\n\ncurl \\(\\curl \\vb F = (\\pdv{F_z}{y}-\\pdv{F_y}{z}, \\pdv{F_x}{z}-\\pdv{F_z}{x}, \\pdv{F_y}{x}-\\pdv{F_x}{y})^T\\)\n\n\n\n\nStoke: what goes around comes around \\[\\int_S \\curl \\vb F \\vdot \\vb dS = \\iint_S \\vb F \\vdot \\vb dl\\]\n\n\n\n\nStokes’ theorem in EM\n\n\n\n\n\n\n\ncurls have no divergence: \\(\\div (\\curl \\vb F)=0\\)\n\n\n\n\npotential fields have no curl \\(\\curl (\\grad u)=0\\)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#curl-rotation",
-    "href": "NumGy_LV02.html#curl-rotation",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "4.2 Curl (rotation)",
-    "text": "4.2 Curl (rotation)\n\ncurl \\(\\curl \\vb F = (\\pdv{F_z}{y}-\\pdv{F_y}{z}, \\pdv{F_x}{z}-\\pdv{F_z}{x}, \\pdv{F_y}{x}-\\pdv{F_x}{y})^T\\)\n\n\n\n\nStoke: what goes around comes around \\[\\int_S \\curl \\vb F \\vdot \\vb dS = \\iint_S \\vb F \\vdot \\vb dl\\]\n\n\n\n\nStokes’ theorem in EM\n\n\n\n\n\n\n\ncurls have no divergence: \\(\\div (\\curl \\vb F)=0\\)\n\n\n\n\npotential fields have no curl \\(\\curl (\\grad u)=0\\)",
+    "objectID": "01_introduction.html#numerical-simulation",
+    "href": "01_introduction.html#numerical-simulation",
+    "title": "1  Introduction",
+    "section": "1.3 Numerical simulation",
+    "text": "1.3 Numerical simulation\nMostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities\nPDE Types (\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(-\\nabla^2 u=f\\) (Poisson) or \\(\\nabla^2 u + k^2 u = f\\) (Helmholtz)\nparabolic PDE \\(-\\nabla^2 u + a \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(-\\nabla^2 u + c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#partial-differential-equations-pdes",
-    "href": "NumGy_LV02.html#partial-differential-equations-pdes",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.1 Partial differential equations (PDEs)",
-    "text": "5.1 Partial differential equations (PDEs)\nMostly: solution of PDEs for either scalar (potentials) or vectorial (fields) quantities\nPDE Types (\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(\\nabla^2 u=f\\)\nparabolic PDE \\(\\nabla^2 u - a \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(\\nabla^2 u - c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
+    "objectID": "01_introduction.html#poisson-equation",
+    "href": "01_introduction.html#poisson-equation",
+    "title": "1  Introduction",
+    "section": "1.4 Poisson equation",
+    "text": "1.4 Poisson equation\npotential field \\(u\\) generates field \\(\\vec{F}=-\\nabla u\\)\ncauses some flow \\(\\vec{j}=a \\vec{F}\\)\n\\(a\\) is some sort of conductivity (electric, hydraulic, thermal)\ncontinuity of flow: divergence of total current \\(\\vb j + \\vb j_s\\) is zero\n\\[ \\div (a \\nabla u) = - \\div \\vb j_s \\]",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#poisson-equation",
-    "href": "NumGy_LV02.html#poisson-equation",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.2 Poisson equation",
-    "text": "5.2 Poisson equation\npotential field \\(u\\) generates field \\(\\vec{F}=-\\nabla u\\)\ncauses some flow \\(\\vec{j}=a \\vec{F}\\)\n\\(a\\) is some sort of conductivity (electric, hydraulic, thermal)\ncontinuity of flow: divergence of total current \\(\\vb j + \\vb j_s\\) is zero\n\\[ \\div (a \\nabla u) = - \\div \\vb j_s \\]",
+    "objectID": "01_introduction.html#darcys-law",
+    "href": "01_introduction.html#darcys-law",
+    "title": "1  Introduction",
+    "section": "1.5 Darcy’s law",
+    "text": "1.5 Darcy’s law\n\n\nvolumetric flow rate \\(Q\\) caused by gradient of pressure \\(p\\)\n\\[ Q = \\frac{k A}{\\mu L} \\Delta p \\]\n\\[\\vb q = -\\frac{k}{\\mu} \\nabla p \\]\n\\[\\div\\vb q = -\\div (k/\\mu \\grad p) = 0\\]\n\n\n\n\nDarcy’s law",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#darcys-law",
-    "href": "NumGy_LV02.html#darcys-law",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.3 Darcy’s law",
-    "text": "5.3 Darcy’s law\n\n\nvolumetric flow rate \\(Q\\) caused by gradient of pressure \\(p\\)\n\\[ Q = \\frac{k A}{\\mu L} \\Delta p \\]\n\\[\\vb q = -\\frac{k}{\\mu} \\nabla p \\]\n\\[\\div\\vb q = -\\div (k/\\mu \\grad p) = 0\\]\n\n\n\n\nDarcy’s law",
+    "objectID": "01_introduction.html#the-heat-equation-in-1d",
+    "href": "01_introduction.html#the-heat-equation-in-1d",
+    "title": "1  Introduction",
+    "section": "1.6 The heat equation in 1D",
+    "text": "1.6 The heat equation in 1D\nsought: Temperature \\(T\\) as a function of space and time\nheat flux density \\(\\vb q = \\lambda\\grad T\\)\n\\(q\\) in W/m², \\(\\lambda\\) - heat conductivity/diffusivity in W/(m.K)\nFourier’s law: \\(\\pdv{T}{t} - a \\nabla^2 T = s\\) (\\(s\\) - heat source)\ntemperature conduction \\(a=\\frac{\\lambda}{\\rho c}\\) (\\(\\rho\\) - density, \\(c\\) - heat capacity)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#the-heat-equation-in-1d",
-    "href": "NumGy_LV02.html#the-heat-equation-in-1d",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.4 The heat equation in 1D",
-    "text": "5.4 The heat equation in 1D\nsought: Temperature \\(T\\) as a function of space and time\nheat flux density \\(\\vb q = \\lambda\\grad T\\)\n\\(q\\) in W/m², \\(\\lambda\\) - heat conductivity/diffusivity in W/(m.K)\nFourier’s law: \\(\\pdv{T}{t} - a \\nabla^2 T = s\\) (\\(s\\) - heat source)\ntemperature conduction \\(a=\\frac{\\lambda}{\\rho c}\\) (\\(\\rho\\) - density, \\(c\\) - heat capacity)",
+    "objectID": "01_introduction.html#stokes-equation",
+    "href": "01_introduction.html#stokes-equation",
+    "title": "1  Introduction",
+    "section": "1.7 Stokes equation",
+    "text": "1.7 Stokes equation\n\\[ \\mu \\nabla^2 \\vb v - \\grad p + f = 0 \\]\n\\[\\div\\vb v = 0 \\]",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#navier-stokes-equation",
-    "href": "NumGy_LV02.html#navier-stokes-equation",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.5 Navier-Stokes equation",
-    "text": "5.5 Navier-Stokes equation\nStokes equation \\[ \\mu \\nabla^2 \\vb v - \\grad p + f = 0 \\]\n\\[\\div\\vb v = 0 \\]\nNavier-Stokes equation (incompressible, uniform viscosity)\n\\[ \\pdv{\\vb u}{t} +(\\vb u \\vdot \\grad) \\vb u = \\nu \\nabla^2 \\vb u - 1/\\rho \\grad p + f \\]",
+    "objectID": "01_introduction.html#navier-stokes-equations",
+    "href": "01_introduction.html#navier-stokes-equations",
+    "title": "1  Introduction",
+    "section": "1.8 Navier-Stokes equations",
+    "text": "1.8 Navier-Stokes equations\n(incompressible, uniform viscosity)\n\\[ \\pdv{\\vb u}{t} +(\\vb u \\vdot \\grad) \\vb u = \\nu \\nabla^2 \\vb u - 1/\\rho \\grad p + f \\]",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#maxwells-equations",
-    "href": "NumGy_LV02.html#maxwells-equations",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.6 Maxwell’s equations",
-    "text": "5.6 Maxwell’s equations\n\nFaraday’s law: currents & varying electric fields \\(\\Rightarrow\\) magnetic field \\[ \\curl \\vb H = \\pdv{\\vb D}{t} + \\vb j \\]\nAmpere’s law: time-varying magnetic fields induce electric field \\[ \\curl\\vb E = -\\pdv{\\vb B}{t}\\]\n\\(\\div\\vb D = \\varrho\\) (charge \\(\\Rightarrow\\)), \\(\\div\\vb B = 0\\) (no magnetic charge)\nmaterial laws \\(\\vb D = \\epsilon \\vb E\\) and \\(\\vec B = \\mu \\vb H\\)",
+    "objectID": "01_introduction.html#maxwells-equations",
+    "href": "01_introduction.html#maxwells-equations",
+    "title": "1  Introduction",
+    "section": "1.9 Maxwell’s equations",
+    "text": "1.9 Maxwell’s equations\n\nFaraday’s law: currents & varying electric fields \\(\\Rightarrow\\) magnetic field \\[ \\curl \\vb H = \\pdv{\\vb D}{t} + \\vb j \\]\nAmpere’s law: time-varying magnetic fields induce electric field \\[ \\curl\\vb E = -\\pdv{\\vb B}{t}\\]\n\\(\\div\\vb D = \\varrho\\) (charge \\(\\Rightarrow\\)), \\(\\div\\vb B = 0\\) (no magnetic charge)\nmaterial laws \\(\\vb D = \\epsilon \\vb E\\) and \\(\\vec B = \\mu \\vb H\\)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#helmholtz-equations",
-    "href": "NumGy_LV02.html#helmholtz-equations",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.7 Helmholtz equations",
-    "text": "5.7 Helmholtz equations\n\\[ \\nabla^2 \\vb F + k^2 \\vb F = f \\]\nresults from wavenumber decomposition of diffusion or wave equations\napproach: \\(\\vb F = \\vb{F_0}e^{\\imath\\omega t} \\quad\\Rightarrow\\quad \\pdv{\\vb F}{t}=\\imath\\omega\\vb F \\quad\\Rightarrow\\quad \\pdv[2]{\\vb F}{t}=-\\omega^2\\vb F\\)\n\\[ \\nabla^2 \\vb F - a \\nabla_t \\vb F - c^2 \\nabla^2_t \\vb F = 0 \\]\n\\[ \\Rightarrow \\nabla^2\\vb F - a\\imath\\omega\\vb F + c^2 \\omega^2\\vb F = 0 \\]",
+    "objectID": "01_introduction.html#helmholtz-equations",
+    "href": "01_introduction.html#helmholtz-equations",
+    "title": "1  Introduction",
+    "section": "1.10 Helmholtz equations",
+    "text": "1.10 Helmholtz equations\n\\[ \\nabla^2 u + k^2 u = f \\]\nresults from wavenumber decomposition of diffusion or wave equations\napproach: \\(\\vb F = \\vb{F_0}e^{\\imath\\omega t} \\quad\\Rightarrow\\quad \\pdv{\\vb F}{t}=\\imath\\omega\\vb F \\quad\\Rightarrow\\quad \\pdv[2]{\\vb F}{t}=-\\omega^2\\vb F\\)\n\\[ \\nabla^2 \\vb F - a \\nabla_t \\vb F - c^2 \\nabla^2_t \\vb F = 0 \\]\n\\[ \\Rightarrow \\nabla^2\\vb F - a\\imath\\omega\\vb F + c^2 \\omega^2\\vb F = 0 \\]",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#the-eikonal-equation",
-    "href": "NumGy_LV02.html#the-eikonal-equation",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "5.8 The Eikonal equation",
-    "text": "5.8 The Eikonal equation\nDescribes first-arrival times \\(t\\) as a function of velocity (\\(v\\)) or slowness (\\(s\\))\n\\[ |\\grad t| = s = 1/v \\]",
+    "objectID": "01_introduction.html#the-eikonal-equation",
+    "href": "01_introduction.html#the-eikonal-equation",
+    "title": "1  Introduction",
+    "section": "1.11 The eikonal equation",
+    "text": "1.11 The eikonal equation\nDescribes first-arrival times \\(t\\) as a function of velocity (\\(v\\)) or slowness (\\(s\\))\n\\[ |\\grad t| = s = 1/v \\]",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV02.html#taylor-expansion",
-    "href": "NumGy_LV02.html#taylor-expansion",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.1 Taylor expansion",
-    "text": "6.1 Taylor expansion\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\]\nTaylor expansion \\[f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2\\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#finite-differences",
-    "href": "NumGy_LV02.html#finite-differences",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.2 Finite differences",
-    "text": "6.2 Finite differences\n\n\n\n\n\n\nApproximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#difference-stencil",
-    "href": "NumGy_LV02.html#difference-stencil",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.3 Difference stencil",
-    "text": "6.3 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\begin{bmatrix}   \n+1 & -2 & +1 & 0 & \\ldots & &  \\\\\n0 & +1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix}  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#fdm-on-the-general-poisson-equation",
-    "href": "NumGy_LV02.html#fdm-on-the-general-poisson-equation",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.4 FDM on the general Poisson equation",
-    "text": "6.4 FDM on the general Poisson equation\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\]\n\\[ \\pdv{(a \\dv*{u})}{z} = a\\pdv[2]{u}{z} + \\pdv{a}{z} \\pdv{u}{z}  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#boundary-conditions",
-    "href": "NumGy_LV02.html#boundary-conditions",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.5 Boundary conditions",
-    "text": "6.5 Boundary conditions\nDirichlet conditions: \\(u_0=u_B\\) (homogeneous if 0)\nNeumann conditions (homogeneous if 0) \\[ \\pdv*{u}{x}_0=g_B \\]\nMixed boundary conditions \\(u_0+\\alpha du_0/dx=\\gamma\\)",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#dirichlet-bc-implementation-way-1",
-    "href": "NumGy_LV02.html#dirichlet-bc-implementation-way-1",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.6 Dirichlet BC implementation way 1",
-    "text": "6.6 Dirichlet BC implementation way 1\n\\(u_0 = u_B\\)\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#dirichlet-bc-implementation-way-2",
-    "href": "NumGy_LV02.html#dirichlet-bc-implementation-way-2",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.7 Dirichlet BC implementation way 2",
-    "text": "6.7 Dirichlet BC implementation way 2\n\\(u_B - 2 u_1 + u_3 = f_1\\)\n\\[ \\begin{bmatrix}   \n-2 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 - u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#neumann-bc-implementation-way-1",
-    "href": "NumGy_LV02.html#neumann-bc-implementation-way-1",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.8 Neumann BC implementation way 1",
-    "text": "6.8 Neumann BC implementation way 1\n\\[ u_1 - u_0 = g_B\\]\n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_0+g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#neumann-bc-implementation-way-2",
-    "href": "NumGy_LV02.html#neumann-bc-implementation-way-2",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "6.9 Neumann BC implementation way 2",
-    "text": "6.9 Neumann BC implementation way 2\n\\[u_0 - 2 u_1+u_2 = f_1 \\qquad u_1 - u_0 = g_B \\Rightarrow u_2-u_1=f_1+g_B \\] \n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#heat-transfer-in-1d",
-    "href": "NumGy_LV02.html#heat-transfer-in-1d",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "7.1 Heat transfer in 1D",
-    "text": "7.1 Heat transfer in 1D\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nwith the periodic boundary conditions:\n\n\\(T(z=0,t)=T_0 + \\Delta T \\sin \\omega t\\) (daily/yearly cycle)\n\\(\\pdv{T}{z}(z=z_1) = 0\\) (no change at depth)\n\nand the initial condition \\(T(z, t=0)=\\sin \\pi z\\) has the analytical solution \\[ T(z, t) = \\Delta T e^{-\\pi^2 t} \\sin \\pi z \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#explicit-methods",
-    "href": "NumGy_LV02.html#explicit-methods",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "7.2 Explicit methods",
-    "text": "7.2 Explicit methods\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nSolve Poisson equation \\(\\div(a\\grad u)=f\\)\nfor every time step \\(i\\) (using FDM, FEM, FVM etc.)\nFinite-difference step in time: update field by \\[ T_{i+1} = T_i + a \\pdv[2]{u}{z} \\cdot \\Delta t\\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#implicit-methods",
-    "href": "NumGy_LV02.html#implicit-methods",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "7.3 Implicit methods",
-    "text": "7.3 Implicit methods\nnext lecture",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV02.html#mixed-methods",
-    "href": "NumGy_LV02.html#mixed-methods",
-    "title": "3  Numerical Simulation Methods in Geophysics, Part 2: Finite Differences",
-    "section": "7.4 Mixed methods",
-    "text": "7.4 Mixed methods",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 2: Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "NumGy_LV03.html",
-    "href": "NumGy_LV03.html",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
+    "objectID": "03_finite-elements.html",
+    "href": "03_finite-elements.html",
+    "title": "3  Finite Elements",
     "section": "",
-    "text": "5 Recap and exercise",
+    "text": "3.1 History and background\nGeophysics: Poisson equation in 1970s, revival in 1990s and predominant in 2000s up to now",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#task-solve-poisson-equation",
-    "href": "NumGy_LV03.html#task-solve-poisson-equation",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.1 Task: solve Poisson equation",
-    "text": "5.1 Task: solve Poisson equation\n\\[\\div(a\\grad u)=f\\]\n(stationary) potential field, e.g., temperature, flux, current\nsimplest method: Finite differences\nFD: Approximate derivative operators by differences using finite values \\(u_i\\) at points \\(x_i\\), e.g. a",
+    "objectID": "03_finite-elements.html#history-and-background",
+    "href": "03_finite-elements.html#history-and-background",
+    "title": "3  Finite Elements",
+    "section": "",
+    "text": "[1943] Courant: Variational Method\n[1956] Turner, Clough, Martin, Topp: Stiffness\n[1960] Clough: Finite Elements for static elasticity\n[1970-80] extension to structural, thermic and fluid dynamics\n[1990] computational improvements\nnow main method for almost all PDE types",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#unit-solution",
-    "href": "NumGy_LV03.html#unit-solution",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.2 Unit solution",
-    "text": "5.2 Unit solution\n2nd derivative \\([+1, -2, +1]\\) \\(\\Rightarrow\\) \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with the stiffness matrix\n\\[ \\vb{A} = \\begin{bmatrix}   \n+1 & -2 & +1 & 0 & \\ldots & &  \\\\\n0 & +1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix}  \\]",
+    "objectID": "03_finite-elements.html#variational-formulation-of-poisson-equation",
+    "href": "03_finite-elements.html#variational-formulation-of-poisson-equation",
+    "title": "3  Finite Elements",
+    "section": "3.2 Variational formulation of Poisson equation",
+    "text": "3.2 Variational formulation of Poisson equation\n\\[ -\\div a \\grad u = f \\]\n\nMultiplication with test function \\(w\\) and integration \\(\\Rightarrow\\) weak form\n\\[ -\\int_\\Omega w \\div a \\grad u \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]\n\n\n\\[ \\div(b\\vb c) = b\\div \\vb c + \\grad b \\cdot \\vb c \\]\n\n\n\\[ \\int_\\Omega \\grad w a \\grad u \\dd\\Omega - \\int_\\Omega \\div(w a \\grad u) \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#finite-difference-stencil",
-    "href": "NumGy_LV03.html#finite-difference-stencil",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.3 Finite difference stencil",
-    "text": "5.3 Finite difference stencil\n\n\n\n\n\n\n\n\n\ncompute each value (red) with the help of its neighbors (blue)",
+    "objectID": "03_finite-elements.html#variational-formulation-of-poisson-equation-1",
+    "href": "03_finite-elements.html#variational-formulation-of-poisson-equation-1",
+    "title": "3  Finite Elements",
+    "section": "3.3 Variational formulation of Poisson equation",
+    "text": "3.3 Variational formulation of Poisson equation\n\\[ \\int_\\Omega \\grad w a \\grad u \\dd\\Omega - \\int_\\Omega \\div(w a \\grad u) \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]\n\nuse Gauss’ law \\(\\int_\\Omega \\div \\vb A = \\int_\\Gamma \\vb A \\cdot \\vb n\\)\n\\[ \\int_\\Omega a \\grad w \\grad u \\dd\\Omega - \\int_\\Gamma a w \\grad u \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]\n\n\nLet \\(u\\) be constructed by shape functions \\(v\\): \\(u=\\sum_i u_i v_i\\)\n\\[ \\int_\\Omega a \\grad w \\grad v_i \\dd\\Omega - \\int_\\Gamma a w \\grad v_i \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#dirichlet-boundary-conditions",
-    "href": "NumGy_LV03.html#dirichlet-boundary-conditions",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.4 Dirichlet boundary conditions",
-    "text": "5.4 Dirichlet boundary conditions\n\\(u_B - 2 u_1 + u_3 = f_1\\)\n\\[ \\begin{bmatrix}   \n-2 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 - u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]\nno change in coefficients, \\(u_B\\) on rhs act as outer source",
+    "objectID": "03_finite-elements.html#galerkins-method",
+    "href": "03_finite-elements.html#galerkins-method",
+    "title": "3  Finite Elements",
+    "section": "3.4 Galerkins method",
+    "text": "3.4 Galerkins method\n\\[ \\int_\\Omega a \\grad w \\grad v_i \\dd\\Omega - \\int_\\Gamma a w \\grad v_i \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]\n\nTest functions equal shape (trial) functions \\(w_i=v_i\\)\n\\[ \\int_\\Omega a \\grad v_i \\grad v_j \\dd\\Omega - \\int_\\Gamma a w \\grad v_j \\dd\\Gamma = \\int_\\Omega f v_j \\dd\\Omega \\]\n\n\n\nchoose \\(v_i\\) so that \\(\\grad v_i\\) is simple and \\(\\grad v_i \\grad v_j\\) mostly 0\ndivide subsurface in sub-volumes \\(\\Omega_i\\) with constant \\(a_i\\) and \\(\\grad v_j\\)",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#neumann-boundary-conditions",
-    "href": "NumGy_LV03.html#neumann-boundary-conditions",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.5 Neumann boundary conditions",
-    "text": "5.5 Neumann boundary conditions\n\\[u_0 - 2 u_1+u_2 = f_1 \\qquad u_1 - u_0 = g_B \\Rightarrow u_2-u_1=f_1+g_B \\] \n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]\nchange in self-coupling, \\(g_B\\) on rhs adds to source",
+    "objectID": "03_finite-elements.html#hat-functions",
+    "href": "03_finite-elements.html#hat-functions",
+    "title": "3  Finite Elements",
+    "section": "3.5 Hat functions",
+    "text": "3.5 Hat functions",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#tasks",
-    "href": "NumGy_LV03.html#tasks",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.6 Tasks",
-    "text": "5.6 Tasks\n\nCreate a stiffness matrix for unit quantities\nImplement Dirichlet BC on one and Neumann on other side\nSolve system for different right-hand sides:\n\nno source at all\nsingle source in the middle or at the boundary\nseveral sources with different strengths (& signs)\nsource on part of the domain\n\nAlwas plot the solution and itsLaplacian",
+    "objectID": "03_finite-elements.html#gradients-for-hat-functions",
+    "href": "03_finite-elements.html#gradients-for-hat-functions",
+    "title": "3  Finite Elements",
+    "section": "3.6 Gradients for hat functions",
+    "text": "3.6 Gradients for hat functions\nEvery element is surrounded by two nodes “carrying” a hat.\nThe gradients are piece-wise constant \\(\\pm 1/\\Delta x_i\\)\n\\[ \\Rightarrow \\int_\\Omega a \\grad v_i \\grad v_{i+1} \\dd\\Omega = -\\frac{a_i}{\\Delta x_i^2} \\cdot \\Delta x_i = -\\frac{a_i}{\\Delta x_i}\\]\n\\[ -\\int_\\Omega a \\grad v_i \\grad v_i \\dd\\Omega = \\frac{a_{i-1}}{\\Delta x_{i-1}^2}\\Delta x_{i-1} + \\frac{a_i}{\\Delta x_i^2}\\Delta x_i = \\frac{a_{i-1}}{\\Delta x_{i-1}} + \\frac{a_i}{\\Delta x_i} \\]\n\\[ -\\int_\\Omega a \\grad v_i \\grad v_{i+2} \\dd\\Omega = 0 \\]",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#the-general-case",
-    "href": "NumGy_LV03.html#the-general-case",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.7 The general case",
-    "text": "5.7 The general case\n\\(\\Delta x \\ne 1\\) & \\(a \\ne 1\\)\n\\(a \\pdv{u}{x}\\)",
+    "objectID": "03_finite-elements.html#boundary-conditions",
+    "href": "03_finite-elements.html#boundary-conditions",
+    "title": "3  Finite Elements",
+    "section": "4.1 Boundary conditions",
+    "text": "4.1 Boundary conditions\nsecond term \\[ - \\int_\\Gamma a v_i \\grad v_j \\dd\\Gamma \\]",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#tasks-1",
-    "href": "NumGy_LV03.html#tasks-1",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "5.8 Tasks",
-    "text": "5.8 Tasks\n\nDerive the coefficiencs for the general case\nWrite a function implementing the general case\nDivide the “subsurface” in regions with different \\(a\\)\nCompute the solution for different source fields\nUse a non-equidistant discretisation\nAlways plot solution along with source and Laplacian",
+    "objectID": "03_finite-elements.html#right-hand-side-vector",
+    "href": "03_finite-elements.html#right-hand-side-vector",
+    "title": "3  Finite Elements",
+    "section": "4.2 Right-hand side vector",
+    "text": "4.2 Right-hand side vector\nThe right-hand-side vector \\(b=\\int v_i f \\dd\\Omega\\) also scales with \\(\\Delta x\\)\ne.g. \\(f=\\div j_s\\) \\(\\Rightarrow\\) $b=v_i j_s = _$\nsystem identical to FD for \\(\\Delta x=\\)const\n\n\n\n\n\n\nDifference of FE to FD\n\n\n\nAny source function \\(f(x)\\) can be integrated on the whole space!",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#heat-transfer-in-1d",
-    "href": "NumGy_LV03.html#heat-transfer-in-1d",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "6.1 Heat transfer in 1D",
-    "text": "6.1 Heat transfer in 1D\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nwith the periodic boundary conditions: * \\(T(z=0,t)=T_0 + \\Delta T \\sin \\omega t\\) (daily/yearly cycle) * \\(\\pdv{T}{z}(z=z_1) = 0\\) (no change at depth) and the initial condition \\(T(z, t=0)=\\sin \\pi z\\) has the analytical solution \\[ T(z, t) = \\Delta T e^{-\\pi^2 t} \\sin \\pi z \\]",
+    "objectID": "03_finite-elements.html#solution",
+    "href": "03_finite-elements.html#solution",
+    "title": "3  Finite Elements",
+    "section": "4.3 Solution",
+    "text": "4.3 Solution\n\\(\\vb v\\) holds the coefficient \\(u_i\\) creating \\(u=\\sum u_i v_i(x)\\)\n\n\n\n\n\n\nDifference of FE to FD\n\n\n\n\\(u\\) is described on the whole space and approximates the solution, not the PDE!\n\n\nHat functions: \\(u_i\\) potentials on nodes, \\(u\\) piece-wise linear\n\n\n\n\n\n\nGenerality of FE\n\n\n\nArbitrary base functions \\(v_i\\) can be used to describe \\(u\\)",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#fd-stencil",
-    "href": "NumGy_LV03.html#fd-stencil",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "6.2 FD stencil",
-    "text": "6.2 FD stencil",
+    "objectID": "02_finite-differences.html",
+    "href": "02_finite-differences.html",
+    "title": "2  Finite Differences",
+    "section": "",
+    "text": "2.1 Helmholtz equations\ne.g. from Fourier assumption \\(u=u_0 e^{\\imath\\omega t}\\)\n\\[ \\div (a\\grad u) + k^2 u = f \\]\n\\[ \\Rightarrow \\vb A + \\vb M = \\vb b \\]",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#explicit-methods",
-    "href": "NumGy_LV03.html#explicit-methods",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "6.3 Explicit methods",
-    "text": "6.3 Explicit methods\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nFinite-difference approximation\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = a \\pdv[2]{T}{z} ^n \\]",
+    "objectID": "02_finite-differences.html#helmholtz-equations",
+    "href": "02_finite-differences.html#helmholtz-equations",
+    "title": "2  Finite Differences",
+    "section": "",
+    "text": "Poisson operator assembled in stiffness matrix \\(\\vb A\\)\nadditional terms with \\(u_i\\) \\(\\Rightarrow\\) mass matrix \\(\\vb M\\)",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#explicit",
-    "href": "NumGy_LV03.html#explicit",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "6.4 Explicit",
-    "text": "6.4 Explicit\nSolve Poisson equation \\(\\div(a\\grad u)=f\\)\nfor every time step \\(i\\) (using FDM, FEM, FVM etc.)\nFinite-difference step in time: update field by \\[ T_{i+1} = T_i + a \\pdv[2]{u}{z} \\cdot \\Delta t\\]",
+    "objectID": "02_finite-differences.html#hyberbolic-equations",
+    "href": "02_finite-differences.html#hyberbolic-equations",
+    "title": "2  Finite Differences",
+    "section": "2.2 Hyberbolic equations",
+    "text": "2.2 Hyberbolic equations\nAcoustic wave equation in 1D \\[ \\pdv[2]{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]\n\\(u\\)..pressure/velocity/displacement, \\(c\\)..velocity\nDamped (mixed parabolic-hyperbolic) wave equation \\[ \\pdv[2]{u}{t} - a\\pdv{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#implicit-methods",
-    "href": "NumGy_LV03.html#implicit-methods",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "6.5 Implicit methods",
-    "text": "6.5 Implicit methods\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = a \\pdv[2]{T}{z} ^{n+1} \\]",
+    "objectID": "02_finite-differences.html#discretization",
+    "href": "02_finite-differences.html#discretization",
+    "title": "2  Finite Differences",
+    "section": "2.3 Discretization",
+    "text": "2.3 Discretization\n\n\n\\[ \\pdv[2]{u}{t}^{n} \\approx \\frac{u^{n+1}-u^n}{\\Delta t} - \\frac{u^{n}-u^{n-1}}{\\Delta t}\n\\]\n\\[ = \\frac{u^{n+1}+u^{n-1}-2 u^n}{\\Delta t^2} = c^2\\pdv[2]{u}{x}^n \\]\n\\[ u^{n+1} = c^2 \\Delta t^2 \\pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} \\]\n\n\\[ \\vb M \\vb u^{n+1} = (\\vb A + 2\\vb M) \\vb u^n - \\vb M \\vb u^{n-1} \\]\n\n\n\n\nSecond derivative",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   },
   {
-    "objectID": "NumGy_LV03.html#mixed---crank-nicholson-method",
-    "href": "NumGy_LV03.html#mixed---crank-nicholson-method",
-    "title": "4  Numerical Simulation Methods in Geophysics, Part 3: FD Implementation",
-    "section": "6.6 Mixed - Crank-Nicholson method",
-    "text": "6.6 Mixed - Crank-Nicholson method\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = \\frac12 a \\pdv[2]{T}{z} ^n + \\frac12 a \\pdv[2]{T}{z} ^{n+1} \\]",
+    "objectID": "02_finite-differences.html#example-velocity-distribution",
+    "href": "02_finite-differences.html#example-velocity-distribution",
+    "title": "2  Finite Differences",
+    "section": "2.4 Example: velocity distribution",
+    "text": "2.4 Example: velocity distribution\n\n\nShow the code\nimport numpy as np\nimport matplotlib.pyplot as plt\nx=np.arange(0, 600.01, 0.5)\nc = 1.0*np.ones_like(x) # velocity in m/s\nc[100:300] = 1 + np.arange(0,0.5,0.0025) \nc[900:1100] = 0.5  # low velocity zone\n\n# Plot velocity distribution.\nplt.plot(x,c,'k')\nplt.xlabel('x [m]')\nplt.ylabel('c [m/s]')\nplt.grid()",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 3: FD  Implementation</span>"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#initial-displacement",
+    "href": "02_finite-differences.html#initial-displacement",
+    "title": "2  Finite Differences",
+    "section": "2.5 Initial displacement",
+    "text": "2.5 Initial displacement\nDerivative of Gaussian (Ricker wavelet)\n\n\nShow the code\nl=5.0\n\n# Initial displacement field [m].\nu=(x-300.0)*np.exp(-(x-300.0)**2/l**2) \n# Plot initial displacement field.\nplt.plot(x,u,'k')\nplt.xlabel('x [m]')\nplt.ylabel('u [m]')\nplt.title('initial displacement field')\nplt.show()",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#time-propagation",
+    "href": "02_finite-differences.html#time-propagation",
+    "title": "2  Finite Differences",
+    "section": "2.6 Time propagation",
+    "text": "2.6 Time propagation\n\n\nShow the code\nu_last=u\ndt = 0.5\nddu = np.zeros_like(u)\ndx = np.diff(x)\nfor i in range(100):\n    dudx = np.diff(u)/dx\n    ddu[1:-1] = np.diff(dudx)/dx[:-1]\n    u_next = 2*u-u_last+ddu*c**2 * dt**2 \n    u_last = u\n    u = u_next\n  \nplt.plot(x,u,'k')",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#section",
+    "href": "02_finite-differences.html#section",
+    "title": "2  Finite Differences",
+    "section": "2.7 ",
+    "text": "2.7",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   }
 ]

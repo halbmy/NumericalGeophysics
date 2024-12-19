@@ -1,0 +1,118 @@
+---
+title: "Finite Differences"
+jupyter: python3
+---
+
+
+
+
+
+## Helmholtz equations
+
+e.g. from Fourier assumption $u=u_0 e^{\imath\omega t}$
+
+$$ \div (a\grad u) + k^2 u = f $$
+
+* Poisson operator assembled in stiffness matrix $\vb A$
+* additional terms with $u_i$ $\Rightarrow$ mass matrix $\vb M$
+
+$$ \Rightarrow \vb A + \vb M = \vb b $$
+
+## Hyberbolic equations 
+
+Acoustic wave equation in 1D
+$$ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
+
+$u$..pressure/velocity/displacement, $c$..velocity
+
+Damped (mixed parabolic-hyperbolic) wave equation
+$$ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
+
+
+## Discretization
+
+:::: {.columns}
+::: {.column}
+$$ \pdv[2]{u}{t}^{n} \approx \frac{u^{n+1}-u^n}{\Delta t} - \frac{u^{n}-u^{n-1}}{\Delta t}
+$$
+
+$$ = \frac{u^{n+1}+u^{n-1}-2 u^n}{\Delta t^2} = c^2\pdv[2]{u}{x}^n $$
+
+
+$$ u^{n+1} = c^2 \Delta t^2 \pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} $$
+
+<!-- \frac{1}{\Delta t}  -->
+
+$$ \vb M \vb u^{n+1} = (\vb A + 2\vb M) \vb u^n - \vb M \vb u^{n-1} $$ 
+:::
+::: {.column}
+![Second derivative](pics/dtsecond.svg)
+:::
+::::
+
+## Example: velocity distribution
+
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: true
+import numpy as np
+import matplotlib.pyplot as plt
+x=np.arange(0, 600.01, 0.5)
+c = 1.0*np.ones_like(x) # velocity in m/s
+c[100:300] = 1 + np.arange(0,0.5,0.0025) 
+c[900:1100] = 0.5  # low velocity zone
+
+# Plot velocity distribution.
+plt.plot(x,c,'k')
+plt.xlabel('x [m]')
+plt.ylabel('c [m/s]')
+plt.grid()
+```
+
+
+## Initial displacement
+
+Derivative of Gaussian (Ricker wavelet)
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: true
+l=5.0
+
+# Initial displacement field [m].
+u=(x-300.0)*np.exp(-(x-300.0)**2/l**2) 
+# Plot initial displacement field.
+plt.plot(x,u,'k')
+plt.xlabel('x [m]')
+plt.ylabel('u [m]')
+plt.title('initial displacement field')
+plt.show()
+```
+
+## Time propagation
+
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: true
+u_last=u
+dt = 0.5
+ddu = np.zeros_like(u)
+dx = np.diff(x)
+for i in range(100):
+    dudx = np.diff(u)/dx
+    ddu[1:-1] = np.diff(dudx)/dx[:-1]
+    u_next = 2*u-u_last+ddu*c**2 * dt**2 
+    u_last = u
+    u = u_next
+  
+plt.plot(x,u,'k')
+```
+
+<video autoplay="true" loop="true">
+<source src="notebooks/wave.mp4"> 
+</video>
+<!-- <video data-autoplay src="notebooks/wave.mp4"></video> -->
+<!-- {{< video notebooks/wave.mp4 video="true">}} -->
+

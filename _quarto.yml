@@ -1,0 +1,32 @@
+project:
+  type: book
+  output-dir: docs
+book:
+  title: "Numerical methods in geophysics"
+  author: "Prof. Dr. Thomas Günther"
+  date: today
+  chapters:
+    - index.qmd
+    - 01_introduction.qmd
+    - 02_finite-differences.qmd
+    - 03_finite-elements.qmd
+format:
+  html:
+    crossref:
+      chapters: true
+      eq-prefix: ""
+    code-fold: true
+    code-summary: "Show the code"
+    html-math-method: mathjax
+    include-in-header:
+      - text: |
+          <script>
+          window.MathJax = {
+            loader: {
+              load: ['[tex]/physics']
+            },
+            tex: {
+              packages: {'[+]': ['physics']}
+            }
+          };
+          </script>

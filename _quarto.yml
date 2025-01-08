@@ -3,13 +3,19 @@ project:
   output-dir: docs
 book:
   title: "Numerical methods in geophysics"
-  author: "Prof. Dr. Thomas Günther"
+  author: "Prof. Dr. Thomas Günther (TU Bergakademie Freiberg)"
   date: today
   chapters:
     - index.qmd
-    - 01_introduction.qmd
-    - 02_finite-differences.qmd
-    - 03_finite-elements.qmd
+    - part: "Introduction"
+      chapters:
+      - 01_introduction.qmd
+    - part: "Finite Differences"
+      chapters:
+      - 02_finite-differences.qmd
+    - part: "Finite Differences"
+      chapters:
+      - 03_finite-elements.qmd
 format:
   html:
     crossref:

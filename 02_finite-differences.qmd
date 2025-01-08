@@ -3,30 +3,124 @@ title: "Finite Differences"
 jupyter: python3
 ---
 
+## Taylor expansion
+Assume the Poisson equation $$\div(a\grad u)=f$$
 
+Taylor expansion $$f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2$$
 
+# The Poisson equation
+## FD Approximation
 
+:::{.callout-tip icon="false" title="Approximate derivative operators by differences"} 
+$$ \pdv{u}{x}\approx\frac{\Delta u}{\Delta x} $$
+:::
+and solution $u$ by finite values $u_i$ at points $x_i$, e.g.
+$$ \dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) $$
 
-## Helmholtz equations
+<!-- $$ \dv*[2]{u}{x}_{3} :=   -->
+$$\pdv[2]{u_3}{x}\approx 
+\frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2} 
+= \frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} $$
 
-e.g. from Fourier assumption $u=u_0 e^{\imath\omega t}$
+## Difference stencil 
+Assumption: equidistant discretization $\Delta x$, conductivity 1
 
-$$ \div (a\grad u) + k^2 u = f $$
+1st derivative: $[-1, +1] / dx$, 2nd derivative $[+1, -2, +1] / dx^2$
 
-* Poisson operator assembled in stiffness matrix $\vb A$
-* additional terms with $u_i$ $\Rightarrow$ mass matrix $\vb M$
+Matrix-Vector product $\vb{A}\cdot\vb{u}=\vb{f}$ with
 
-$$ \Rightarrow \vb A + \vb M = \vb b $$
+$$ \vb{A} = \frac{1}{\Delta x} \begin{bmatrix}   
++1 & -2 & +1 & 0 & \ldots & &  \\
+0 & +1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & +1 & -2 & +1
+\end{bmatrix}  $$
 
-## Hyberbolic equations 
+![1D Finite-Difference stencil](pics/fd1dstencil.svg)
 
-Acoustic wave equation in 1D
-$$ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
+## FDM on the general Poisson equation
+Assume the Poisson equation $$\div(a\grad u)=f$$ with a conductivity term $a$
 
-$u$..pressure/velocity/displacement, $c$..velocity
+$$ \pdv{(a \pdv*{u})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  $$
 
-Damped (mixed parabolic-hyperbolic) wave equation
-$$ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
+## Boundary conditions
+
+Dirichlet conditions: $u_0=u_B$ (homogeneous if 0)
+
+Neumann conditions (homogeneous if 0)
+$$ \pdv*{u}{x}_0=g_B $$
+
+Mixed boundary conditions $u_0+\alpha du_0/dx=\gamma$
+
+### Dirichlet BC implementation way 1
+$u_0 = u_B$
+
+$$ \begin{bmatrix}   
++1 & 0 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} = 
+\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  $$
+
+### Dirichlet BC implementation way 2
+$u_B - 2 u_1 + u_3 = f_1$
+
+$$ \begin{bmatrix}   
+-2 & +1 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & 0 & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} = 
+\begin{bmatrix} f_1 - u_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} $$
+
+### Neumann BC implementation way 1
+$$ u_1 - u_0 = g_B$$ 
+
+$$ \begin{bmatrix}   
+-1 & +1 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+\ldots & \ldots & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} = 
+\begin{bmatrix} f_0+g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  $$
+
+### Neumann BC implementation way 2
+$$u_0 - 2 u_1+u_2 = f_1 \qquad u_1 - u_0 = g_B \Rightarrow u_2-u_1=f_1+g_B $$ 
+<!-- $-u_1 + u_2 = f_1 - g_B$ -->
+
+$$ \begin{bmatrix}   
+-1 & +1 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & 0 & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} = 
+\begin{bmatrix} f_1 + g_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} $$
+
+# Parabolic PDEs
+
+## Heat transfer in 1D
+$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
+
+with the periodic boundary conditions:
+
+* $T(z=0,t)=T_0 + \Delta T \sin \omega t$ (daily/yearly cycle)
+* $\pdv{T}{z}(z=z_1) = 0$ (no change at depth)
+
+and the initial condition $T(z, t=0)=\sin \pi z$ has the analytical solution
+$$ T(z, t) = \Delta T e^{-\pi^2 t} \sin \pi z $$
+
+## Explicit methods
+
+$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
+
+Solve Poisson equation $\div(a\grad u)=f$ 
+
+for every time step $i$ (using FDM, FEM, FVM etc.)
+
+Finite-difference step in time: update field by 
+$$ T_{i+1} = T_i + a \pdv[2]{u}{z} \cdot \Delta t$$
+
 
 
 ## Discretization

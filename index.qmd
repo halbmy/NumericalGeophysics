@@ -1,0 +1,157 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+# jupyter: python3 
+--- 
+# Recap
+
+1. The Finite Difference (FD) method
+   * Poisson equation in 1D, look into 2D/3D
+   * diffusion equation in 1D, time-stepping 
+1. Solving the hyperbolic (acoustic) wave equation in 1D
+1. The Finite Element (FE) method
+   * Poisson and diffusion equation in 1D
+   * (complex) Helmholtz equation in 2D for EM problems
+   * solving EM problems and computational aspects
+
+## Solution in pyGIMLi
+
+:::: {.columns}
+::: {.column}
+step by step
+```
+import pygimli.solver as ps
+A = ps.createStiffnessMatrix(mesh, a)
+M = ps.createMassMatrix(mesh, b)
+f = ps.createLoadVector(mesh, f)
+ps.assembleNeumannBC(b, boundaries)
+ps.assembleDirichletBC(A, b)
+ps.assembleRobinBC(A, boundaries, b)
+u = ps.linSolve(A, b)
+```
+:::
+::: {.column}
+or shortly
+
+```
+bc = {'Dirichlet': {4: 1.0, 3: 0.0},
+      'Neumann': {2: 1.0}}
+u = ps.solveFiniteElements(mesh, a, b, f, bc=bc, 
+                           t=times, c)
+u = pygimli.physics.seismics.solvePressureWave(
+    mesh, velocities, times, sourcePos, uSource)
+```
+:::
+::::
+
+$$ c\pdv{u}{t}= \div(a\grad u) + b u + f(\vb r, t)$$
+
+## Advection
+
+Volume elements move with velocity $\vb v$ and take (advectio=move with)
+
+$$\pdv{T}{t} \Rightarrow \pdv{T}{t} + \dv{z}{t}\pdv{T}{z}$$ 
+in 3D $\vb{v}\cdot\grad{T}$ $\Rightarrow$ advection-dispersion equation
+
+$$\pdv{T}{t} = \div a\grad{T} + Q - \vb{v}\cdot\grad{T}$$
+
+## Advection-dispersion equation (general)
+$$ \pdv{u}{t}+\vb v\cdot\grad u = \div(a\grad u) + b u + f(\vb r, t)$$
+
+$\vb v\cdot\grad u$ (Advection), $\div(a\grad u)$ (Dispersion=Diffusion)
+
+Solve, e.g., by [`pyGIMLi.solver.solveFiniteVolume` (Link)](https://www.pygimli.org/pygimliapi/_generated/pygimli.solver.html#pygimli.solver.solveFiniteVolume)
+
+```
+bc = dict(Dirichlet={4: 1.0, 3: 0.0}, Neumann={2: 1.0})
+u = ps.solveFiniteVolume(mesh, a, b, f, bc=bc, t=times, c)
+```
+
+## Computational fluid dynamics
+
+Magnetohydrodynamic induction equation
+
+$$\pdv{\vb B}{t} =  \curl \frac{1}{\mu\sigma} \curl \vb B + \curl(\vb v \cross \vb B)$$
+
+Forces on fluid (induction, Coriolis, pressure, gravity, Lorentz)
+$$ \rho \pdv{\vb v}{t} + \rho (\vb v \cdot \grad) \vb v + \grad p = -2\omega\cross\vb v+\alpha T \vb g + \vb j \cross \vb B / \rho $$
+
+## FE solution for inhomogeneous viscosity
+
+![](pics/morra10_1.png){fig-align="center"}
+
+## Simple 1D advection problem
+
+$$\pdv{u}{t} + \pdv{v(u)}{x}=0$$
+
+Solution $u_i$ at node $i$ represents average value over cell
+
+$$ \overline{u}_i(t) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}} u(x, t)\dd x $$
+
+$$ \int_{t_1}^{t_2} \pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$ 
+
+## FV
+
+![](pics/finite_volume.png)
+
+## Simple 1D advection problem
+
+$$ u(x, t_2) = u(x, t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$ 
+
+$$ \overline{u}(t_2) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}}\qty\Big(u(x,t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x})  $$
+
+$$ \overline{u}(t_2) = \overline{u}(t_1) - \frac{1}{x_{i+1/2}-x_{i-1/2}}
+\qty\Big(\int_{t_1}^{t_2} v_{i+1/2} \dd t - \int_{t_1}^{t_2} v_{i-1/2} \dd t) $$
+
+## Result
+
+$$ \pdv{\overline{u}_i}{t} +\frac{1}{\Delta x_i} (v_{i+1/2}-v_{i-1/2}) = 0 $$
+
+::: {.callout-note}
+Finite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell's loss is always another cell's gain! 
+:::
+
+## Visualization
+
+![](pics/ave_demo.png){fig-align="center"}
+
+## Similarity to staggered (E, B) grid methods
+
+![](pics/morra10_2.png){fig-align="center"}
+
+## Conservation law (3D) problem
+
+$$\pdv{\vb u}{t} + \div\vb v(u)= 0$$
+
+volume integral over cell, using Gauss' law
+
+$$\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Omega_i} \div\vb v(u) \dd\Omega = 0 = 
+\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Gamma_i} \vb v(u) \cdot \vb n \dd{\Gamma} $$
+
+$$\Rightarrow \pdv{\overline{u}}{t} +\frac{1}{V_i}\int_{\Gamma_i}\vb v(u)\cdot \vb n \dd{\Gamma} =0  $$

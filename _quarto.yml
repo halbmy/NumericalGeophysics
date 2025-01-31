@@ -16,6 +16,9 @@ book:
     - part: "Finite Differences"
       chapters:
       - 03_finite-elements.qmd
+    - part: "Current lecture"
+      chapters:
+      - currentlecture.qmd
 format:
   html:
     crossref:

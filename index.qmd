@@ -44,3 +44,7 @@ The most important source of supplementary information is the book by @ward1988e
 ## License
 
 This material is licensed under the Creative Commons License.
+
+## Current lecture
+
+[Current lecture](currentlecture.html)

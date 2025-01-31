@@ -4,129 +4,59 @@
     "href": "index.html",
     "title": "Numerical methods in geophysics",
     "section": "",
-    "text": "1 Recap",
+    "text": "Prerequisites\nHere are the lecture notes for the 2024/2025 module Numerical Simulation methods in Geophysics. These notes are tailored for Master’s students of Geophysics or Geoinformatics at the Institute of Geophysics and Geoinformatics, TU Bergakademie Freiberg.\nYou can access all the materials on the GitHub repository https://github.com/halbmy/NumericalGeophysics.\nEnjoy studying!",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Prerequisites</span>"
     ]
   },
   {
-    "objectID": "index.html#solution-in-pygimli",
-    "href": "index.html#solution-in-pygimli",
+    "objectID": "index.html#background",
+    "href": "index.html#background",
     "title": "Numerical methods in geophysics",
-    "section": "1.1 Solution in pyGIMLi",
-    "text": "1.1 Solution in pyGIMLi\n\n\nstep by step\nimport pygimli.solver as ps\nA = ps.createStiffnessMatrix(mesh, a)\nM = ps.createMassMatrix(mesh, b)\nf = ps.createLoadVector(mesh, f)\nps.assembleNeumannBC(b, boundaries)\nps.assembleDirichletBC(A, b)\nps.assembleRobinBC(A, boundaries, b)\nu = ps.linSolve(A, b)\n\nor shortly\nbc = {'Dirichlet': {4: 1.0, 3: 0.0},\n      'Neumann': {2: 1.0}}\nu = ps.solveFiniteElements(mesh, a, b, f, bc=bc, \n                           t=times, c)\nu = pygimli.physics.seismics.solvePressureWave(\n    mesh, velocities, times, sourcePos, uSource)\n\n\n\\[ c\\pdv{u}{t}= \\div(a\\grad u) + b u + f(\\vb r, t)\\]",
+    "section": "Background",
+    "text": "Background\nWhile this course was around already since 2000 in Freiberg, it did not meet the general title before I started and I found no text book about learning the background of the simulation methods being increasingly used in geophysics, particularly solving partial differential equations by own codes and understanding the physics by doing so. I aim at all common PDE types from elliptic, parabolic to hyperbolic, going from 1D to 2D and 3D, from Finite Differences to Finite Elements and Finite Volumes.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Prerequisites</span>"
     ]
   },
   {
-    "objectID": "index.html#advection",
-    "href": "index.html#advection",
+    "objectID": "index.html#code",
+    "href": "index.html#code",
     "title": "Numerical methods in geophysics",
-    "section": "1.2 Advection",
-    "text": "1.2 Advection\nVolume elements move with velocity \\(\\vb v\\) and take (advectio=move with)\n\\[\\pdv{T}{t} \\Rightarrow \\pdv{T}{t} + \\dv{z}{t}\\pdv{T}{z}\\] in 3D \\(\\vb{v}\\cdot\\grad{T}\\) \\(\\Rightarrow\\) advection-dispersion equation\n\\[\\pdv{T}{t} = \\div a\\grad{T} + Q - \\vb{v}\\cdot\\grad{T}\\]",
+    "section": "Code",
+    "text": "Code\nThe website’s course material includes sections with embedded Python code.\nYou can easily copy the code and execute it in a compatible Python runtime environment.\nFor an optimal experience, we recommend installing Python via miniforge.\nMoreover, you have the freedom to explore your own concepts and delve deeper into the course content by creating your personalized Jupyter notebooks. You can utilize use either Visual Studio Code or Jupyterlab\nThe material was created by Quarto.\nWorking with Jupyter Notebooks in Visual Studio Code is exceptionally straightforward.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Prerequisites</span>"
     ]
   },
   {
-    "objectID": "index.html#advection-dispersion-equation-general",
-    "href": "index.html#advection-dispersion-equation-general",
+    "objectID": "index.html#self-study",
+    "href": "index.html#self-study",
     "title": "Numerical methods in geophysics",
-    "section": "1.3 Advection-dispersion equation (general)",
-    "text": "1.3 Advection-dispersion equation (general)\n\\[ \\pdv{u}{t}+\\vb v\\cdot\\grad u = \\div(a\\grad u) + b u + f(\\vb r, t)\\]\n\\(\\vb v\\cdot\\grad u\\) (Advection), \\(\\div(a\\grad u)\\) (Dispersion=Diffusion)\nSolve, e.g., by pyGIMLi.solver.solveFiniteVolume (Link)\nbc = dict(Dirichlet={4: 1.0, 3: 0.0}, Neumann={2: 1.0})\nu = ps.solveFiniteVolume(mesh, a, b, f, bc=bc, t=times, c)",
+    "section": "Self study",
+    "text": "Self study\nThere are individual small tasks for self-study that are scattered throughout the lecture.\n\n\n\n\n\n\nSelf study\n\n\n\nYou can easily identify these callouts.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Prerequisites</span>"
     ]
   },
   {
-    "objectID": "index.html#computational-fluid-dynamics",
-    "href": "index.html#computational-fluid-dynamics",
+    "objectID": "index.html#recommended-reading",
+    "href": "index.html#recommended-reading",
     "title": "Numerical methods in geophysics",
-    "section": "1.4 Computational fluid dynamics",
-    "text": "1.4 Computational fluid dynamics\nMagnetohydrodynamic induction equation\n\\[\\pdv{\\vb B}{t} =  \\curl \\frac{1}{\\mu\\sigma} \\curl \\vb B + \\curl(\\vb v \\cross \\vb B)\\]\nForces on fluid (induction, Coriolis, pressure, gravity, Lorentz) \\[ \\rho \\pdv{\\vb v}{t} + \\rho (\\vb v \\cdot \\grad) \\vb v + \\grad p = -2\\omega\\cross\\vb v+\\alpha T \\vb g + \\vb j \\cross \\vb B / \\rho \\]",
+    "section": "Recommended Reading",
+    "text": "Recommended Reading\nThe most important source of supplementary information is the book by @ward1988electromagnetic.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Prerequisites</span>"
     ]
   },
   {
-    "objectID": "index.html#fe-solution-for-inhomogeneous-viscosity",
-    "href": "index.html#fe-solution-for-inhomogeneous-viscosity",
+    "objectID": "index.html#license",
+    "href": "index.html#license",
     "title": "Numerical methods in geophysics",
-    "section": "1.5 FE solution for inhomogeneous viscosity",
-    "text": "1.5 FE solution for inhomogeneous viscosity",
+    "section": "License",
+    "text": "License\nThis material is licensed under the Creative Commons License.",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#simple-1d-advection-problem",
-    "href": "index.html#simple-1d-advection-problem",
-    "title": "Numerical methods in geophysics",
-    "section": "1.6 Simple 1D advection problem",
-    "text": "1.6 Simple 1D advection problem\n\\[\\pdv{u}{t} + \\pdv{v(u)}{x}=0\\]\nSolution \\(u_i\\) at node \\(i\\) represents average value over cell\n\\[ \\overline{u}_i(t) = \\frac{1}{x_{i+1/2}-x_{i-1/2}} \\int_{x_{i-1/2}}^{x_{i+1/2}} u(x, t)\\dd x \\]\n\\[ \\int_{t_1}^{t_2} \\pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \\int_{t_1}^{t_2} \\pdv{v(u)}{x} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#fv",
-    "href": "index.html#fv",
-    "title": "Numerical methods in geophysics",
-    "section": "1.7 FV",
-    "text": "1.7 FV",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#simple-1d-advection-problem-1",
-    "href": "index.html#simple-1d-advection-problem-1",
-    "title": "Numerical methods in geophysics",
-    "section": "1.8 Simple 1D advection problem",
-    "text": "1.8 Simple 1D advection problem\n\\[ u(x, t_2) = u(x, t_1) - \\int_{t_1}^{t_2} \\pdv{v(u)}{x} \\]\n\\[ \\overline{u}(t_2) = \\frac{1}{x_{i+1/2}-x_{i-1/2}} \\int_{x_{i-1/2}}^{x_{i+1/2}}\\qty\\Big(u(x,t_1) - \\int_{t_1}^{t_2} \\pdv{v(u)}{x})  \\]\n\\[ \\overline{u}(t_2) = \\overline{u}(t_1) - \\frac{1}{x_{i+1/2}-x_{i-1/2}}\n\\qty\\Big(\\int_{t_1}^{t_2} v_{i+1/2} \\dd t - \\int_{t_1}^{t_2} v_{i-1/2} \\dd t) \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#result",
-    "href": "index.html#result",
-    "title": "Numerical methods in geophysics",
-    "section": "1.9 Result",
-    "text": "1.9 Result\n\\[ \\pdv{\\overline{u}_i}{t} +\\frac{1}{\\Delta x_i} (v_{i+1/2}-v_{i-1/2}) = 0 \\]\n\n\n\n\n\n\nNote\n\n\n\nFinite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell’s loss is always another cell’s gain!",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#visualization",
-    "href": "index.html#visualization",
-    "title": "Numerical methods in geophysics",
-    "section": "1.10 Visualization",
-    "text": "1.10 Visualization",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#similarity-to-staggered-e-b-grid-methods",
-    "href": "index.html#similarity-to-staggered-e-b-grid-methods",
-    "title": "Numerical methods in geophysics",
-    "section": "1.11 Similarity to staggered (E, B) grid methods",
-    "text": "1.11 Similarity to staggered (E, B) grid methods",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
-    ]
-  },
-  {
-    "objectID": "index.html#conservation-law-3d-problem",
-    "href": "index.html#conservation-law-3d-problem",
-    "title": "Numerical methods in geophysics",
-    "section": "1.12 Conservation law (3D) problem",
-    "text": "1.12 Conservation law (3D) problem\n\\[\\pdv{\\vb u}{t} + \\div\\vb v(u)= 0\\]\nvolume integral over cell, using Gauss’ law\n\\[\\int_{\\Omega_i} \\pdv{\\vb u}{t}\\dd\\Omega+\\int_{\\Omega_i} \\div\\vb v(u) \\dd\\Omega = 0 =\n\\int_{\\Omega_i} \\pdv{\\vb u}{t}\\dd\\Omega+\\int_{\\Gamma_i} \\vb v(u) \\cdot \\vb n \\dd{\\Gamma} \\]\n\\[\\Rightarrow \\pdv{\\overline{u}}{t} +\\frac{1}{V_i}\\int_{\\Gamma_i}\\vb v(u)\\cdot \\vb n \\dd{\\Gamma} =0  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Prerequisites</span>"
     ]
   },
   {

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Finite Elements – Numerical methods in geophysics</title>
+<title>3&nbsp; Finite Elements – Numerical methods in geophysics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,6 +30,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./currentlecture.html" rel="next">
 <link href="./02_finite-differences.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -119,7 +120,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_finite-elements.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./03_finite-elements.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_finite-elements.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./03_finite-elements.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -147,7 +148,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></span></a>
+ <span class="menu-text">Prerequisites</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -162,7 +163,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
       </ul>
@@ -179,7 +180,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./02_finite-differences.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
   </div>
 </li>
       </ul>
@@ -196,7 +197,24 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_finite-elements.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Current lecture</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./currentlecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span></span></a>
   </div>
 </li>
       </ul>
@@ -211,17 +229,17 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#history-and-background" id="toc-history-and-background" class="nav-link active" data-scroll-target="#history-and-background"><span class="header-section-number">4.1</span> History and background</a></li>
-  <li><a href="#variational-formulation-of-poisson-equation" id="toc-variational-formulation-of-poisson-equation" class="nav-link" data-scroll-target="#variational-formulation-of-poisson-equation"><span class="header-section-number">4.2</span> Variational formulation of Poisson equation</a></li>
-  <li><a href="#variational-formulation-of-poisson-equation-1" id="toc-variational-formulation-of-poisson-equation-1" class="nav-link" data-scroll-target="#variational-formulation-of-poisson-equation-1"><span class="header-section-number">4.3</span> Variational formulation of Poisson equation</a></li>
-  <li><a href="#galerkins-method" id="toc-galerkins-method" class="nav-link" data-scroll-target="#galerkins-method"><span class="header-section-number">4.4</span> Galerkins method</a></li>
-  <li><a href="#hat-functions" id="toc-hat-functions" class="nav-link" data-scroll-target="#hat-functions"><span class="header-section-number">4.5</span> Hat functions</a></li>
-  <li><a href="#gradients-for-hat-functions" id="toc-gradients-for-hat-functions" class="nav-link" data-scroll-target="#gradients-for-hat-functions"><span class="header-section-number">4.6</span> Gradients for hat functions</a></li>
-  <li><a href="#system-stiffness-matrix" id="toc-system-stiffness-matrix" class="nav-link" data-scroll-target="#system-stiffness-matrix"><span class="header-section-number">5</span> System (stiffness) matrix</a>
+  <li><a href="#history-and-background" id="toc-history-and-background" class="nav-link active" data-scroll-target="#history-and-background"><span class="header-section-number">3.1</span> History and background</a></li>
+  <li><a href="#variational-formulation-of-poisson-equation" id="toc-variational-formulation-of-poisson-equation" class="nav-link" data-scroll-target="#variational-formulation-of-poisson-equation"><span class="header-section-number">3.2</span> Variational formulation of Poisson equation</a></li>
+  <li><a href="#variational-formulation-of-poisson-equation-1" id="toc-variational-formulation-of-poisson-equation-1" class="nav-link" data-scroll-target="#variational-formulation-of-poisson-equation-1"><span class="header-section-number">3.3</span> Variational formulation of Poisson equation</a></li>
+  <li><a href="#galerkins-method" id="toc-galerkins-method" class="nav-link" data-scroll-target="#galerkins-method"><span class="header-section-number">3.4</span> Galerkins method</a></li>
+  <li><a href="#hat-functions" id="toc-hat-functions" class="nav-link" data-scroll-target="#hat-functions"><span class="header-section-number">3.5</span> Hat functions</a></li>
+  <li><a href="#gradients-for-hat-functions" id="toc-gradients-for-hat-functions" class="nav-link" data-scroll-target="#gradients-for-hat-functions"><span class="header-section-number">3.6</span> Gradients for hat functions</a></li>
+  <li><a href="#system-stiffness-matrix" id="toc-system-stiffness-matrix" class="nav-link" data-scroll-target="#system-stiffness-matrix"><span class="header-section-number">4</span> System (stiffness) matrix</a>
   <ul class="collapse">
-  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">5.1</span> Boundary conditions</a></li>
-  <li><a href="#right-hand-side-vector" id="toc-right-hand-side-vector" class="nav-link" data-scroll-target="#right-hand-side-vector"><span class="header-section-number">5.2</span> Right-hand side vector</a></li>
-  <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution"><span class="header-section-number">5.3</span> Solution</a></li>
+  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">4.1</span> Boundary conditions</a></li>
+  <li><a href="#right-hand-side-vector" id="toc-right-hand-side-vector" class="nav-link" data-scroll-target="#right-hand-side-vector"><span class="header-section-number">4.2</span> Right-hand side vector</a></li>
+  <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution"><span class="header-section-number">4.3</span> Solution</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -229,9 +247,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_finite-elements.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./03_finite-elements.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_finite-elements.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./03_finite-elements.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></h1>
 </div>
 
 
@@ -248,8 +266,8 @@ window.Quarto = {
 </header>
 
 
-<section id="history-and-background" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="history-and-background"><span class="header-section-number">4.1</span> History and background</h2>
+<section id="history-and-background" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="history-and-background"><span class="header-section-number">3.1</span> History and background</h2>
 <ul>
 <li>[1943] Courant: Variational Method</li>
 <li>[1956] Turner, Clough, Martin, Topp: Stiffness</li>
@@ -260,8 +278,8 @@ window.Quarto = {
 </ul>
 <p>Geophysics: Poisson equation in 1970s, revival in 1990s and predominant in 2000s up to now</p>
 </section>
-<section id="variational-formulation-of-poisson-equation" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="variational-formulation-of-poisson-equation"><span class="header-section-number">4.2</span> Variational formulation of Poisson equation</h2>
+<section id="variational-formulation-of-poisson-equation" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="variational-formulation-of-poisson-equation"><span class="header-section-number">3.2</span> Variational formulation of Poisson equation</h2>
 <p><span class="math display">\[ -\div a \grad u = f \]</span></p>
 <div class="fragment">
 <p>Multiplication with test function <span class="math inline">\(w\)</span> and integration <span class="math inline">\(\Rightarrow\)</span> weak form</p>
@@ -274,8 +292,8 @@ window.Quarto = {
 <p><span class="math display">\[ \int_\Omega \grad w a \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega \]</span></p>
 </div>
 </section>
-<section id="variational-formulation-of-poisson-equation-1" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="variational-formulation-of-poisson-equation-1"><span class="header-section-number">4.3</span> Variational formulation of Poisson equation</h2>
+<section id="variational-formulation-of-poisson-equation-1" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="variational-formulation-of-poisson-equation-1"><span class="header-section-number">3.3</span> Variational formulation of Poisson equation</h2>
 <p><span class="math display">\[ \int_\Omega \grad w a \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega \]</span></p>
 <div class="fragment">
 <p>use Gauss’ law <span class="math inline">\(\int_\Omega \div \vb A = \int_\Gamma \vb A \cdot \vb n\)</span></p>
@@ -286,8 +304,8 @@ window.Quarto = {
 <p><span class="math display">\[ \int_\Omega a \grad w \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \dd\Gamma = \int_\Omega fw \dd\Omega \]</span></p>
 </div>
 </section>
-<section id="galerkins-method" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="galerkins-method"><span class="header-section-number">4.4</span> Galerkins method</h2>
+<section id="galerkins-method" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="galerkins-method"><span class="header-section-number">3.4</span> Galerkins method</h2>
 <p><span class="math display">\[ \int_\Omega a \grad w \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \dd\Gamma = \int_\Omega fw \dd\Omega \]</span></p>
 <div class="fragment">
 <p>Test functions equal shape (trial) functions <span class="math inline">\(w_i=v_i\)</span></p>
@@ -300,29 +318,29 @@ window.Quarto = {
 </ul>
 </div>
 </section>
-<section id="hat-functions" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="hat-functions"><span class="header-section-number">4.5</span> Hat functions</h2>
+<section id="hat-functions" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="hat-functions"><span class="header-section-number">3.5</span> Hat functions</h2>
 <p><img src="pics/shapefunctions1d.svg" class="img-fluid" style="width:100.0%"></p>
 </section>
-<section id="gradients-for-hat-functions" class="level2" data-number="4.6">
-<h2 data-number="4.6" class="anchored" data-anchor-id="gradients-for-hat-functions"><span class="header-section-number">4.6</span> Gradients for hat functions</h2>
+<section id="gradients-for-hat-functions" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="gradients-for-hat-functions"><span class="header-section-number">3.6</span> Gradients for hat functions</h2>
 <p>Every element is surrounded by two nodes “carrying” a hat.</p>
 <p>The gradients are piece-wise constant <span class="math inline">\(\pm 1/\Delta x_i\)</span></p>
 <p><span class="math display">\[ \Rightarrow \int_\Omega a \grad v_i \grad v_{i+1} \dd\Omega = -\frac{a_i}{\Delta x_i^2} \cdot \Delta x_i = -\frac{a_i}{\Delta x_i}\]</span></p>
 <p><span class="math display">\[ -\int_\Omega a \grad v_i \grad v_i \dd\Omega = \frac{a_{i-1}}{\Delta x_{i-1}^2}\Delta x_{i-1} + \frac{a_i}{\Delta x_i^2}\Delta x_i = \frac{a_{i-1}}{\Delta x_{i-1}} + \frac{a_i}{\Delta x_i} \]</span></p>
 <p><span class="math display">\[ -\int_\Omega a \grad v_i \grad v_{i+2} \dd\Omega = 0 \]</span></p>
 </section>
-<section id="system-stiffness-matrix" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> System (stiffness) matrix</h1>
+<section id="system-stiffness-matrix" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> System (stiffness) matrix</h1>
 <p>Matrix integrating gradient of base functions for neighbors <span class="math inline">\(A\)</span> <span class="math display">\[ \vb A_{i, i+1} = -\frac{a_i}{\Delta x_i^2} \cdot \Delta x_i \]</span></p>
 <p><span class="math display">\[ A_{i,i} = \int_\Omega a \grad v_i \grad v_i \dd\Omega = -A_{i,i+1} + A_{i+1,i}  \]</span></p>
 <p><span class="math inline">\(\Rightarrow\)</span> matrix-vector equation <span class="math inline">\(\vb A \vb u = \vb b\)</span> <span class="math inline">\(\Rightarrow\)</span></p>
-<section id="boundary-conditions" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">5.1</span> Boundary conditions</h2>
+<section id="boundary-conditions" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">4.1</span> Boundary conditions</h2>
 <p>second term <span class="math display">\[ - \int_\Gamma a v_i \grad v_j \dd\Gamma \]</span></p>
 </section>
-<section id="right-hand-side-vector" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="right-hand-side-vector"><span class="header-section-number">5.2</span> Right-hand side vector</h2>
+<section id="right-hand-side-vector" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="right-hand-side-vector"><span class="header-section-number">4.2</span> Right-hand side vector</h2>
 <p>The right-hand-side vector <span class="math inline">\(b=\int v_i f \dd\Omega\)</span> also scales with <span class="math inline">\(\Delta x\)</span></p>
 <p>e.g.&nbsp;<span class="math inline">\(f=\div j_s\)</span> <span class="math inline">\(\Rightarrow\)</span> $b=v_i j_s = _$</p>
 <p>system identical to FD for <span class="math inline">\(\Delta x=\)</span>const</p>
@@ -340,8 +358,8 @@ Difference of FE to FD
 </div>
 </div>
 </section>
-<section id="solution" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="solution"><span class="header-section-number">5.3</span> Solution</h2>
+<section id="solution" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="solution"><span class="header-section-number">4.3</span> Solution</h2>
 <p><span class="math inline">\(\vb v\)</span> holds the coefficient <span class="math inline">\(u_i\)</span> creating <span class="math inline">\(u=\sum u_i v_i(x)\)</span></p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled" title="Difference of FE to FD">
 <div class="callout-header d-flex align-content-center">
@@ -799,10 +817,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./02_finite-differences.html" class="pagination-link" aria-label="Finite Differences">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./currentlecture.html" class="pagination-link" aria-label="Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

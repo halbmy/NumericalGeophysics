@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3&nbsp; Finite Differences – Numerical methods in geophysics</title>
+<title>2&nbsp; Finite Differences – Numerical methods in geophysics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -156,7 +156,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_finite-differences.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./02_finite-differences.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_finite-differences.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./02_finite-differences.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -184,7 +184,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></span></a>
+ <span class="menu-text">Prerequisites</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -199,7 +199,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
       </ul>
@@ -216,7 +216,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./02_finite-differences.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
   </div>
 </li>
       </ul>
@@ -233,7 +233,24 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_finite-elements.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Current lecture</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./currentlecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span></span></a>
   </div>
 </li>
       </ul>
@@ -248,28 +265,28 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#taylor-expansion" id="toc-taylor-expansion" class="nav-link active" data-scroll-target="#taylor-expansion"><span class="header-section-number">3.1</span> Taylor expansion</a></li>
-  <li><a href="#the-poisson-equation" id="toc-the-poisson-equation" class="nav-link" data-scroll-target="#the-poisson-equation"><span class="header-section-number">4</span> The Poisson equation</a>
+  <li><a href="#taylor-expansion" id="toc-taylor-expansion" class="nav-link active" data-scroll-target="#taylor-expansion"><span class="header-section-number">2.1</span> Taylor expansion</a></li>
+  <li><a href="#the-poisson-equation" id="toc-the-poisson-equation" class="nav-link" data-scroll-target="#the-poisson-equation"><span class="header-section-number">3</span> The Poisson equation</a>
   <ul class="collapse">
-  <li><a href="#fd-approximation" id="toc-fd-approximation" class="nav-link" data-scroll-target="#fd-approximation"><span class="header-section-number">4.1</span> FD Approximation</a></li>
-  <li><a href="#difference-stencil" id="toc-difference-stencil" class="nav-link" data-scroll-target="#difference-stencil"><span class="header-section-number">4.2</span> Difference stencil</a></li>
-  <li><a href="#fdm-on-the-general-poisson-equation" id="toc-fdm-on-the-general-poisson-equation" class="nav-link" data-scroll-target="#fdm-on-the-general-poisson-equation"><span class="header-section-number">4.3</span> FDM on the general Poisson equation</a></li>
-  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">4.4</span> Boundary conditions</a>
+  <li><a href="#fd-approximation" id="toc-fd-approximation" class="nav-link" data-scroll-target="#fd-approximation"><span class="header-section-number">3.1</span> FD Approximation</a></li>
+  <li><a href="#difference-stencil" id="toc-difference-stencil" class="nav-link" data-scroll-target="#difference-stencil"><span class="header-section-number">3.2</span> Difference stencil</a></li>
+  <li><a href="#fdm-on-the-general-poisson-equation" id="toc-fdm-on-the-general-poisson-equation" class="nav-link" data-scroll-target="#fdm-on-the-general-poisson-equation"><span class="header-section-number">3.3</span> FDM on the general Poisson equation</a></li>
+  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">3.4</span> Boundary conditions</a>
   <ul class="collapse">
-  <li><a href="#dirichlet-bc-implementation-way-1" id="toc-dirichlet-bc-implementation-way-1" class="nav-link" data-scroll-target="#dirichlet-bc-implementation-way-1"><span class="header-section-number">4.4.1</span> Dirichlet BC implementation way 1</a></li>
-  <li><a href="#dirichlet-bc-implementation-way-2" id="toc-dirichlet-bc-implementation-way-2" class="nav-link" data-scroll-target="#dirichlet-bc-implementation-way-2"><span class="header-section-number">4.4.2</span> Dirichlet BC implementation way 2</a></li>
-  <li><a href="#neumann-bc-implementation-way-1" id="toc-neumann-bc-implementation-way-1" class="nav-link" data-scroll-target="#neumann-bc-implementation-way-1"><span class="header-section-number">4.4.3</span> Neumann BC implementation way 1</a></li>
-  <li><a href="#neumann-bc-implementation-way-2" id="toc-neumann-bc-implementation-way-2" class="nav-link" data-scroll-target="#neumann-bc-implementation-way-2"><span class="header-section-number">4.4.4</span> Neumann BC implementation way 2</a></li>
+  <li><a href="#dirichlet-bc-implementation-way-1" id="toc-dirichlet-bc-implementation-way-1" class="nav-link" data-scroll-target="#dirichlet-bc-implementation-way-1"><span class="header-section-number">3.4.1</span> Dirichlet BC implementation way 1</a></li>
+  <li><a href="#dirichlet-bc-implementation-way-2" id="toc-dirichlet-bc-implementation-way-2" class="nav-link" data-scroll-target="#dirichlet-bc-implementation-way-2"><span class="header-section-number">3.4.2</span> Dirichlet BC implementation way 2</a></li>
+  <li><a href="#neumann-bc-implementation-way-1" id="toc-neumann-bc-implementation-way-1" class="nav-link" data-scroll-target="#neumann-bc-implementation-way-1"><span class="header-section-number">3.4.3</span> Neumann BC implementation way 1</a></li>
+  <li><a href="#neumann-bc-implementation-way-2" id="toc-neumann-bc-implementation-way-2" class="nav-link" data-scroll-target="#neumann-bc-implementation-way-2"><span class="header-section-number">3.4.4</span> Neumann BC implementation way 2</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#parabolic-pdes" id="toc-parabolic-pdes" class="nav-link" data-scroll-target="#parabolic-pdes"><span class="header-section-number">5</span> Parabolic PDEs</a>
+  <li><a href="#parabolic-pdes" id="toc-parabolic-pdes" class="nav-link" data-scroll-target="#parabolic-pdes"><span class="header-section-number">4</span> Parabolic PDEs</a>
   <ul class="collapse">
-  <li><a href="#heat-transfer-in-1d" id="toc-heat-transfer-in-1d" class="nav-link" data-scroll-target="#heat-transfer-in-1d"><span class="header-section-number">5.1</span> Heat transfer in 1D</a></li>
-  <li><a href="#explicit-methods" id="toc-explicit-methods" class="nav-link" data-scroll-target="#explicit-methods"><span class="header-section-number">5.2</span> Explicit methods</a></li>
-  <li><a href="#discretization" id="toc-discretization" class="nav-link" data-scroll-target="#discretization"><span class="header-section-number">5.3</span> Discretization</a></li>
-  <li><a href="#example-velocity-distribution" id="toc-example-velocity-distribution" class="nav-link" data-scroll-target="#example-velocity-distribution"><span class="header-section-number">5.4</span> Example: velocity distribution</a></li>
-  <li><a href="#initial-displacement" id="toc-initial-displacement" class="nav-link" data-scroll-target="#initial-displacement"><span class="header-section-number">5.5</span> Initial displacement</a></li>
-  <li><a href="#time-propagation" id="toc-time-propagation" class="nav-link" data-scroll-target="#time-propagation"><span class="header-section-number">5.6</span> Time propagation</a></li>
+  <li><a href="#heat-transfer-in-1d" id="toc-heat-transfer-in-1d" class="nav-link" data-scroll-target="#heat-transfer-in-1d"><span class="header-section-number">4.1</span> Heat transfer in 1D</a></li>
+  <li><a href="#explicit-methods" id="toc-explicit-methods" class="nav-link" data-scroll-target="#explicit-methods"><span class="header-section-number">4.2</span> Explicit methods</a></li>
+  <li><a href="#discretization" id="toc-discretization" class="nav-link" data-scroll-target="#discretization"><span class="header-section-number">4.3</span> Discretization</a></li>
+  <li><a href="#example-velocity-distribution" id="toc-example-velocity-distribution" class="nav-link" data-scroll-target="#example-velocity-distribution"><span class="header-section-number">4.4</span> Example: velocity distribution</a></li>
+  <li><a href="#initial-displacement" id="toc-initial-displacement" class="nav-link" data-scroll-target="#initial-displacement"><span class="header-section-number">4.5</span> Initial displacement</a></li>
+  <li><a href="#time-propagation" id="toc-time-propagation" class="nav-link" data-scroll-target="#time-propagation"><span class="header-section-number">4.6</span> Time propagation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -277,9 +294,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_finite-differences.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./02_finite-differences.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_finite-differences.html">Finite Differences</a></li><li class="breadcrumb-item"><a href="./02_finite-differences.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></h1>
 </div>
 
 
@@ -296,15 +313,15 @@ window.Quarto = {
 </header>
 
 
-<section id="taylor-expansion" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="taylor-expansion"><span class="header-section-number">3.1</span> Taylor expansion</h2>
+<section id="taylor-expansion" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="taylor-expansion"><span class="header-section-number">2.1</span> Taylor expansion</h2>
 <p>Assume the Poisson equation <span class="math display">\[\div(a\grad u)=f\]</span></p>
 <p>Taylor expansion <span class="math display">\[f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2\]</span></p>
 </section>
-<section id="the-poisson-equation" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> The Poisson equation</h1>
-<section id="fd-approximation" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="fd-approximation"><span class="header-section-number">4.1</span> FD Approximation</h2>
+<section id="the-poisson-equation" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> The Poisson equation</h1>
+<section id="fd-approximation" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="fd-approximation"><span class="header-section-number">3.1</span> FD Approximation</h2>
 <div class="callout callout-style-default callout-tip no-icon callout-titled" title="Approximate derivative operators by differences">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -324,8 +341,8 @@ Approximate derivative operators by differences
 \frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}
 = \frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \]</span></p>
 </section>
-<section id="difference-stencil" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="difference-stencil"><span class="header-section-number">4.2</span> Difference stencil</h2>
+<section id="difference-stencil" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="difference-stencil"><span class="header-section-number">3.2</span> Difference stencil</h2>
 <p>Assumption: equidistant discretization <span class="math inline">\(\Delta x\)</span>, conductivity 1</p>
 <p>1st derivative: <span class="math inline">\([-1, +1] / dx\)</span>, 2nd derivative <span class="math inline">\([+1, -2, +1] / dx^2\)</span></p>
 <p>Matrix-Vector product <span class="math inline">\(\vb{A}\cdot\vb{u}=\vb{f}\)</span> with</p>
@@ -342,18 +359,18 @@ Approximate derivative operators by differences
 </figure>
 </div>
 </section>
-<section id="fdm-on-the-general-poisson-equation" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="fdm-on-the-general-poisson-equation"><span class="header-section-number">4.3</span> FDM on the general Poisson equation</h2>
+<section id="fdm-on-the-general-poisson-equation" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="fdm-on-the-general-poisson-equation"><span class="header-section-number">3.3</span> FDM on the general Poisson equation</h2>
 <p>Assume the Poisson equation <span class="math display">\[\div(a\grad u)=f\]</span> with a conductivity term <span class="math inline">\(a\)</span></p>
 <p><span class="math display">\[ \pdv{(a \pdv*{u})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  \]</span></p>
 </section>
-<section id="boundary-conditions" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">4.4</span> Boundary conditions</h2>
+<section id="boundary-conditions" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">3.4</span> Boundary conditions</h2>
 <p>Dirichlet conditions: <span class="math inline">\(u_0=u_B\)</span> (homogeneous if 0)</p>
 <p>Neumann conditions (homogeneous if 0) <span class="math display">\[ \pdv*{u}{x}_0=g_B \]</span></p>
 <p>Mixed boundary conditions <span class="math inline">\(u_0+\alpha du_0/dx=\gamma\)</span></p>
-<section id="dirichlet-bc-implementation-way-1" class="level3" data-number="4.4.1">
-<h3 data-number="4.4.1" class="anchored" data-anchor-id="dirichlet-bc-implementation-way-1"><span class="header-section-number">4.4.1</span> Dirichlet BC implementation way 1</h3>
+<section id="dirichlet-bc-implementation-way-1" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="dirichlet-bc-implementation-way-1"><span class="header-section-number">3.4.1</span> Dirichlet BC implementation way 1</h3>
 <p><span class="math inline">\(u_0 = u_B\)</span></p>
 <p><span class="math display">\[ \begin{bmatrix}   
 +1 &amp; 0 &amp; 0 &amp; \ldots &amp; &amp;  \\
@@ -363,8 +380,8 @@ Approximate derivative operators by differences
 \end{bmatrix} \cdot\vb{u} =
 \begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  \]</span></p>
 </section>
-<section id="dirichlet-bc-implementation-way-2" class="level3" data-number="4.4.2">
-<h3 data-number="4.4.2" class="anchored" data-anchor-id="dirichlet-bc-implementation-way-2"><span class="header-section-number">4.4.2</span> Dirichlet BC implementation way 2</h3>
+<section id="dirichlet-bc-implementation-way-2" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="dirichlet-bc-implementation-way-2"><span class="header-section-number">3.4.2</span> Dirichlet BC implementation way 2</h3>
 <p><span class="math inline">\(u_B - 2 u_1 + u_3 = f_1\)</span></p>
 <p><span class="math display">\[ \begin{bmatrix}   
 -2 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
@@ -374,8 +391,8 @@ Approximate derivative operators by differences
 \end{bmatrix} \cdot\vb{u} =
 \begin{bmatrix} f_1 - u_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} \]</span></p>
 </section>
-<section id="neumann-bc-implementation-way-1" class="level3" data-number="4.4.3">
-<h3 data-number="4.4.3" class="anchored" data-anchor-id="neumann-bc-implementation-way-1"><span class="header-section-number">4.4.3</span> Neumann BC implementation way 1</h3>
+<section id="neumann-bc-implementation-way-1" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="neumann-bc-implementation-way-1"><span class="header-section-number">3.4.3</span> Neumann BC implementation way 1</h3>
 <p><span class="math display">\[ u_1 - u_0 = g_B\]</span></p>
 <p><span class="math display">\[ \begin{bmatrix}   
 -1 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
@@ -385,8 +402,8 @@ Approximate derivative operators by differences
 \end{bmatrix} \cdot\vb{u} =
 \begin{bmatrix} f_0+g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  \]</span></p>
 </section>
-<section id="neumann-bc-implementation-way-2" class="level3" data-number="4.4.4">
-<h3 data-number="4.4.4" class="anchored" data-anchor-id="neumann-bc-implementation-way-2"><span class="header-section-number">4.4.4</span> Neumann BC implementation way 2</h3>
+<section id="neumann-bc-implementation-way-2" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="neumann-bc-implementation-way-2"><span class="header-section-number">3.4.4</span> Neumann BC implementation way 2</h3>
 <p><span class="math display">\[u_0 - 2 u_1+u_2 = f_1 \qquad u_1 - u_0 = g_B \Rightarrow u_2-u_1=f_1+g_B \]</span> <!-- $-u_1 + u_2 = f_1 - g_B$ --></p>
 <p><span class="math display">\[ \begin{bmatrix}   
 -1 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
@@ -398,10 +415,10 @@ Approximate derivative operators by differences
 </section>
 </section>
 </section>
-<section id="parabolic-pdes" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Parabolic PDEs</h1>
-<section id="heat-transfer-in-1d" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="heat-transfer-in-1d"><span class="header-section-number">5.1</span> Heat transfer in 1D</h2>
+<section id="parabolic-pdes" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Parabolic PDEs</h1>
+<section id="heat-transfer-in-1d" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="heat-transfer-in-1d"><span class="header-section-number">4.1</span> Heat transfer in 1D</h2>
 <p><span class="math display">\[ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 \]</span></p>
 <p>with the periodic boundary conditions:</p>
 <ul>
@@ -410,15 +427,15 @@ Approximate derivative operators by differences
 </ul>
 <p>and the initial condition <span class="math inline">\(T(z, t=0)=\sin \pi z\)</span> has the analytical solution <span class="math display">\[ T(z, t) = \Delta T e^{-\pi^2 t} \sin \pi z \]</span></p>
 </section>
-<section id="explicit-methods" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="explicit-methods"><span class="header-section-number">5.2</span> Explicit methods</h2>
+<section id="explicit-methods" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="explicit-methods"><span class="header-section-number">4.2</span> Explicit methods</h2>
 <p><span class="math display">\[ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 \]</span></p>
 <p>Solve Poisson equation <span class="math inline">\(\div(a\grad u)=f\)</span></p>
 <p>for every time step <span class="math inline">\(i\)</span> (using FDM, FEM, FVM etc.)</p>
 <p>Finite-difference step in time: update field by <span class="math display">\[ T_{i+1} = T_i + a \pdv[2]{u}{z} \cdot \Delta t\]</span></p>
 </section>
-<section id="discretization" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="discretization"><span class="header-section-number">5.3</span> Discretization</h2>
+<section id="discretization" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="discretization"><span class="header-section-number">4.3</span> Discretization</h2>
 <div class="columns">
 <div class="column">
 <p><span class="math display">\[ \pdv[2]{u}{t}^{n} \approx \frac{u^{n+1}-u^n}{\Delta t} - \frac{u^{n}-u^{n-1}}{\Delta t}
@@ -437,9 +454,9 @@ Approximate derivative operators by differences
 </div>
 </div>
 </section>
-<section id="example-velocity-distribution" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="example-velocity-distribution"><span class="header-section-number">5.4</span> Example: velocity distribution</h2>
-<div id="77a5b2f3" class="cell" data-output-location="column-fragment" data-execution_count="1">
+<section id="example-velocity-distribution" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="example-velocity-distribution"><span class="header-section-number">4.4</span> Example: velocity distribution</h2>
+<div id="03da808a" class="cell" data-output-location="column-fragment" data-execution_count="1">
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -464,10 +481,10 @@ Approximate derivative operators by differences
 </div>
 </div>
 </section>
-<section id="initial-displacement" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="initial-displacement"><span class="header-section-number">5.5</span> Initial displacement</h2>
+<section id="initial-displacement" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="initial-displacement"><span class="header-section-number">4.5</span> Initial displacement</h2>
 <p>Derivative of Gaussian (Ricker wavelet)</p>
-<div id="e58c46c6" class="cell" data-output-location="column-fragment" data-execution_count="2">
+<div id="afd8a374" class="cell" data-output-location="column-fragment" data-execution_count="2">
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l<span class="op">=</span><span class="fl">5.0</span></span>
@@ -490,9 +507,9 @@ Approximate derivative operators by differences
 </div>
 </div>
 </section>
-<section id="time-propagation" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="time-propagation"><span class="header-section-number">5.6</span> Time propagation</h2>
-<div id="19b073b3" class="cell" data-output-location="column-fragment" data-execution_count="3">
+<section id="time-propagation" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="time-propagation"><span class="header-section-number">4.6</span> Time propagation</h2>
+<div id="8c49137f" class="cell" data-output-location="column-fragment" data-execution_count="3">
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>u_last<span class="op">=</span>u</span>
@@ -950,12 +967,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./01_introduction.html" class="pagination-link" aria-label="Introduction">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./03_finite-elements.html" class="pagination-link" aria-label="Finite Elements">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

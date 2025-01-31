@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Introduction – Numerical methods in geophysics</title>
+<title>1&nbsp; Introduction – Numerical methods in geophysics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -120,7 +120,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html">Introduction</a></li><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html">Introduction</a></li><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -148,7 +148,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></span></a>
+ <span class="menu-text">Prerequisites</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -163,7 +163,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01_introduction.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
       </ul>
@@ -180,7 +180,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./02_finite-differences.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
   </div>
 </li>
       </ul>
@@ -197,7 +197,24 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_finite-elements.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Current lecture</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./currentlecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span></span></a>
   </div>
 </li>
       </ul>
@@ -212,32 +229,32 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#differential-operators" id="toc-differential-operators" class="nav-link active" data-scroll-target="#differential-operators"><span class="header-section-number">3</span> Differential operators</a>
+  <li><a href="#differential-operators" id="toc-differential-operators" class="nav-link active" data-scroll-target="#differential-operators"><span class="header-section-number">2</span> Differential operators</a>
   <ul class="collapse">
-  <li><a href="#curl-rotation" id="toc-curl-rotation" class="nav-link" data-scroll-target="#curl-rotation"><span class="header-section-number">3.1</span> Curl (rotation)</a></li>
+  <li><a href="#curl-rotation" id="toc-curl-rotation" class="nav-link" data-scroll-target="#curl-rotation"><span class="header-section-number">2.1</span> Curl (rotation)</a></li>
   </ul></li>
-  <li><a href="#partial-differential-equations-pdes" id="toc-partial-differential-equations-pdes" class="nav-link" data-scroll-target="#partial-differential-equations-pdes"><span class="header-section-number">4</span> Partial differential equations (PDEs)</a>
+  <li><a href="#partial-differential-equations-pdes" id="toc-partial-differential-equations-pdes" class="nav-link" data-scroll-target="#partial-differential-equations-pdes"><span class="header-section-number">3</span> Partial differential equations (PDEs)</a>
   <ul class="collapse">
-  <li><a href="#pde-types" id="toc-pde-types" class="nav-link" data-scroll-target="#pde-types"><span class="header-section-number">4.1</span> PDE Types</a></li>
-  <li><a href="#poisson-equation" id="toc-poisson-equation" class="nav-link" data-scroll-target="#poisson-equation"><span class="header-section-number">4.2</span> Poisson equation</a></li>
-  <li><a href="#the-heat-equation-in-1d" id="toc-the-heat-equation-in-1d" class="nav-link" data-scroll-target="#the-heat-equation-in-1d"><span class="header-section-number">4.3</span> The heat equation in 1D</a></li>
-  <li><a href="#flow-and-transport" id="toc-flow-and-transport" class="nav-link" data-scroll-target="#flow-and-transport"><span class="header-section-number">4.4</span> Flow and transport</a>
+  <li><a href="#pde-types" id="toc-pde-types" class="nav-link" data-scroll-target="#pde-types"><span class="header-section-number">3.1</span> PDE Types</a></li>
+  <li><a href="#poisson-equation" id="toc-poisson-equation" class="nav-link" data-scroll-target="#poisson-equation"><span class="header-section-number">3.2</span> Poisson equation</a></li>
+  <li><a href="#the-heat-equation-in-1d" id="toc-the-heat-equation-in-1d" class="nav-link" data-scroll-target="#the-heat-equation-in-1d"><span class="header-section-number">3.3</span> The heat equation in 1D</a></li>
+  <li><a href="#flow-and-transport" id="toc-flow-and-transport" class="nav-link" data-scroll-target="#flow-and-transport"><span class="header-section-number">3.4</span> Flow and transport</a>
   <ul class="collapse">
-  <li><a href="#darcys-law" id="toc-darcys-law" class="nav-link" data-scroll-target="#darcys-law"><span class="header-section-number">4.4.1</span> Darcy’s law</a></li>
-  <li><a href="#stokes-equation" id="toc-stokes-equation" class="nav-link" data-scroll-target="#stokes-equation"><span class="header-section-number">4.4.2</span> Stokes equation</a></li>
-  <li><a href="#navier-stokes-equations" id="toc-navier-stokes-equations" class="nav-link" data-scroll-target="#navier-stokes-equations"><span class="header-section-number">4.4.3</span> Navier-Stokes equations</a></li>
+  <li><a href="#darcys-law" id="toc-darcys-law" class="nav-link" data-scroll-target="#darcys-law"><span class="header-section-number">3.4.1</span> Darcy’s law</a></li>
+  <li><a href="#stokes-equation" id="toc-stokes-equation" class="nav-link" data-scroll-target="#stokes-equation"><span class="header-section-number">3.4.2</span> Stokes equation</a></li>
+  <li><a href="#navier-stokes-equations" id="toc-navier-stokes-equations" class="nav-link" data-scroll-target="#navier-stokes-equations"><span class="header-section-number">3.4.3</span> Navier-Stokes equations</a></li>
   </ul></li>
-  <li><a href="#electromagnetics" id="toc-electromagnetics" class="nav-link" data-scroll-target="#electromagnetics"><span class="header-section-number">4.5</span> Electromagnetics</a>
+  <li><a href="#electromagnetics" id="toc-electromagnetics" class="nav-link" data-scroll-target="#electromagnetics"><span class="header-section-number">3.5</span> Electromagnetics</a>
   <ul class="collapse">
-  <li><a href="#maxwells-equations" id="toc-maxwells-equations" class="nav-link" data-scroll-target="#maxwells-equations"><span class="header-section-number">4.5.1</span> Maxwell’s equations</a></li>
+  <li><a href="#maxwells-equations" id="toc-maxwells-equations" class="nav-link" data-scroll-target="#maxwells-equations"><span class="header-section-number">3.5.1</span> Maxwell’s equations</a></li>
   </ul></li>
-  <li><a href="#helmholtz-equations" id="toc-helmholtz-equations" class="nav-link" data-scroll-target="#helmholtz-equations"><span class="header-section-number">4.6</span> Helmholtz equations</a></li>
-  <li><a href="#helmholtz-equations-1" id="toc-helmholtz-equations-1" class="nav-link" data-scroll-target="#helmholtz-equations-1"><span class="header-section-number">4.7</span> Helmholtz equations</a></li>
+  <li><a href="#helmholtz-equations" id="toc-helmholtz-equations" class="nav-link" data-scroll-target="#helmholtz-equations"><span class="header-section-number">3.6</span> Helmholtz equations</a></li>
+  <li><a href="#helmholtz-equations-1" id="toc-helmholtz-equations-1" class="nav-link" data-scroll-target="#helmholtz-equations-1"><span class="header-section-number">3.7</span> Helmholtz equations</a></li>
   </ul></li>
-  <li><a href="#wave-equations" id="toc-wave-equations" class="nav-link" data-scroll-target="#wave-equations"><span class="header-section-number">5</span> Wave equations</a>
+  <li><a href="#wave-equations" id="toc-wave-equations" class="nav-link" data-scroll-target="#wave-equations"><span class="header-section-number">4</span> Wave equations</a>
   <ul class="collapse">
-  <li><a href="#the-eikonal-equation" id="toc-the-eikonal-equation" class="nav-link" data-scroll-target="#the-eikonal-equation"><span class="header-section-number">5.1</span> The eikonal equation</a></li>
-  <li><a href="#hyberbolic-equations" id="toc-hyberbolic-equations" class="nav-link" data-scroll-target="#hyberbolic-equations"><span class="header-section-number">5.2</span> Hyberbolic equations</a></li>
+  <li><a href="#the-eikonal-equation" id="toc-the-eikonal-equation" class="nav-link" data-scroll-target="#the-eikonal-equation"><span class="header-section-number">4.1</span> The eikonal equation</a></li>
+  <li><a href="#hyberbolic-equations" id="toc-hyberbolic-equations" class="nav-link" data-scroll-target="#hyberbolic-equations"><span class="header-section-number">4.2</span> Hyberbolic equations</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -245,9 +262,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html">Introduction</a></li><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html">Introduction</a></li><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
 </div>
 
 
@@ -264,8 +281,8 @@ window.Quarto = {
 </header>
 
 
-<section id="differential-operators" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Differential operators</h1>
+<section id="differential-operators" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Differential operators</h1>
 <ul>
 <li><p>single derivative in space <span class="math inline">\(\pdv{x}\)</span> or time <span class="math inline">\(\pdv t\)</span></p></li>
 <li><p>gradient <span class="math inline">\(\grad=(\pdv x, \pdv y, \pdv z)^T\)</span></p></li>
@@ -285,8 +302,8 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<section id="curl-rotation" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="curl-rotation"><span class="header-section-number">3.1</span> Curl (rotation)</h2>
+<section id="curl-rotation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="curl-rotation"><span class="header-section-number">2.1</span> Curl (rotation)</h2>
 <ul>
 <li>curl <span class="math inline">\(\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T\)</span></li>
 </ul>
@@ -316,11 +333,11 @@ window.Quarto = {
 </div>
 </section>
 </section>
-<section id="partial-differential-equations-pdes" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Partial differential equations (PDEs)</h1>
+<section id="partial-differential-equations-pdes" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Partial differential equations (PDEs)</h1>
 <p>Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities</p>
-<section id="pde-types" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="pde-types"><span class="header-section-number">4.1</span> PDE Types</h2>
+<section id="pde-types" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="pde-types"><span class="header-section-number">3.1</span> PDE Types</h2>
 <p>(<span class="math inline">\(u\)</span>-function, <span class="math inline">\(f\)</span>-source, <span class="math inline">\(a\)</span>/<span class="math inline">\(c\)</span>-parameter):</p>
 <ul>
 <li>elliptic PDE: <span class="math inline">\(-\nabla^2 u=f\)</span> (Poisson) or <span class="math inline">\(\nabla^2 u + k^2 u = f\)</span> (Helmholtz)</li>
@@ -330,26 +347,26 @@ window.Quarto = {
 <li>nonlinear <span class="math inline">\((\nabla u)^2=s^2\)</span> (Eikonal equation)</li>
 </ul>
 </section>
-<section id="poisson-equation" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="poisson-equation"><span class="header-section-number">4.2</span> Poisson equation</h2>
+<section id="poisson-equation" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="poisson-equation"><span class="header-section-number">3.2</span> Poisson equation</h2>
 <p>potential field <span class="math inline">\(u\)</span> generates field <span class="math inline">\(\vec{F}=-\nabla u\)</span></p>
 <p>causes some flow <span class="math inline">\(\vec{j}=a \vec{F}\)</span></p>
 <p><span class="math inline">\(a\)</span> is some sort of conductivity (electric, hydraulic, thermal)</p>
 <p>continuity of flow: divergence of total current <span class="math inline">\(\vb j + \vb j_s\)</span> is zero</p>
 <p><span class="math display">\[ \div (a \nabla u) = - \div \vb j_s \]</span></p>
 </section>
-<section id="the-heat-equation-in-1d" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="the-heat-equation-in-1d"><span class="header-section-number">4.3</span> The heat equation in 1D</h2>
+<section id="the-heat-equation-in-1d" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="the-heat-equation-in-1d"><span class="header-section-number">3.3</span> The heat equation in 1D</h2>
 <p>sought: Temperature <span class="math inline">\(T\)</span> as a function of space and time</p>
 <p>heat flux density <span class="math inline">\(\vb q = \lambda\grad T\)</span></p>
 <p><span class="math inline">\(q\)</span> in W/m², <span class="math inline">\(\lambda\)</span> - heat conductivity/diffusivity in W/(m.K)</p>
 <p>Fourier’s law: <span class="math inline">\(\pdv{T}{t} - a \nabla^2 T = s\)</span> (<span class="math inline">\(s\)</span> - heat source)</p>
 <p>temperature conduction <span class="math inline">\(a=\frac{\lambda}{\rho c}\)</span> (<span class="math inline">\(\rho\)</span> - density, <span class="math inline">\(c\)</span> - heat capacity)</p>
 </section>
-<section id="flow-and-transport" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="flow-and-transport"><span class="header-section-number">4.4</span> Flow and transport</h2>
-<section id="darcys-law" class="level3" data-number="4.4.1">
-<h3 data-number="4.4.1" class="anchored" data-anchor-id="darcys-law"><span class="header-section-number">4.4.1</span> Darcy’s law</h3>
+<section id="flow-and-transport" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="flow-and-transport"><span class="header-section-number">3.4</span> Flow and transport</h2>
+<section id="darcys-law" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="darcys-law"><span class="header-section-number">3.4.1</span> Darcy’s law</h3>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p>volumetric flow rate <span class="math inline">\(Q\)</span> caused by gradient of pressure <span class="math inline">\(p\)</span></p>
@@ -366,21 +383,21 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="stokes-equation" class="level3" data-number="4.4.2">
-<h3 data-number="4.4.2" class="anchored" data-anchor-id="stokes-equation"><span class="header-section-number">4.4.2</span> Stokes equation</h3>
+<section id="stokes-equation" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="stokes-equation"><span class="header-section-number">3.4.2</span> Stokes equation</h3>
 <p><span class="math display">\[ \mu \nabla^2 \vb v - \grad p + f = 0 \]</span></p>
 <p><span class="math display">\[\div\vb v = 0 \]</span></p>
 </section>
-<section id="navier-stokes-equations" class="level3" data-number="4.4.3">
-<h3 data-number="4.4.3" class="anchored" data-anchor-id="navier-stokes-equations"><span class="header-section-number">4.4.3</span> Navier-Stokes equations</h3>
+<section id="navier-stokes-equations" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="navier-stokes-equations"><span class="header-section-number">3.4.3</span> Navier-Stokes equations</h3>
 <p>(incompressible, uniform viscosity)</p>
 <p><span class="math display">\[ \pdv{\vb u}{t} +(\vb u \vdot \grad) \vb u = \nu \nabla^2 \vb u - 1/\rho \grad p + f \]</span></p>
 </section>
 </section>
-<section id="electromagnetics" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="electromagnetics"><span class="header-section-number">4.5</span> Electromagnetics</h2>
-<section id="maxwells-equations" class="level3" data-number="4.5.1">
-<h3 data-number="4.5.1" class="anchored" data-anchor-id="maxwells-equations"><span class="header-section-number">4.5.1</span> Maxwell’s equations</h3>
+<section id="electromagnetics" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="electromagnetics"><span class="header-section-number">3.5</span> Electromagnetics</h2>
+<section id="maxwells-equations" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="maxwells-equations"><span class="header-section-number">3.5.1</span> Maxwell’s equations</h3>
 <ul>
 <li>Faraday’s law: currents &amp; varying electric fields <span class="math inline">\(\Rightarrow\)</span> magnetic field <span class="math display">\[ \curl \vb H = \pdv{\vb D}{t} + \vb j \]</span></li>
 <li>Ampere’s law: time-varying magnetic fields induce electric field <span class="math display">\[ \curl\vb E = -\pdv{\vb B}{t}\]</span></li>
@@ -389,8 +406,8 @@ window.Quarto = {
 </ul>
 </section>
 </section>
-<section id="helmholtz-equations" class="level2" data-number="4.6">
-<h2 data-number="4.6" class="anchored" data-anchor-id="helmholtz-equations"><span class="header-section-number">4.6</span> Helmholtz equations</h2>
+<section id="helmholtz-equations" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="helmholtz-equations"><span class="header-section-number">3.6</span> Helmholtz equations</h2>
 <p>e.g.&nbsp;from Fourier assumption <span class="math inline">\(u=u_0 e^{\imath\omega t}\)</span></p>
 <p><span class="math display">\[ \div (a\grad u) + k^2 u = f \]</span></p>
 <ul>
@@ -399,8 +416,8 @@ window.Quarto = {
 </ul>
 <p><span class="math display">\[ \Rightarrow \vb A + \vb M = \vb b \]</span></p>
 </section>
-<section id="helmholtz-equations-1" class="level2" data-number="4.7">
-<h2 data-number="4.7" class="anchored" data-anchor-id="helmholtz-equations-1"><span class="header-section-number">4.7</span> Helmholtz equations</h2>
+<section id="helmholtz-equations-1" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="helmholtz-equations-1"><span class="header-section-number">3.7</span> Helmholtz equations</h2>
 <p><span class="math display">\[ \nabla^2 u + k^2 u = f \]</span></p>
 <p>results from wavenumber decomposition of diffusion or wave equations</p>
 <p>approach: <span class="math inline">\(\vb F = \vb{F_0}e^{\imath\omega t} \quad\Rightarrow\quad \pdv{\vb F}{t}=\imath\omega\vb F \quad\Rightarrow\quad \pdv[2]{\vb F}{t}=-\omega^2\vb F\)</span></p>
@@ -408,16 +425,16 @@ window.Quarto = {
 <p><span class="math display">\[ \Rightarrow \nabla^2\vb F - a\imath\omega\vb F + c^2 \omega^2\vb F = 0 \]</span></p>
 </section>
 </section>
-<section id="wave-equations" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Wave equations</h1>
-<section id="the-eikonal-equation" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="the-eikonal-equation"><span class="header-section-number">5.1</span> The eikonal equation</h2>
+<section id="wave-equations" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Wave equations</h1>
+<section id="the-eikonal-equation" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-eikonal-equation"><span class="header-section-number">4.1</span> The eikonal equation</h2>
 <p>Describes first-arrival times <span class="math inline">\(t\)</span> as a function of velocity (<span class="math inline">\(v\)</span>) or slowness (<span class="math inline">\(s\)</span>)</p>
 <p><span class="math display">\[ |\grad t| = s = 1/v \]</span></p>
 <p><img src="pics/tt4.png" class="fragment" width="458" height="420"></p>
 </section>
-<section id="hyberbolic-equations" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="hyberbolic-equations"><span class="header-section-number">5.2</span> Hyberbolic equations</h2>
+<section id="hyberbolic-equations" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="hyberbolic-equations"><span class="header-section-number">4.2</span> Hyberbolic equations</h2>
 <p>Acoustic wave equation in 1D <span class="math display">\[ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 \]</span></p>
 <p><span class="math inline">\(u\)</span>..pressure/velocity/displacement, <span class="math inline">\(c\)</span>..velocity</p>
 <p>Damped (mixed parabolic-hyperbolic) wave equation <span class="math display">\[ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 \]</span></p>
@@ -850,12 +867,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./index.html" class="pagination-link" aria-label="Prerequisites">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Prerequisites</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Prerequisites</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./02_finite-differences.html" class="pagination-link" aria-label="Finite Differences">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

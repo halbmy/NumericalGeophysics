@@ -4,572 +4,481 @@
     "href": "index.html",
     "title": "Numerical methods in geophysics",
     "section": "",
-    "text": "Prerequisites\nHere are the lecture notes for the 2024/2025 module Numerical Simulation methods in Geophysics. These notes are tailored for Master’s students of Geophysics or Geoinformatics at the Institute of Geophysics and Geoinformatics, TU Bergakademie Freiberg.\nYou can access all the materials on the GitHub repository https://github.com/halbmy/NumGy.\nEnjoy studying!",
+    "text": "1 Recap",
     "crumbs": [
-      "Prerequisites"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
     ]
   },
   {
-    "objectID": "index.html#background",
-    "href": "index.html#background",
+    "objectID": "index.html#solution-in-pygimli",
+    "href": "index.html#solution-in-pygimli",
     "title": "Numerical methods in geophysics",
-    "section": "Background",
-    "text": "Background\nWhile this course was around already since 2000 in Freiberg, it did not meet the general title before I started and I found no text book about learning the background of the simulation methods being increasingly used in geophysics, particularly solving partial differential equations by own codes and understanding the physics by doing so. I aim at all common PDE types from elliptic, parabolic to hyperbolic, going from 1D to 2D and 3D, from Finite Differences to Finite Elements and Finite Volumes.",
+    "section": "1.1 Solution in pyGIMLi",
+    "text": "1.1 Solution in pyGIMLi\n\n\nstep by step\nimport pygimli.solver as ps\nA = ps.createStiffnessMatrix(mesh, a)\nM = ps.createMassMatrix(mesh, b)\nf = ps.createLoadVector(mesh, f)\nps.assembleNeumannBC(b, boundaries)\nps.assembleDirichletBC(A, b)\nps.assembleRobinBC(A, boundaries, b)\nu = ps.linSolve(A, b)\n\nor shortly\nbc = {'Dirichlet': {4: 1.0, 3: 0.0},\n      'Neumann': {2: 1.0}}\nu = ps.solveFiniteElements(mesh, a, b, f, bc=bc, \n                           t=times, c)\nu = pygimli.physics.seismics.solvePressureWave(\n    mesh, velocities, times, sourcePos, uSource)\n\n\n\\[ c\\pdv{u}{t}= \\div(a\\grad u) + b u + f(\\vb r, t)\\]",
     "crumbs": [
-      "Prerequisites"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
     ]
   },
   {
-    "objectID": "index.html#code",
-    "href": "index.html#code",
+    "objectID": "index.html#advection",
+    "href": "index.html#advection",
     "title": "Numerical methods in geophysics",
-    "section": "Code",
-    "text": "Code\nThe website’s course material includes sections with embedded Python code.\nYou can easily copy the code and execute it in a compatible Python runtime environment.\nFor an optimal experience, we recommend installing Python via miniforge.\nMoreover, you have the freedom to explore your own concepts and delve deeper into the course content by creating your personalized Jupyter notebooks. You can utilize use either Visual Studio Code or Jupyterlab\nThe material was created by Quarto.\nWorking with Jupyter Notebooks in Visual Studio Code is exceptionally straightforward.",
+    "section": "1.2 Advection",
+    "text": "1.2 Advection\nVolume elements move with velocity \\(\\vb v\\) and take (advectio=move with)\n\\[\\pdv{T}{t} \\Rightarrow \\pdv{T}{t} + \\dv{z}{t}\\pdv{T}{z}\\] in 3D \\(\\vb{v}\\cdot\\grad{T}\\) \\(\\Rightarrow\\) advection-dispersion equation\n\\[\\pdv{T}{t} = \\div a\\grad{T} + Q - \\vb{v}\\cdot\\grad{T}\\]",
     "crumbs": [
-      "Prerequisites"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
     ]
   },
   {
-    "objectID": "index.html#self-study",
-    "href": "index.html#self-study",
+    "objectID": "index.html#advection-dispersion-equation-general",
+    "href": "index.html#advection-dispersion-equation-general",
     "title": "Numerical methods in geophysics",
-    "section": "Self study",
-    "text": "Self study\nThere are individual small tasks for self-study that are scattered throughout the lecture.\n\n\n\n\n\n\nSelf study\n\n\n\nYou can easily identify these callouts.",
+    "section": "1.3 Advection-dispersion equation (general)",
+    "text": "1.3 Advection-dispersion equation (general)\n\\[ \\pdv{u}{t}+\\vb v\\cdot\\grad u = \\div(a\\grad u) + b u + f(\\vb r, t)\\]\n\\(\\vb v\\cdot\\grad u\\) (Advection), \\(\\div(a\\grad u)\\) (Dispersion=Diffusion)\nSolve, e.g., by pyGIMLi.solver.solveFiniteVolume (Link)\nbc = dict(Dirichlet={4: 1.0, 3: 0.0}, Neumann={2: 1.0})\nu = ps.solveFiniteVolume(mesh, a, b, f, bc=bc, t=times, c)",
     "crumbs": [
-      "Prerequisites"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
     ]
   },
   {
-    "objectID": "index.html#recommended-reading",
-    "href": "index.html#recommended-reading",
+    "objectID": "index.html#computational-fluid-dynamics",
+    "href": "index.html#computational-fluid-dynamics",
     "title": "Numerical methods in geophysics",
-    "section": "Recommended Reading",
-    "text": "Recommended Reading\nThe most important source of supplementary information is the book by @ward1988electromagnetic.",
+    "section": "1.4 Computational fluid dynamics",
+    "text": "1.4 Computational fluid dynamics\nMagnetohydrodynamic induction equation\n\\[\\pdv{\\vb B}{t} =  \\curl \\frac{1}{\\mu\\sigma} \\curl \\vb B + \\curl(\\vb v \\cross \\vb B)\\]\nForces on fluid (induction, Coriolis, pressure, gravity, Lorentz) \\[ \\rho \\pdv{\\vb v}{t} + \\rho (\\vb v \\cdot \\grad) \\vb v + \\grad p = -2\\omega\\cross\\vb v+\\alpha T \\vb g + \\vb j \\cross \\vb B / \\rho \\]",
     "crumbs": [
-      "Prerequisites"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
     ]
   },
   {
-    "objectID": "index.html#license",
-    "href": "index.html#license",
+    "objectID": "index.html#fe-solution-for-inhomogeneous-viscosity",
+    "href": "index.html#fe-solution-for-inhomogeneous-viscosity",
     "title": "Numerical methods in geophysics",
-    "section": "License",
-    "text": "License\nThis material is licensed under the Creative Commons License.",
+    "section": "1.5 FE solution for inhomogeneous viscosity",
+    "text": "1.5 FE solution for inhomogeneous viscosity",
     "crumbs": [
-      "Prerequisites"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#simple-1d-advection-problem",
+    "href": "index.html#simple-1d-advection-problem",
+    "title": "Numerical methods in geophysics",
+    "section": "1.6 Simple 1D advection problem",
+    "text": "1.6 Simple 1D advection problem\n\\[\\pdv{u}{t} + \\pdv{v(u)}{x}=0\\]\nSolution \\(u_i\\) at node \\(i\\) represents average value over cell\n\\[ \\overline{u}_i(t) = \\frac{1}{x_{i+1/2}-x_{i-1/2}} \\int_{x_{i-1/2}}^{x_{i+1/2}} u(x, t)\\dd x \\]\n\\[ \\int_{t_1}^{t_2} \\pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \\int_{t_1}^{t_2} \\pdv{v(u)}{x} \\]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#fv",
+    "href": "index.html#fv",
+    "title": "Numerical methods in geophysics",
+    "section": "1.7 FV",
+    "text": "1.7 FV",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#simple-1d-advection-problem-1",
+    "href": "index.html#simple-1d-advection-problem-1",
+    "title": "Numerical methods in geophysics",
+    "section": "1.8 Simple 1D advection problem",
+    "text": "1.8 Simple 1D advection problem\n\\[ u(x, t_2) = u(x, t_1) - \\int_{t_1}^{t_2} \\pdv{v(u)}{x} \\]\n\\[ \\overline{u}(t_2) = \\frac{1}{x_{i+1/2}-x_{i-1/2}} \\int_{x_{i-1/2}}^{x_{i+1/2}}\\qty\\Big(u(x,t_1) - \\int_{t_1}^{t_2} \\pdv{v(u)}{x})  \\]\n\\[ \\overline{u}(t_2) = \\overline{u}(t_1) - \\frac{1}{x_{i+1/2}-x_{i-1/2}}\n\\qty\\Big(\\int_{t_1}^{t_2} v_{i+1/2} \\dd t - \\int_{t_1}^{t_2} v_{i-1/2} \\dd t) \\]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#result",
+    "href": "index.html#result",
+    "title": "Numerical methods in geophysics",
+    "section": "1.9 Result",
+    "text": "1.9 Result\n\\[ \\pdv{\\overline{u}_i}{t} +\\frac{1}{\\Delta x_i} (v_{i+1/2}-v_{i-1/2}) = 0 \\]\n\n\n\n\n\n\nNote\n\n\n\nFinite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell’s loss is always another cell’s gain!",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#visualization",
+    "href": "index.html#visualization",
+    "title": "Numerical methods in geophysics",
+    "section": "1.10 Visualization",
+    "text": "1.10 Visualization",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#similarity-to-staggered-e-b-grid-methods",
+    "href": "index.html#similarity-to-staggered-e-b-grid-methods",
+    "title": "Numerical methods in geophysics",
+    "section": "1.11 Similarity to staggered (E, B) grid methods",
+    "text": "1.11 Similarity to staggered (E, B) grid methods",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#conservation-law-3d-problem",
+    "href": "index.html#conservation-law-3d-problem",
+    "title": "Numerical methods in geophysics",
+    "section": "1.12 Conservation law (3D) problem",
+    "text": "1.12 Conservation law (3D) problem\n\\[\\pdv{\\vb u}{t} + \\div\\vb v(u)= 0\\]\nvolume integral over cell, using Gauss’ law\n\\[\\int_{\\Omega_i} \\pdv{\\vb u}{t}\\dd\\Omega+\\int_{\\Omega_i} \\div\\vb v(u) \\dd\\Omega = 0 =\n\\int_{\\Omega_i} \\pdv{\\vb u}{t}\\dd\\Omega+\\int_{\\Gamma_i} \\vb v(u) \\cdot \\vb n \\dd{\\Gamma} \\]\n\\[\\Rightarrow \\pdv{\\overline{u}}{t} +\\frac{1}{V_i}\\int_{\\Gamma_i}\\vb v(u)\\cdot \\vb n \\dd{\\Gamma} =0  \\]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span>"
     ]
   },
   {
     "objectID": "01_introduction.html",
     "href": "01_introduction.html",
-    "title": "1  Introduction",
+    "title": "2  Introduction",
     "section": "",
-    "text": "2 Differential operators",
+    "text": "3 Differential operators",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#differential-operators",
-    "href": "01_introduction.html#differential-operators",
-    "title": "1  Introduction",
-    "section": "",
-    "text": "single derivative in space \\(\\pdv{x}\\) or time \\(\\pdv t\\)\ngradient \\(\\grad=(\\pdv x, \\pdv y, \\pdv z)^T\\)\ndivergence \\(\\div \\vb F = \\pdv{F_x}{x} + \\pdv{F_y}{y} + \\pdv{F_z}{z}\\)\n\n\n\n\nGauss’: what’s in (volume) comes out (surface) \\[\\int_V \\div\\vb F\\ dV = \\iint_S \\vb F \\vdot \\vb n\\ dS\\]\n\n\n\n\nGauss’s theorem in EM",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "01_introduction.html#curl-rotation",
     "href": "01_introduction.html#curl-rotation",
-    "title": "1  Introduction",
-    "section": "2.1 Curl (rotation)",
-    "text": "2.1 Curl (rotation)\n\ncurl \\(\\curl \\vb F = (\\pdv{F_z}{y}-\\pdv{F_y}{z}, \\pdv{F_x}{z}-\\pdv{F_z}{x}, \\pdv{F_y}{x}-\\pdv{F_x}{y})^T\\)\n\n\n\n\nStoke: what goes around comes around \\[\\int_S \\curl \\vb F \\vdot \\vb dS = \\iint_S \\vb F \\vdot \\vb dl\\]\n\n\n\n\nStokes’ theorem in EM\n\n\n\n\n\n\n\ncurls have no divergence: \\(\\div (\\curl \\vb F)=0\\)\n\n\n\n\npotential fields have no curl \\(\\curl (\\grad u)=0\\)",
+    "title": "2  Introduction",
+    "section": "3.1 Curl (rotation)",
+    "text": "3.1 Curl (rotation)\n\ncurl \\(\\curl \\vb F = (\\pdv{F_z}{y}-\\pdv{F_y}{z}, \\pdv{F_x}{z}-\\pdv{F_z}{x}, \\pdv{F_y}{x}-\\pdv{F_x}{y})^T\\)\n\n\n\n\nStoke: what goes around comes around \\[\\int_S \\curl \\vb F \\vdot \\vb dS = \\iint_S \\vb F \\vdot \\vb dl\\]\n\n\n\n\nStokes’ theorem in EM\n\n\n\n\n\n\n\ncurls have no divergence: \\(\\div (\\curl \\vb F)=0\\)\n\n\n\n\npotential fields have no curl \\(\\curl (\\grad u)=0\\)",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#numerical-simulation",
-    "href": "01_introduction.html#numerical-simulation",
-    "title": "1  Introduction",
-    "section": "1.3 Numerical simulation",
-    "text": "1.3 Numerical simulation\nMostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities\nPDE Types (\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(-\\nabla^2 u=f\\) (Poisson) or \\(\\nabla^2 u + k^2 u = f\\) (Helmholtz)\nparabolic PDE \\(-\\nabla^2 u + a \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(-\\nabla^2 u + c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#poisson-equation",
-    "href": "01_introduction.html#poisson-equation",
-    "title": "1  Introduction",
-    "section": "3.2 Poisson equation",
-    "text": "3.2 Poisson equation\npotential field \\(u\\) generates field \\(\\vec{F}=-\\nabla u\\)\ncauses some flow \\(\\vec{j}=a \\vec{F}\\)\n\\(a\\) is some sort of conductivity (electric, hydraulic, thermal)\ncontinuity of flow: divergence of total current \\(\\vb j + \\vb j_s\\) is zero\n\\[ \\div (a \\nabla u) = - \\div \\vb j_s \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#darcys-law",
-    "href": "01_introduction.html#darcys-law",
-    "title": "1  Introduction",
-    "section": "1.5 Darcy’s law",
-    "text": "1.5 Darcy’s law\n\n\nvolumetric flow rate \\(Q\\) caused by gradient of pressure \\(p\\)\n\\[ Q = \\frac{k A}{\\mu L} \\Delta p \\]\n\\[\\vb q = -\\frac{k}{\\mu} \\nabla p \\]\n\\[\\div\\vb q = -\\div (k/\\mu \\grad p) = 0\\]\n\n\n\n\nDarcy’s law",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#the-heat-equation-in-1d",
-    "href": "01_introduction.html#the-heat-equation-in-1d",
-    "title": "1  Introduction",
-    "section": "3.3 The heat equation in 1D",
-    "text": "3.3 The heat equation in 1D\nsought: Temperature \\(T\\) as a function of space and time\nheat flux density \\(\\vb q = \\lambda\\grad T\\)\n\\(q\\) in W/m², \\(\\lambda\\) - heat conductivity/diffusivity in W/(m.K)\nFourier’s law: \\(\\pdv{T}{t} - a \\nabla^2 T = s\\) (\\(s\\) - heat source)\ntemperature conduction \\(a=\\frac{\\lambda}{\\rho c}\\) (\\(\\rho\\) - density, \\(c\\) - heat capacity)",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#stokes-equation",
-    "href": "01_introduction.html#stokes-equation",
-    "title": "1  Introduction",
-    "section": "1.7 Stokes equation",
-    "text": "1.7 Stokes equation\n\\[ \\mu \\nabla^2 \\vb v - \\grad p + f = 0 \\]\n\\[\\div\\vb v = 0 \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#navier-stokes-equations",
-    "href": "01_introduction.html#navier-stokes-equations",
-    "title": "1  Introduction",
-    "section": "1.8 Navier-Stokes equations",
-    "text": "1.8 Navier-Stokes equations\n(incompressible, uniform viscosity)\n\\[ \\pdv{\\vb u}{t} +(\\vb u \\vdot \\grad) \\vb u = \\nu \\nabla^2 \\vb u - 1/\\rho \\grad p + f \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#maxwells-equations",
-    "href": "01_introduction.html#maxwells-equations",
-    "title": "1  Introduction",
-    "section": "1.9 Maxwell’s equations",
-    "text": "1.9 Maxwell’s equations\n\nFaraday’s law: currents & varying electric fields \\(\\Rightarrow\\) magnetic field \\[ \\curl \\vb H = \\pdv{\\vb D}{t} + \\vb j \\]\nAmpere’s law: time-varying magnetic fields induce electric field \\[ \\curl\\vb E = -\\pdv{\\vb B}{t}\\]\n\\(\\div\\vb D = \\varrho\\) (charge \\(\\Rightarrow\\)), \\(\\div\\vb B = 0\\) (no magnetic charge)\nmaterial laws \\(\\vb D = \\epsilon \\vb E\\) and \\(\\vec B = \\mu \\vb H\\)",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#helmholtz-equations",
-    "href": "01_introduction.html#helmholtz-equations",
-    "title": "1  Introduction",
-    "section": "3.6 Helmholtz equations",
-    "text": "3.6 Helmholtz equations\ne.g. from Fourier assumption \\(u=u_0 e^{\\imath\\omega t}\\)\n\\[ \\div (a\\grad u) + k^2 u = f \\]\n\nPoisson operator assembled in stiffness matrix \\(\\vb A\\)\nadditional terms with \\(u_i\\) \\(\\Rightarrow\\) mass matrix \\(\\vb M\\)\n\n\\[ \\Rightarrow \\vb A + \\vb M = \\vb b \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#the-eikonal-equation",
-    "href": "01_introduction.html#the-eikonal-equation",
-    "title": "1  Introduction",
-    "section": "4.1 The eikonal equation",
-    "text": "4.1 The eikonal equation\nDescribes first-arrival times \\(t\\) as a function of velocity (\\(v\\)) or slowness (\\(s\\))\n\\[ |\\grad t| = s = 1/v \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html",
-    "href": "03_finite-elements.html",
-    "title": "3  Finite Elements",
-    "section": "",
-    "text": "3.1 History and background\nGeophysics: Poisson equation in 1970s, revival in 1990s and predominant in 2000s up to now",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#history-and-background",
-    "href": "03_finite-elements.html#history-and-background",
-    "title": "3  Finite Elements",
-    "section": "",
-    "text": "[1943] Courant: Variational Method\n[1956] Turner, Clough, Martin, Topp: Stiffness\n[1960] Clough: Finite Elements for static elasticity\n[1970-80] extension to structural, thermic and fluid dynamics\n[1990] computational improvements\nnow main method for almost all PDE types",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#variational-formulation-of-poisson-equation",
-    "href": "03_finite-elements.html#variational-formulation-of-poisson-equation",
-    "title": "3  Finite Elements",
-    "section": "3.2 Variational formulation of Poisson equation",
-    "text": "3.2 Variational formulation of Poisson equation\n\\[ -\\div a \\grad u = f \\]\n\nMultiplication with test function \\(w\\) and integration \\(\\Rightarrow\\) weak form\n\\[ -\\int_\\Omega w \\div a \\grad u \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]\n\n\n\\[ \\div(b\\vb c) = b\\div \\vb c + \\grad b \\cdot \\vb c \\]\n\n\n\\[ \\int_\\Omega \\grad w a \\grad u \\dd\\Omega - \\int_\\Omega \\div(w a \\grad u) \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#variational-formulation-of-poisson-equation-1",
-    "href": "03_finite-elements.html#variational-formulation-of-poisson-equation-1",
-    "title": "3  Finite Elements",
-    "section": "3.3 Variational formulation of Poisson equation",
-    "text": "3.3 Variational formulation of Poisson equation\n\\[ \\int_\\Omega \\grad w a \\grad u \\dd\\Omega - \\int_\\Omega \\div(w a \\grad u) \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]\n\nuse Gauss’ law \\(\\int_\\Omega \\div \\vb A = \\int_\\Gamma \\vb A \\cdot \\vb n\\)\n\\[ \\int_\\Omega a \\grad w \\grad u \\dd\\Omega - \\int_\\Gamma a w \\grad u \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]\n\n\nLet \\(u\\) be constructed by shape functions \\(v\\): \\(u=\\sum_i u_i v_i\\)\n\\[ \\int_\\Omega a \\grad w \\grad v_i \\dd\\Omega - \\int_\\Gamma a w \\grad v_i \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#galerkins-method",
-    "href": "03_finite-elements.html#galerkins-method",
-    "title": "3  Finite Elements",
-    "section": "3.4 Galerkins method",
-    "text": "3.4 Galerkins method\n\\[ \\int_\\Omega a \\grad w \\grad v_i \\dd\\Omega - \\int_\\Gamma a w \\grad v_i \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]\n\nTest functions equal shape (trial) functions \\(w_i=v_i\\)\n\\[ \\int_\\Omega a \\grad v_i \\grad v_j \\dd\\Omega - \\int_\\Gamma a w \\grad v_j \\dd\\Gamma = \\int_\\Omega f v_j \\dd\\Omega \\]\n\n\n\nchoose \\(v_i\\) so that \\(\\grad v_i\\) is simple and \\(\\grad v_i \\grad v_j\\) mostly 0\ndivide subsurface in sub-volumes \\(\\Omega_i\\) with constant \\(a_i\\) and \\(\\grad v_j\\)",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#hat-functions",
-    "href": "03_finite-elements.html#hat-functions",
-    "title": "3  Finite Elements",
-    "section": "3.5 Hat functions",
-    "text": "3.5 Hat functions",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#gradients-for-hat-functions",
-    "href": "03_finite-elements.html#gradients-for-hat-functions",
-    "title": "3  Finite Elements",
-    "section": "3.6 Gradients for hat functions",
-    "text": "3.6 Gradients for hat functions\nEvery element is surrounded by two nodes “carrying” a hat.\nThe gradients are piece-wise constant \\(\\pm 1/\\Delta x_i\\)\n\\[ \\Rightarrow \\int_\\Omega a \\grad v_i \\grad v_{i+1} \\dd\\Omega = -\\frac{a_i}{\\Delta x_i^2} \\cdot \\Delta x_i = -\\frac{a_i}{\\Delta x_i}\\]\n\\[ -\\int_\\Omega a \\grad v_i \\grad v_i \\dd\\Omega = \\frac{a_{i-1}}{\\Delta x_{i-1}^2}\\Delta x_{i-1} + \\frac{a_i}{\\Delta x_i^2}\\Delta x_i = \\frac{a_{i-1}}{\\Delta x_{i-1}} + \\frac{a_i}{\\Delta x_i} \\]\n\\[ -\\int_\\Omega a \\grad v_i \\grad v_{i+2} \\dd\\Omega = 0 \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#boundary-conditions",
-    "href": "03_finite-elements.html#boundary-conditions",
-    "title": "3  Finite Elements",
-    "section": "4.1 Boundary conditions",
-    "text": "4.1 Boundary conditions\nsecond term \\[ - \\int_\\Gamma a v_i \\grad v_j \\dd\\Gamma \\]",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#right-hand-side-vector",
-    "href": "03_finite-elements.html#right-hand-side-vector",
-    "title": "3  Finite Elements",
-    "section": "4.2 Right-hand side vector",
-    "text": "4.2 Right-hand side vector\nThe right-hand-side vector \\(b=\\int v_i f \\dd\\Omega\\) also scales with \\(\\Delta x\\)\ne.g. \\(f=\\div j_s\\) \\(\\Rightarrow\\) $b=v_i j_s = _$\nsystem identical to FD for \\(\\Delta x=\\)const\n\n\n\n\n\n\nDifference of FE to FD\n\n\n\nAny source function \\(f(x)\\) can be integrated on the whole space!",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "03_finite-elements.html#solution",
-    "href": "03_finite-elements.html#solution",
-    "title": "3  Finite Elements",
-    "section": "4.3 Solution",
-    "text": "4.3 Solution\n\\(\\vb v\\) holds the coefficient \\(u_i\\) creating \\(u=\\sum u_i v_i(x)\\)\n\n\n\n\n\n\nDifference of FE to FD\n\n\n\n\\(u\\) is described on the whole space and approximates the solution, not the PDE!\n\n\nHat functions: \\(u_i\\) potentials on nodes, \\(u\\) piece-wise linear\n\n\n\n\n\n\nGenerality of FE\n\n\n\nArbitrary base functions \\(v_i\\) can be used to describe \\(u\\)",
-    "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Elements</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html",
-    "href": "02_finite-differences.html",
-    "title": "2  Finite Differences",
-    "section": "",
-    "text": "2.1 Taylor expansion\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\]\nTaylor expansion \\[f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2\\]",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#helmholtz-equations",
-    "href": "02_finite-differences.html#helmholtz-equations",
-    "title": "2  Finite Differences",
-    "section": "",
-    "text": "Poisson operator assembled in stiffness matrix \\(\\vb A\\)\nadditional terms with \\(u_i\\) \\(\\Rightarrow\\) mass matrix \\(\\vb M\\)",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#hyberbolic-equations",
-    "href": "02_finite-differences.html#hyberbolic-equations",
-    "title": "2  Finite Differences",
-    "section": "2.2 Hyberbolic equations",
-    "text": "2.2 Hyberbolic equations\nAcoustic wave equation in 1D \\[ \\pdv[2]{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]\n\\(u\\)..pressure/velocity/displacement, \\(c\\)..velocity\nDamped (mixed parabolic-hyperbolic) wave equation \\[ \\pdv[2]{u}{t} - a\\pdv{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#discretization",
-    "href": "02_finite-differences.html#discretization",
-    "title": "2  Finite Differences",
-    "section": "4.3 Discretization",
-    "text": "4.3 Discretization\n\n\n\\[ \\pdv[2]{u}{t}^{n} \\approx \\frac{u^{n+1}-u^n}{\\Delta t} - \\frac{u^{n}-u^{n-1}}{\\Delta t}\n\\]\n\\[ = \\frac{u^{n+1}+u^{n-1}-2 u^n}{\\Delta t^2} = c^2\\pdv[2]{u}{x}^n \\]\n\\[ u^{n+1} = c^2 \\Delta t^2 \\pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} \\]\n\n\\[ \\vb M \\vb u^{n+1} = (\\vb A + 2\\vb M) \\vb u^n - \\vb M \\vb u^{n-1} \\]\n\n\n\n\nSecond derivative",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#example-velocity-distribution",
-    "href": "02_finite-differences.html#example-velocity-distribution",
-    "title": "2  Finite Differences",
-    "section": "4.4 Example: velocity distribution",
-    "text": "4.4 Example: velocity distribution\n\n\nShow the code\nimport numpy as np\nimport matplotlib.pyplot as plt\nx=np.arange(0, 600.01, 0.5)\nc = 1.0*np.ones_like(x) # velocity in m/s\nc[100:300] = 1 + np.arange(0,0.5,0.0025) \nc[900:1100] = 0.5  # low velocity zone\n\n# Plot velocity distribution.\nplt.plot(x,c,'k')\nplt.xlabel('x [m]')\nplt.ylabel('c [m/s]')\nplt.grid()",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#initial-displacement",
-    "href": "02_finite-differences.html#initial-displacement",
-    "title": "2  Finite Differences",
-    "section": "4.5 Initial displacement",
-    "text": "4.5 Initial displacement\nDerivative of Gaussian (Ricker wavelet)\n\n\nShow the code\nl=5.0\n\n# Initial displacement field [m].\nu=(x-300.0)*np.exp(-(x-300.0)**2/l**2) \n# Plot initial displacement field.\nplt.plot(x,u,'k')\nplt.xlabel('x [m]')\nplt.ylabel('u [m]')\nplt.title('initial displacement field')\nplt.show()",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#time-propagation",
-    "href": "02_finite-differences.html#time-propagation",
-    "title": "2  Finite Differences",
-    "section": "4.6 Time propagation",
-    "text": "4.6 Time propagation\n\n\nShow the code\nu_last=u\ndt = 0.5\nddu = np.zeros_like(u)\ndx = np.diff(x)\nfor i in range(100):\n    dudx = np.diff(u)/dx\n    ddu[1:-1] = np.diff(dudx)/dx[:-1]\n    u_next = 2*u-u_last+ddu*c**2 * dt**2 \n    u_last = u\n    u = u_next\n  \nplt.plot(x,u,'k')",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#section",
-    "href": "02_finite-differences.html#section",
-    "title": "2  Finite Differences",
-    "section": "2.7 ",
-    "text": "2.7",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#partial-differential-equations-pdes",
-    "href": "01_introduction.html#partial-differential-equations-pdes",
-    "title": "1  Introduction",
-    "section": "1.2 Partial differential equations (PDEs)",
-    "text": "1.2 Partial differential equations (PDEs)\nMostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities\n\n1.2.1 PDE Types\n(\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(-\\nabla^2 u=f\\) (Poisson) or \\(\\nabla^2 u + k^2 u = f\\) (Helmholtz)\nparabolic PDE \\(-\\nabla^2 u + a \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(-\\nabla^2 u + c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#flow-and-transport",
-    "href": "01_introduction.html#flow-and-transport",
-    "title": "1  Introduction",
-    "section": "3.4 Flow and transport",
-    "text": "3.4 Flow and transport\n\n3.4.1 Darcy’s law\n\n\nvolumetric flow rate \\(Q\\) caused by gradient of pressure \\(p\\)\n\\[ Q = \\frac{k A}{\\mu L} \\Delta p \\]\n\\[\\vb q = -\\frac{k}{\\mu} \\nabla p \\]\n\\[\\div\\vb q = -\\div (k/\\mu \\grad p) = 0\\]\n\n\n\n\nDarcy’s law\n\n\n\n\n\n\n3.4.2 Stokes equation\n\\[ \\mu \\nabla^2 \\vb v - \\grad p + f = 0 \\]\n\\[\\div\\vb v = 0 \\]\n\n\n3.4.3 Navier-Stokes equations\n(incompressible, uniform viscosity)\n\\[ \\pdv{\\vb u}{t} +(\\vb u \\vdot \\grad) \\vb u = \\nu \\nabla^2 \\vb u - 1/\\rho \\grad p + f \\]",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#electromagnetics",
-    "href": "01_introduction.html#electromagnetics",
-    "title": "1  Introduction",
-    "section": "3.5 Electromagnetics",
-    "text": "3.5 Electromagnetics\n\n3.5.1 Maxwell’s equations\n\nFaraday’s law: currents & varying electric fields \\(\\Rightarrow\\) magnetic field \\[ \\curl \\vb H = \\pdv{\\vb D}{t} + \\vb j \\]\nAmpere’s law: time-varying magnetic fields induce electric field \\[ \\curl\\vb E = -\\pdv{\\vb B}{t}\\]\n\\(\\div\\vb D = \\varrho\\) (charge \\(\\Rightarrow\\)), \\(\\div\\vb B = 0\\) (no magnetic charge)\nmaterial laws \\(\\vb D = \\epsilon \\vb E\\) and \\(\\vec B = \\mu \\vb H\\)",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "01_introduction.html#wave-equations",
-    "href": "01_introduction.html#wave-equations",
-    "title": "1  Introduction",
-    "section": "3.6 Wave equations",
-    "text": "3.6 Wave equations\n\n3.6.1 The eikonal equation\nDescribes first-arrival times \\(t\\) as a function of velocity (\\(v\\)) or slowness (\\(s\\))\n\\[ |\\grad t| = s = 1/v \\]\n\n\n\n3.6.2 Waveform modelling\nbla",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "01_introduction.html#pde-types",
     "href": "01_introduction.html#pde-types",
-    "title": "1  Introduction",
-    "section": "3.1 PDE Types",
-    "text": "3.1 PDE Types\n(\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(-\\nabla^2 u=f\\) (Poisson) or \\(\\nabla^2 u + k^2 u = f\\) (Helmholtz)\nparabolic PDE \\(-\\nabla^2 u + a \\pdv{u}{t} \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(-\\nabla^2 u + c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
+    "title": "2  Introduction",
+    "section": "4.1 PDE Types",
+    "text": "4.1 PDE Types\n(\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(-\\nabla^2 u=f\\) (Poisson) or \\(\\nabla^2 u + k^2 u = f\\) (Helmholtz)\nparabolic PDE \\(-\\nabla^2 u + a \\pdv{u}{t} \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(-\\nabla^2 u + c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html#poisson-equation",
+    "href": "01_introduction.html#poisson-equation",
+    "title": "2  Introduction",
+    "section": "4.2 Poisson equation",
+    "text": "4.2 Poisson equation\npotential field \\(u\\) generates field \\(\\vec{F}=-\\nabla u\\)\ncauses some flow \\(\\vec{j}=a \\vec{F}\\)\n\\(a\\) is some sort of conductivity (electric, hydraulic, thermal)\ncontinuity of flow: divergence of total current \\(\\vb j + \\vb j_s\\) is zero\n\\[ \\div (a \\nabla u) = - \\div \\vb j_s \\]",
+    "crumbs": [
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html#the-heat-equation-in-1d",
+    "href": "01_introduction.html#the-heat-equation-in-1d",
+    "title": "2  Introduction",
+    "section": "4.3 The heat equation in 1D",
+    "text": "4.3 The heat equation in 1D\nsought: Temperature \\(T\\) as a function of space and time\nheat flux density \\(\\vb q = \\lambda\\grad T\\)\n\\(q\\) in W/m², \\(\\lambda\\) - heat conductivity/diffusivity in W/(m.K)\nFourier’s law: \\(\\pdv{T}{t} - a \\nabla^2 T = s\\) (\\(s\\) - heat source)\ntemperature conduction \\(a=\\frac{\\lambda}{\\rho c}\\) (\\(\\rho\\) - density, \\(c\\) - heat capacity)",
+    "crumbs": [
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html#flow-and-transport",
+    "href": "01_introduction.html#flow-and-transport",
+    "title": "2  Introduction",
+    "section": "4.4 Flow and transport",
+    "text": "4.4 Flow and transport\n\n4.4.1 Darcy’s law\n\n\nvolumetric flow rate \\(Q\\) caused by gradient of pressure \\(p\\)\n\\[ Q = \\frac{k A}{\\mu L} \\Delta p \\]\n\\[\\vb q = -\\frac{k}{\\mu} \\nabla p \\]\n\\[\\div\\vb q = -\\div (k/\\mu \\grad p) = 0\\]\n\n\n\n\nDarcy’s law\n\n\n\n\n\n\n4.4.2 Stokes equation\n\\[ \\mu \\nabla^2 \\vb v - \\grad p + f = 0 \\]\n\\[\\div\\vb v = 0 \\]\n\n\n4.4.3 Navier-Stokes equations\n(incompressible, uniform viscosity)\n\\[ \\pdv{\\vb u}{t} +(\\vb u \\vdot \\grad) \\vb u = \\nu \\nabla^2 \\vb u - 1/\\rho \\grad p + f \\]",
+    "crumbs": [
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html#electromagnetics",
+    "href": "01_introduction.html#electromagnetics",
+    "title": "2  Introduction",
+    "section": "4.5 Electromagnetics",
+    "text": "4.5 Electromagnetics\n\n4.5.1 Maxwell’s equations\n\nFaraday’s law: currents & varying electric fields \\(\\Rightarrow\\) magnetic field \\[ \\curl \\vb H = \\pdv{\\vb D}{t} + \\vb j \\]\nAmpere’s law: time-varying magnetic fields induce electric field \\[ \\curl\\vb E = -\\pdv{\\vb B}{t}\\]\n\\(\\div\\vb D = \\varrho\\) (charge \\(\\Rightarrow\\)), \\(\\div\\vb B = 0\\) (no magnetic charge)\nmaterial laws \\(\\vb D = \\epsilon \\vb E\\) and \\(\\vec B = \\mu \\vb H\\)",
+    "crumbs": [
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html#helmholtz-equations",
+    "href": "01_introduction.html#helmholtz-equations",
+    "title": "2  Introduction",
+    "section": "4.6 Helmholtz equations",
+    "text": "4.6 Helmholtz equations\ne.g. from Fourier assumption \\(u=u_0 e^{\\imath\\omega t}\\)\n\\[ \\div (a\\grad u) + k^2 u = f \\]\n\nPoisson operator assembled in stiffness matrix \\(\\vb A\\)\nadditional terms with \\(u_i\\) \\(\\Rightarrow\\) mass matrix \\(\\vb M\\)\n\n\\[ \\Rightarrow \\vb A + \\vb M = \\vb b \\]",
+    "crumbs": [
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "01_introduction.html#helmholtz-equations-1",
     "href": "01_introduction.html#helmholtz-equations-1",
-    "title": "1  Introduction",
-    "section": "3.7 Helmholtz equations",
-    "text": "3.7 Helmholtz equations\n\\[ \\nabla^2 u + k^2 u = f \\]\nresults from wavenumber decomposition of diffusion or wave equations\napproach: \\(\\vb F = \\vb{F_0}e^{\\imath\\omega t} \\quad\\Rightarrow\\quad \\pdv{\\vb F}{t}=\\imath\\omega\\vb F \\quad\\Rightarrow\\quad \\pdv[2]{\\vb F}{t}=-\\omega^2\\vb F\\)\n\\[ \\nabla^2 \\vb F - a \\nabla_t \\vb F - c^2 \\nabla^2_t \\vb F = 0 \\]\n\\[ \\Rightarrow \\nabla^2\\vb F - a\\imath\\omega\\vb F + c^2 \\omega^2\\vb F = 0 \\]",
+    "title": "2  Introduction",
+    "section": "4.7 Helmholtz equations",
+    "text": "4.7 Helmholtz equations\n\\[ \\nabla^2 u + k^2 u = f \\]\nresults from wavenumber decomposition of diffusion or wave equations\napproach: \\(\\vb F = \\vb{F_0}e^{\\imath\\omega t} \\quad\\Rightarrow\\quad \\pdv{\\vb F}{t}=\\imath\\omega\\vb F \\quad\\Rightarrow\\quad \\pdv[2]{\\vb F}{t}=-\\omega^2\\vb F\\)\n\\[ \\nabla^2 \\vb F - a \\nabla_t \\vb F - c^2 \\nabla^2_t \\vb F = 0 \\]\n\\[ \\Rightarrow \\nabla^2\\vb F - a\\imath\\omega\\vb F + c^2 \\omega^2\\vb F = 0 \\]",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01_introduction.html#the-eikonal-equation",
+    "href": "01_introduction.html#the-eikonal-equation",
+    "title": "2  Introduction",
+    "section": "5.1 The eikonal equation",
+    "text": "5.1 The eikonal equation\nDescribes first-arrival times \\(t\\) as a function of velocity (\\(v\\)) or slowness (\\(s\\))\n\\[ |\\grad t| = s = 1/v \\]",
+    "crumbs": [
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
     "objectID": "01_introduction.html#hyberbolic-equations",
     "href": "01_introduction.html#hyberbolic-equations",
-    "title": "1  Introduction",
-    "section": "4.2 Hyberbolic equations",
-    "text": "4.2 Hyberbolic equations\nAcoustic wave equation in 1D \\[ \\pdv[2]{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]\n\\(u\\)..pressure/velocity/displacement, \\(c\\)..velocity\nDamped (mixed parabolic-hyperbolic) wave equation \\[ \\pdv[2]{u}{t} - a\\pdv{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]",
+    "title": "2  Introduction",
+    "section": "5.2 Hyberbolic equations",
+    "text": "5.2 Hyberbolic equations\nAcoustic wave equation in 1D \\[ \\pdv[2]{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]\n\\(u\\)..pressure/velocity/displacement, \\(c\\)..velocity\nDamped (mixed parabolic-hyperbolic) wave equation \\[ \\pdv[2]{u}{t} - a\\pdv{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
     ]
   },
   {
-    "objectID": "02_finite-differences.html#taylor-expansion",
-    "href": "02_finite-differences.html#taylor-expansion",
-    "title": "2  Finite Differences",
-    "section": "3.1 Taylor expansion",
+    "objectID": "02_finite-differences.html",
+    "href": "02_finite-differences.html",
+    "title": "3  Finite Differences",
+    "section": "",
     "text": "3.1 Taylor expansion\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\]\nTaylor expansion \\[f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2\\]",
     "crumbs": [
       "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#finite-differences",
-    "href": "02_finite-differences.html#finite-differences",
-    "title": "2  Finite Differences",
-    "section": "3.2 Finite differences",
-    "text": "3.2 Finite differences\n\n\n\n\n\n\nApproximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#difference-stencil",
-    "href": "02_finite-differences.html#difference-stencil",
-    "title": "2  Finite Differences",
-    "section": "3.2 Difference stencil",
-    "text": "3.2 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\frac{1}{\\Delta x} \\begin{bmatrix}   \n+1 & -2 & +1 & 0 & \\ldots & &  \\\\\n0 & +1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix}  \\]\n\n\n\n1D Finite-Difference stencil",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#fdm-on-the-general-poisson-equation",
-    "href": "02_finite-differences.html#fdm-on-the-general-poisson-equation",
-    "title": "2  Finite Differences",
-    "section": "3.3 FDM on the general Poisson equation",
-    "text": "3.3 FDM on the general Poisson equation\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\] with a conductivity term \\(a\\)\n\\[ \\pdv{(a \\pdv*{u})}{z} = a\\pdv[2]{u}{z} + \\pdv{a}{z} \\pdv{u}{z}  \\]",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#boundary-conditions",
-    "href": "02_finite-differences.html#boundary-conditions",
-    "title": "2  Finite Differences",
-    "section": "3.4 Boundary conditions",
-    "text": "3.4 Boundary conditions\nDirichlet conditions: \\(u_0=u_B\\) (homogeneous if 0)\nNeumann conditions (homogeneous if 0) \\[ \\pdv*{u}{x}_0=g_B \\]\nMixed boundary conditions \\(u_0+\\alpha du_0/dx=\\gamma\\)\n\n3.4.1 Dirichlet BC implementation way 1\n\\(u_0 = u_B\\)\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n3.4.2 Dirichlet BC implementation way 2\n\\(u_B - 2 u_1 + u_3 = f_1\\)\n\\[ \\begin{bmatrix}   \n-2 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 - u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]\n\n\n3.4.3 Neumann BC implementation way 1\n\\[ u_1 - u_0 = g_B\\]\n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_0+g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n3.4.4 Neumann BC implementation way 2\n\\[u_0 - 2 u_1+u_2 = f_1 \\qquad u_1 - u_0 = g_B \\Rightarrow u_2-u_1=f_1+g_B \\] \n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#dirichlet-bc-implementation-way-1",
-    "href": "02_finite-differences.html#dirichlet-bc-implementation-way-1",
-    "title": "2  Finite Differences",
-    "section": "3.6 Dirichlet BC implementation way 1",
-    "text": "3.6 Dirichlet BC implementation way 1\n\\(u_0 = u_B\\)\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#dirichlet-bc-implementation-way-2",
-    "href": "02_finite-differences.html#dirichlet-bc-implementation-way-2",
-    "title": "2  Finite Differences",
-    "section": "3.7 Dirichlet BC implementation way 2",
-    "text": "3.7 Dirichlet BC implementation way 2\n\\(u_B - 2 u_1 + u_3 = f_1\\)\n\\[ \\begin{bmatrix}   \n-2 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 - u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#neumann-bc-implementation-way-1",
-    "href": "02_finite-differences.html#neumann-bc-implementation-way-1",
-    "title": "2  Finite Differences",
-    "section": "3.8 Neumann BC implementation way 1",
-    "text": "3.8 Neumann BC implementation way 1\n\\[ u_1 - u_0 = g_B\\]\n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_0+g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#neumann-bc-implementation-way-2",
-    "href": "02_finite-differences.html#neumann-bc-implementation-way-2",
-    "title": "2  Finite Differences",
-    "section": "3.9 Neumann BC implementation way 2",
-    "text": "3.9 Neumann BC implementation way 2\n\\[u_0 - 2 u_1+u_2 = f_1 \\qquad u_1 - u_0 = g_B \\Rightarrow u_2-u_1=f_1+g_B \\] \n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#heat-transfer-in-1d",
-    "href": "02_finite-differences.html#heat-transfer-in-1d",
-    "title": "2  Finite Differences",
-    "section": "4.1 Heat transfer in 1D",
-    "text": "4.1 Heat transfer in 1D\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nwith the periodic boundary conditions:\n\n\\(T(z=0,t)=T_0 + \\Delta T \\sin \\omega t\\) (daily/yearly cycle)\n\\(\\pdv{T}{z}(z=z_1) = 0\\) (no change at depth)\n\nand the initial condition \\(T(z, t=0)=\\sin \\pi z\\) has the analytical solution \\[ T(z, t) = \\Delta T e^{-\\pi^2 t} \\sin \\pi z \\]",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#explicit-methods",
-    "href": "02_finite-differences.html#explicit-methods",
-    "title": "2  Finite Differences",
-    "section": "4.2 Explicit methods",
-    "text": "4.2 Explicit methods\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nSolve Poisson equation \\(\\div(a\\grad u)=f\\)\nfor every time step \\(i\\) (using FDM, FEM, FVM etc.)\nFinite-difference step in time: update field by \\[ T_{i+1} = T_i + a \\pdv[2]{u}{z} \\cdot \\Delta t\\]",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
-    ]
-  },
-  {
-    "objectID": "02_finite-differences.html#finite-differences-on-the-poisson-equation",
-    "href": "02_finite-differences.html#finite-differences-on-the-poisson-equation",
-    "title": "2  Finite Differences",
-    "section": "3.2 Finite differences on the Poisson equation",
-    "text": "3.2 Finite differences on the Poisson equation\n\n\n\n\n\n\nApproximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]\n\n3.2.1 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\frac{1}{\\Delta x} \\begin{bmatrix}   \n+1 & -2 & +1 & 0 & \\ldots & &  \\\\\n0 & +1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix}  \\]\n\n\n\n1D Finite-Difference stencil\n\n\n\n\n3.2.2 FDM on the general Poisson equation\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\] with a conductivity term \\(a\\)\n\\[ \\pdv{(a \\pdv*{u})}{z} = a\\pdv[2]{u}{z} + \\pdv{a}{z} \\pdv{u}{z}  \\]",
-    "crumbs": [
-      "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   },
   {
     "objectID": "02_finite-differences.html#fd-approximation",
     "href": "02_finite-differences.html#fd-approximation",
-    "title": "2  Finite Differences",
-    "section": "3.1 FD Approximation",
-    "text": "3.1 FD Approximation\n\n\n\n\n\n\nApproximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]",
+    "title": "3  Finite Differences",
+    "section": "4.1 FD Approximation",
+    "text": "4.1 FD Approximation\n\n\n\n\n\n\nApproximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]",
     "crumbs": [
       "Finite Differences",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#difference-stencil",
+    "href": "02_finite-differences.html#difference-stencil",
+    "title": "3  Finite Differences",
+    "section": "4.2 Difference stencil",
+    "text": "4.2 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\frac{1}{\\Delta x} \\begin{bmatrix}   \n+1 & -2 & +1 & 0 & \\ldots & &  \\\\\n0 & +1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix}  \\]\n\n\n\n1D Finite-Difference stencil",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#fdm-on-the-general-poisson-equation",
+    "href": "02_finite-differences.html#fdm-on-the-general-poisson-equation",
+    "title": "3  Finite Differences",
+    "section": "4.3 FDM on the general Poisson equation",
+    "text": "4.3 FDM on the general Poisson equation\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\] with a conductivity term \\(a\\)\n\\[ \\pdv{(a \\pdv*{u})}{z} = a\\pdv[2]{u}{z} + \\pdv{a}{z} \\pdv{u}{z}  \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#boundary-conditions",
+    "href": "02_finite-differences.html#boundary-conditions",
+    "title": "3  Finite Differences",
+    "section": "4.4 Boundary conditions",
+    "text": "4.4 Boundary conditions\nDirichlet conditions: \\(u_0=u_B\\) (homogeneous if 0)\nNeumann conditions (homogeneous if 0) \\[ \\pdv*{u}{x}_0=g_B \\]\nMixed boundary conditions \\(u_0+\\alpha du_0/dx=\\gamma\\)\n\n4.4.1 Dirichlet BC implementation way 1\n\\(u_0 = u_B\\)\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n4.4.2 Dirichlet BC implementation way 2\n\\(u_B - 2 u_1 + u_3 = f_1\\)\n\\[ \\begin{bmatrix}   \n-2 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 - u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]\n\n\n4.4.3 Neumann BC implementation way 1\n\\[ u_1 - u_0 = g_B\\]\n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_0+g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n4.4.4 Neumann BC implementation way 2\n\\[u_0 - 2 u_1+u_2 = f_1 \\qquad u_1 - u_0 = g_B \\Rightarrow u_2-u_1=f_1+g_B \\] \n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#heat-transfer-in-1d",
+    "href": "02_finite-differences.html#heat-transfer-in-1d",
+    "title": "3  Finite Differences",
+    "section": "5.1 Heat transfer in 1D",
+    "text": "5.1 Heat transfer in 1D\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nwith the periodic boundary conditions:\n\n\\(T(z=0,t)=T_0 + \\Delta T \\sin \\omega t\\) (daily/yearly cycle)\n\\(\\pdv{T}{z}(z=z_1) = 0\\) (no change at depth)\n\nand the initial condition \\(T(z, t=0)=\\sin \\pi z\\) has the analytical solution \\[ T(z, t) = \\Delta T e^{-\\pi^2 t} \\sin \\pi z \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#explicit-methods",
+    "href": "02_finite-differences.html#explicit-methods",
+    "title": "3  Finite Differences",
+    "section": "5.2 Explicit methods",
+    "text": "5.2 Explicit methods\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nSolve Poisson equation \\(\\div(a\\grad u)=f\\)\nfor every time step \\(i\\) (using FDM, FEM, FVM etc.)\nFinite-difference step in time: update field by \\[ T_{i+1} = T_i + a \\pdv[2]{u}{z} \\cdot \\Delta t\\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#discretization",
+    "href": "02_finite-differences.html#discretization",
+    "title": "3  Finite Differences",
+    "section": "5.3 Discretization",
+    "text": "5.3 Discretization\n\n\n\\[ \\pdv[2]{u}{t}^{n} \\approx \\frac{u^{n+1}-u^n}{\\Delta t} - \\frac{u^{n}-u^{n-1}}{\\Delta t}\n\\]\n\\[ = \\frac{u^{n+1}+u^{n-1}-2 u^n}{\\Delta t^2} = c^2\\pdv[2]{u}{x}^n \\]\n\\[ u^{n+1} = c^2 \\Delta t^2 \\pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} \\]\n\n\\[ \\vb M \\vb u^{n+1} = (\\vb A + 2\\vb M) \\vb u^n - \\vb M \\vb u^{n-1} \\]\n\n\n\n\nSecond derivative",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#example-velocity-distribution",
+    "href": "02_finite-differences.html#example-velocity-distribution",
+    "title": "3  Finite Differences",
+    "section": "5.4 Example: velocity distribution",
+    "text": "5.4 Example: velocity distribution\n\n\nShow the code\nimport numpy as np\nimport matplotlib.pyplot as plt\nx=np.arange(0, 600.01, 0.5)\nc = 1.0*np.ones_like(x) # velocity in m/s\nc[100:300] = 1 + np.arange(0,0.5,0.0025) \nc[900:1100] = 0.5  # low velocity zone\n\n# Plot velocity distribution.\nplt.plot(x,c,'k')\nplt.xlabel('x [m]')\nplt.ylabel('c [m/s]')\nplt.grid()",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#initial-displacement",
+    "href": "02_finite-differences.html#initial-displacement",
+    "title": "3  Finite Differences",
+    "section": "5.5 Initial displacement",
+    "text": "5.5 Initial displacement\nDerivative of Gaussian (Ricker wavelet)\n\n\nShow the code\nl=5.0\n\n# Initial displacement field [m].\nu=(x-300.0)*np.exp(-(x-300.0)**2/l**2) \n# Plot initial displacement field.\nplt.plot(x,u,'k')\nplt.xlabel('x [m]')\nplt.ylabel('u [m]')\nplt.title('initial displacement field')\nplt.show()",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#time-propagation",
+    "href": "02_finite-differences.html#time-propagation",
+    "title": "3  Finite Differences",
+    "section": "5.6 Time propagation",
+    "text": "5.6 Time propagation\n\n\nShow the code\nu_last=u\ndt = 0.5\nddu = np.zeros_like(u)\ndx = np.diff(x)\nfor i in range(100):\n    dudx = np.diff(u)/dx\n    ddu[1:-1] = np.diff(dudx)/dx[:-1]\n    u_next = 2*u-u_last+ddu*c**2 * dt**2 \n    u_last = u\n    u = u_next\n  \nplt.plot(x,u,'k')",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html",
+    "href": "03_finite-elements.html",
+    "title": "4  Finite Elements",
+    "section": "",
+    "text": "4.1 History and background\nGeophysics: Poisson equation in 1970s, revival in 1990s and predominant in 2000s up to now",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#history-and-background",
+    "href": "03_finite-elements.html#history-and-background",
+    "title": "4  Finite Elements",
+    "section": "",
+    "text": "[1943] Courant: Variational Method\n[1956] Turner, Clough, Martin, Topp: Stiffness\n[1960] Clough: Finite Elements for static elasticity\n[1970-80] extension to structural, thermic and fluid dynamics\n[1990] computational improvements\nnow main method for almost all PDE types",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#variational-formulation-of-poisson-equation",
+    "href": "03_finite-elements.html#variational-formulation-of-poisson-equation",
+    "title": "4  Finite Elements",
+    "section": "4.2 Variational formulation of Poisson equation",
+    "text": "4.2 Variational formulation of Poisson equation\n\\[ -\\div a \\grad u = f \\]\n\nMultiplication with test function \\(w\\) and integration \\(\\Rightarrow\\) weak form\n\\[ -\\int_\\Omega w \\div a \\grad u \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]\n\n\n\\[ \\div(b\\vb c) = b\\div \\vb c + \\grad b \\cdot \\vb c \\]\n\n\n\\[ \\int_\\Omega \\grad w a \\grad u \\dd\\Omega - \\int_\\Omega \\div(w a \\grad u) \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#variational-formulation-of-poisson-equation-1",
+    "href": "03_finite-elements.html#variational-formulation-of-poisson-equation-1",
+    "title": "4  Finite Elements",
+    "section": "4.3 Variational formulation of Poisson equation",
+    "text": "4.3 Variational formulation of Poisson equation\n\\[ \\int_\\Omega \\grad w a \\grad u \\dd\\Omega - \\int_\\Omega \\div(w a \\grad u) \\dd\\Omega = \\int_\\Omega w f \\dd\\Omega \\]\n\nuse Gauss’ law \\(\\int_\\Omega \\div \\vb A = \\int_\\Gamma \\vb A \\cdot \\vb n\\)\n\\[ \\int_\\Omega a \\grad w \\grad u \\dd\\Omega - \\int_\\Gamma a w \\grad u \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]\n\n\nLet \\(u\\) be constructed by shape functions \\(v\\): \\(u=\\sum_i u_i v_i\\)\n\\[ \\int_\\Omega a \\grad w \\grad v_i \\dd\\Omega - \\int_\\Gamma a w \\grad v_i \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#galerkins-method",
+    "href": "03_finite-elements.html#galerkins-method",
+    "title": "4  Finite Elements",
+    "section": "4.4 Galerkins method",
+    "text": "4.4 Galerkins method\n\\[ \\int_\\Omega a \\grad w \\grad v_i \\dd\\Omega - \\int_\\Gamma a w \\grad v_i \\dd\\Gamma = \\int_\\Omega fw \\dd\\Omega \\]\n\nTest functions equal shape (trial) functions \\(w_i=v_i\\)\n\\[ \\int_\\Omega a \\grad v_i \\grad v_j \\dd\\Omega - \\int_\\Gamma a w \\grad v_j \\dd\\Gamma = \\int_\\Omega f v_j \\dd\\Omega \\]\n\n\n\nchoose \\(v_i\\) so that \\(\\grad v_i\\) is simple and \\(\\grad v_i \\grad v_j\\) mostly 0\ndivide subsurface in sub-volumes \\(\\Omega_i\\) with constant \\(a_i\\) and \\(\\grad v_j\\)",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#hat-functions",
+    "href": "03_finite-elements.html#hat-functions",
+    "title": "4  Finite Elements",
+    "section": "4.5 Hat functions",
+    "text": "4.5 Hat functions",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#gradients-for-hat-functions",
+    "href": "03_finite-elements.html#gradients-for-hat-functions",
+    "title": "4  Finite Elements",
+    "section": "4.6 Gradients for hat functions",
+    "text": "4.6 Gradients for hat functions\nEvery element is surrounded by two nodes “carrying” a hat.\nThe gradients are piece-wise constant \\(\\pm 1/\\Delta x_i\\)\n\\[ \\Rightarrow \\int_\\Omega a \\grad v_i \\grad v_{i+1} \\dd\\Omega = -\\frac{a_i}{\\Delta x_i^2} \\cdot \\Delta x_i = -\\frac{a_i}{\\Delta x_i}\\]\n\\[ -\\int_\\Omega a \\grad v_i \\grad v_i \\dd\\Omega = \\frac{a_{i-1}}{\\Delta x_{i-1}^2}\\Delta x_{i-1} + \\frac{a_i}{\\Delta x_i^2}\\Delta x_i = \\frac{a_{i-1}}{\\Delta x_{i-1}} + \\frac{a_i}{\\Delta x_i} \\]\n\\[ -\\int_\\Omega a \\grad v_i \\grad v_{i+2} \\dd\\Omega = 0 \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#boundary-conditions",
+    "href": "03_finite-elements.html#boundary-conditions",
+    "title": "4  Finite Elements",
+    "section": "5.1 Boundary conditions",
+    "text": "5.1 Boundary conditions\nsecond term \\[ - \\int_\\Gamma a v_i \\grad v_j \\dd\\Gamma \\]",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#right-hand-side-vector",
+    "href": "03_finite-elements.html#right-hand-side-vector",
+    "title": "4  Finite Elements",
+    "section": "5.2 Right-hand side vector",
+    "text": "5.2 Right-hand side vector\nThe right-hand-side vector \\(b=\\int v_i f \\dd\\Omega\\) also scales with \\(\\Delta x\\)\ne.g. \\(f=\\div j_s\\) \\(\\Rightarrow\\) $b=v_i j_s = _$\nsystem identical to FD for \\(\\Delta x=\\)const\n\n\n\n\n\n\nDifference of FE to FD\n\n\n\nAny source function \\(f(x)\\) can be integrated on the whole space!",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
+    ]
+  },
+  {
+    "objectID": "03_finite-elements.html#solution",
+    "href": "03_finite-elements.html#solution",
+    "title": "4  Finite Elements",
+    "section": "5.3 Solution",
+    "text": "5.3 Solution\n\\(\\vb v\\) holds the coefficient \\(u_i\\) creating \\(u=\\sum u_i v_i(x)\\)\n\n\n\n\n\n\nDifference of FE to FD\n\n\n\n\\(u\\) is described on the whole space and approximates the solution, not the PDE!\n\n\nHat functions: \\(u_i\\) potentials on nodes, \\(u\\) piece-wise linear\n\n\n\n\n\n\nGenerality of FE\n\n\n\nArbitrary base functions \\(v_i\\) can be used to describe \\(u\\)",
+    "crumbs": [
+      "Finite Differences",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Finite Elements</span>"
     ]
   }
 ]

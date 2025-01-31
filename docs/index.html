@@ -6,8 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Prof.&nbsp;Dr.&nbsp;Thomas Günther (TU Bergakademie Freiberg)">
-<meta name="dcterms.date" content="2024-12-19">
+<meta name="author" content="thomas.guenther@geophysik.tu-freiberg.de">
+<meta name="dcterms.date" content="2025-01-31">
 
 <title>Numerical methods in geophysics</title>
 <style>
@@ -80,6 +80,35 @@ window.MathJax = {
 };
 </script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -92,7 +121,7 @@ window.MathJax = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Prerequisites</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -120,7 +149,7 @@ window.MathJax = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Prerequisites</span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -135,7 +164,7 @@ window.MathJax = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
       </ul>
@@ -152,7 +181,7 @@ window.MathJax = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./02_finite-differences.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
   </div>
 </li>
       </ul>
@@ -169,7 +198,7 @@ window.MathJax = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./03_finite-elements.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
   </div>
 </li>
       </ul>
@@ -184,12 +213,21 @@ window.MathJax = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites">Prerequisites</a></li>
-  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
-  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
-  <li><a href="#self-study" id="toc-self-study" class="nav-link" data-scroll-target="#self-study">Self study</a></li>
-  <li><a href="#recommended-reading" id="toc-recommended-reading" class="nav-link" data-scroll-target="#recommended-reading">Recommended Reading</a></li>
-  <li><a href="#license" id="toc-license" class="nav-link" data-scroll-target="#license">License</a></li>
+  <li><a href="#recap" id="toc-recap" class="nav-link active" data-scroll-target="#recap"><span class="header-section-number">1</span> Recap</a>
+  <ul class="collapse">
+  <li><a href="#solution-in-pygimli" id="toc-solution-in-pygimli" class="nav-link" data-scroll-target="#solution-in-pygimli"><span class="header-section-number">1.1</span> Solution in pyGIMLi</a></li>
+  <li><a href="#advection" id="toc-advection" class="nav-link" data-scroll-target="#advection"><span class="header-section-number">1.2</span> Advection</a></li>
+  <li><a href="#advection-dispersion-equation-general" id="toc-advection-dispersion-equation-general" class="nav-link" data-scroll-target="#advection-dispersion-equation-general"><span class="header-section-number">1.3</span> Advection-dispersion equation (general)</a></li>
+  <li><a href="#computational-fluid-dynamics" id="toc-computational-fluid-dynamics" class="nav-link" data-scroll-target="#computational-fluid-dynamics"><span class="header-section-number">1.4</span> Computational fluid dynamics</a></li>
+  <li><a href="#fe-solution-for-inhomogeneous-viscosity" id="toc-fe-solution-for-inhomogeneous-viscosity" class="nav-link" data-scroll-target="#fe-solution-for-inhomogeneous-viscosity"><span class="header-section-number">1.5</span> FE solution for inhomogeneous viscosity</a></li>
+  <li><a href="#simple-1d-advection-problem" id="toc-simple-1d-advection-problem" class="nav-link" data-scroll-target="#simple-1d-advection-problem"><span class="header-section-number">1.6</span> Simple 1D advection problem</a></li>
+  <li><a href="#fv" id="toc-fv" class="nav-link" data-scroll-target="#fv"><span class="header-section-number">1.7</span> FV</a></li>
+  <li><a href="#simple-1d-advection-problem-1" id="toc-simple-1d-advection-problem-1" class="nav-link" data-scroll-target="#simple-1d-advection-problem-1"><span class="header-section-number">1.8</span> Simple 1D advection problem</a></li>
+  <li><a href="#result" id="toc-result" class="nav-link" data-scroll-target="#result"><span class="header-section-number">1.9</span> Result</a></li>
+  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization"><span class="header-section-number">1.10</span> Visualization</a></li>
+  <li><a href="#similarity-to-staggered-e-b-grid-methods" id="toc-similarity-to-staggered-e-b-grid-methods" class="nav-link" data-scroll-target="#similarity-to-staggered-e-b-grid-methods"><span class="header-section-number">1.11</span> Similarity to staggered (E, B) grid methods</a></li>
+  <li><a href="#conservation-law-3d-problem" id="toc-conservation-law-3d-problem" class="nav-link" data-scroll-target="#conservation-law-3d-problem"><span class="header-section-number">1.12</span> Conservation law (3D) problem</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -199,6 +237,7 @@ window.MathJax = {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Numerical methods in geophysics</h1>
+<p class="subtitle lead">1. MGPY+MGIN</p>
 </div>
 
 
@@ -208,14 +247,14 @@ window.MathJax = {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Prof.&nbsp;Dr.&nbsp;Thomas Günther (TU Bergakademie Freiberg) </p>
+             <p>thomas.guenther@geophysik.tu-freiberg.de </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 19, 2024</p>
+      <p class="date">January 31, 2025</p>
     </div>
   </div>
   
@@ -227,51 +266,136 @@ window.MathJax = {
 </header>
 
 
-<section id="prerequisites" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="prerequisites">Prerequisites</h2>
-<p>Here are the lecture notes for the 2024/2025 module <strong>Numerical Simulation methods in Geophysics.</strong> These notes are tailored for Master’s students of Geophysics or Geoinformatics at the <a href="https://tu-freiberg.de/geophysik">Institute of Geophysics and Geoinformatics, TU Bergakademie Freiberg</a>.</p>
-<p>You can access all the materials on the GitHub repository <a href="https://github.com/halbmy/NumGy" class="uri">https://github.com/halbmy/NumGy</a>.</p>
-<p>Enjoy studying!</p>
+<section id="recap" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Recap</h1>
+<ol type="1">
+<li>The Finite Difference (FD) method
+<ul>
+<li>Poisson equation in 1D, look into 2D/3D</li>
+<li>diffusion equation in 1D, time-stepping</li>
+</ul></li>
+<li>Solving the hyperbolic (acoustic) wave equation in 1D</li>
+<li>The Finite Element (FE) method
+<ul>
+<li>Poisson and diffusion equation in 1D</li>
+<li>(complex) Helmholtz equation in 2D for EM problems</li>
+<li>solving EM problems and computational aspects</li>
+</ul></li>
+</ol>
+<section id="solution-in-pygimli" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="solution-in-pygimli"><span class="header-section-number">1.1</span> Solution in pyGIMLi</h2>
+<div class="columns">
+<div class="column">
+<p>step by step</p>
+<pre><code>import pygimli.solver as ps
+A = ps.createStiffnessMatrix(mesh, a)
+M = ps.createMassMatrix(mesh, b)
+f = ps.createLoadVector(mesh, f)
+ps.assembleNeumannBC(b, boundaries)
+ps.assembleDirichletBC(A, b)
+ps.assembleRobinBC(A, boundaries, b)
+u = ps.linSolve(A, b)</code></pre>
+</div><div class="column">
+<p>or shortly</p>
+<pre><code>bc = {'Dirichlet': {4: 1.0, 3: 0.0},
+      'Neumann': {2: 1.0}}
+u = ps.solveFiniteElements(mesh, a, b, f, bc=bc, 
+                           t=times, c)
+u = pygimli.physics.seismics.solvePressureWave(
+    mesh, velocities, times, sourcePos, uSource)</code></pre>
+</div>
+</div>
+<p><span class="math display">\[ c\pdv{u}{t}= \div(a\grad u) + b u + f(\vb r, t)\]</span></p>
 </section>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>While this course was around already since 2000 in Freiberg, it did not meet the general title before I started and I found no text book about learning the background of the simulation methods being increasingly used in geophysics, particularly solving partial differential equations by own codes and understanding the physics by doing so. I aim at all common PDE types from elliptic, parabolic to hyperbolic, going from 1D to 2D and 3D, from Finite Differences to Finite Elements and Finite Volumes.</p>
+<section id="advection" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="advection"><span class="header-section-number">1.2</span> Advection</h2>
+<p>Volume elements move with velocity <span class="math inline">\(\vb v\)</span> and take (advectio=move with)</p>
+<p><span class="math display">\[\pdv{T}{t} \Rightarrow \pdv{T}{t} + \dv{z}{t}\pdv{T}{z}\]</span> in 3D <span class="math inline">\(\vb{v}\cdot\grad{T}\)</span> <span class="math inline">\(\Rightarrow\)</span> advection-dispersion equation</p>
+<p><span class="math display">\[\pdv{T}{t} = \div a\grad{T} + Q - \vb{v}\cdot\grad{T}\]</span></p>
 </section>
-<section id="code" class="level2">
-<h2 class="anchored" data-anchor-id="code">Code</h2>
-<p>The website’s course material includes sections with embedded Python code.</p>
-<p>You can easily copy the code and execute it in a compatible Python runtime environment.</p>
-<p>For an optimal experience, we recommend installing Python via <a href="https://github.com/conda-forge/miniforge"><em>miniforge</em></a>.</p>
-<p>Moreover, you have the freedom to explore your own concepts and delve deeper into the course content by creating your personalized Jupyter notebooks. You can utilize use either <a href="https://code.visualstudio.com/">Visual Studio Code</a> or <a href="https://jupyter.org">Jupyterlab</a></p>
-<p>The material was created by <a href="https://quarto.org">Quarto</a>.</p>
-<p>Working with Jupyter Notebooks in Visual Studio Code is <a href="https://code.visualstudio.com/docs/datascience/jupyter-notebooks">exceptionally straightforward</a>.</p>
+<section id="advection-dispersion-equation-general" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="advection-dispersion-equation-general"><span class="header-section-number">1.3</span> Advection-dispersion equation (general)</h2>
+<p><span class="math display">\[ \pdv{u}{t}+\vb v\cdot\grad u = \div(a\grad u) + b u + f(\vb r, t)\]</span></p>
+<p><span class="math inline">\(\vb v\cdot\grad u\)</span> (Advection), <span class="math inline">\(\div(a\grad u)\)</span> (Dispersion=Diffusion)</p>
+<p>Solve, e.g., by <a href="https://www.pygimli.org/pygimliapi/_generated/pygimli.solver.html#pygimli.solver.solveFiniteVolume"><code>pyGIMLi.solver.solveFiniteVolume</code> (Link)</a></p>
+<pre><code>bc = dict(Dirichlet={4: 1.0, 3: 0.0}, Neumann={2: 1.0})
+u = ps.solveFiniteVolume(mesh, a, b, f, bc=bc, t=times, c)</code></pre>
 </section>
-<section id="self-study" class="level2">
-<h2 class="anchored" data-anchor-id="self-study">Self study</h2>
-<p>There are individual small tasks for self-study that are scattered throughout the lecture.</p>
-<div class="callout callout-style-simple callout-none no-icon callout-titled" title="Self study">
+<section id="computational-fluid-dynamics" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="computational-fluid-dynamics"><span class="header-section-number">1.4</span> Computational fluid dynamics</h2>
+<p>Magnetohydrodynamic induction equation</p>
+<p><span class="math display">\[\pdv{\vb B}{t} =  \curl \frac{1}{\mu\sigma} \curl \vb B + \curl(\vb v \cross \vb B)\]</span></p>
+<p>Forces on fluid (induction, Coriolis, pressure, gravity, Lorentz) <span class="math display">\[ \rho \pdv{\vb v}{t} + \rho (\vb v \cdot \grad) \vb v + \grad p = -2\omega\cross\vb v+\alpha T \vb g + \vb j \cross \vb B / \rho \]</span></p>
+</section>
+<section id="fe-solution-for-inhomogeneous-viscosity" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="fe-solution-for-inhomogeneous-viscosity"><span class="header-section-number">1.5</span> FE solution for inhomogeneous viscosity</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/morra10_1.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="simple-1d-advection-problem" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="simple-1d-advection-problem"><span class="header-section-number">1.6</span> Simple 1D advection problem</h2>
+<p><span class="math display">\[\pdv{u}{t} + \pdv{v(u)}{x}=0\]</span></p>
+<p>Solution <span class="math inline">\(u_i\)</span> at node <span class="math inline">\(i\)</span> represents average value over cell</p>
+<p><span class="math display">\[ \overline{u}_i(t) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}} u(x, t)\dd x \]</span></p>
+<p><span class="math display">\[ \int_{t_1}^{t_2} \pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \int_{t_1}^{t_2} \pdv{v(u)}{x} \]</span></p>
+</section>
+<section id="fv" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="fv"><span class="header-section-number">1.7</span> FV</h2>
+<p><img src="pics/finite_volume.png" class="img-fluid"></p>
+</section>
+<section id="simple-1d-advection-problem-1" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="simple-1d-advection-problem-1"><span class="header-section-number">1.8</span> Simple 1D advection problem</h2>
+<p><span class="math display">\[ u(x, t_2) = u(x, t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x} \]</span></p>
+<p><span class="math display">\[ \overline{u}(t_2) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}}\qty\Big(u(x,t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x})  \]</span></p>
+<p><span class="math display">\[ \overline{u}(t_2) = \overline{u}(t_1) - \frac{1}{x_{i+1/2}-x_{i-1/2}}
+\qty\Big(\int_{t_1}^{t_2} v_{i+1/2} \dd t - \int_{t_1}^{t_2} v_{i-1/2} \dd t) \]</span></p>
+</section>
+<section id="result" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="result"><span class="header-section-number">1.9</span> Result</h2>
+<p><span class="math display">\[ \pdv{\overline{u}_i}{t} +\frac{1}{\Delta x_i} (v_{i+1/2}-v_{i-1/2}) = 0 \]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
+<i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Self study
+Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You can easily identify these callouts.</p>
+<p>Finite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell’s loss is always another cell’s gain!</p>
 </div>
 </div>
 </section>
-<section id="recommended-reading" class="level2">
-<h2 class="anchored" data-anchor-id="recommended-reading">Recommended Reading</h2>
-<p>The most important source of supplementary information is the book by <span class="citation" data-cites="ward1988electromagnetic">@ward1988electromagnetic</span>.</p>
+<section id="visualization" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="visualization"><span class="header-section-number">1.10</span> Visualization</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/ave_demo.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
 </section>
-<section id="license" class="level2">
-<h2 class="anchored" data-anchor-id="license">License</h2>
-<p>This material is licensed under the Creative Commons License.</p>
+<section id="similarity-to-staggered-e-b-grid-methods" class="level2" data-number="1.11">
+<h2 data-number="1.11" class="anchored" data-anchor-id="similarity-to-staggered-e-b-grid-methods"><span class="header-section-number">1.11</span> Similarity to staggered (E, B) grid methods</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/morra10_2.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="conservation-law-3d-problem" class="level2" data-number="1.12">
+<h2 data-number="1.12" class="anchored" data-anchor-id="conservation-law-3d-problem"><span class="header-section-number">1.12</span> Conservation law (3D) problem</h2>
+<p><span class="math display">\[\pdv{\vb u}{t} + \div\vb v(u)= 0\]</span></p>
+<p>volume integral over cell, using Gauss’ law</p>
+<p><span class="math display">\[\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Omega_i} \div\vb v(u) \dd\Omega = 0 =
+\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Gamma_i} \vb v(u) \cdot \vb n \dd{\Gamma} \]</span></p>
+<p><span class="math display">\[\Rightarrow \pdv{\overline{u}}{t} +\frac{1}{V_i}\int_{\Gamma_i}\vb v(u)\cdot \vb n \dd{\Gamma} =0  \]</span></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -700,7 +824,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./01_introduction.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

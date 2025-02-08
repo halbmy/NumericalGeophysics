@@ -1,0 +1,187 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 13: A few more details"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+--- 
+# Recap
+
+1. The Finite Difference (FD) method
+   * Poisson equation in 1D, look into 2D/3D
+   * diffusion equation in 1D, time-stepping, (1D wave equation)
+1. The Finite Element (FE) method
+   * Poisson and diffusion equation in 1D
+   * (complex) Helmholtz equation in 2D for EM problems
+   * solving EM problems and computational aspects
+1. Finite Volume (FV) method for advection problems
+
+## The methods
+
+::: {.callout-tip title="The Finite Difference method"}
+approximates the partial derivatives by difference quotients (beware $\Delta x$ and $\Delta a$)
+:::
+
+::: {.callout-tip title="The Finite Element method"}
+approximates the solution through base functions in integrative sense
+:::
+
+::: {.callout-tip title="The Finite Volume method"}
+approximates the solution by piecewise constant values and keeps conservation law by fluxes
+:::
+
+# Boundary conditions
+
+## Mixed boundary conditions
+So far...
+
+* Dirichlet Boundary conditions $u=u_0$
+* Neumann Boundary conditions $\pdv{u}{n}=g_B$<br>
+  for vectorial problems $\vb n\cdot \vb E=0$ or $\vb\curl \vb E=0$
+
+In general mixed, also called Robin (or impedance convective) BC
+$$ a u + b \pdv{u}{n} = c $$
+
+## Example DC resistivity with point source
+$$\div \sigma \grad u = \div \vb j = I \delta(\vb r - \vb r_s)$$
+
+solution for homogeneous $\sigma$ on surface: $u=\frac{I}{2\pi\sigma} \frac{1}{|\vb r - \vb r_s|}$
+
+E-field $\vb E=-\frac{I}{2\pi\sigma} \frac{\vb r - \vb r_s}{|\vb r - \vb r_s|^3}$
+
+normal direction $\vb E \cdot \vb n=-\frac{u}{|\vb r - \vb r_s|}\cos \phi$ purely geometric
+
+$$\pdv{u}{n} + \frac{\cos\phi}{|\vb r - \vb r_s|}=0$$
+
+## Perfectly matched layers
+
+::: {.columns}
+::: {.column}
+![](pics/FDTD_TFSF.png)
+:::
+::: {.column}
+$$ \pdv{x} \rightarrow \frac{1}{1+i\sigma/\omega} \pdv{x}  $$
+
+$$ x \rightarrow x + \frac{i}{\omega}\int^x \sigma(x')\dd x' $$
+
+:::
+::: 
+
+
+## Absorbing boundary conditions
+wave equation (e.g. in 2D)
+$$ \pdv[2]{u}{t} - v^2 \laplacian u = 0 $$
+
+Fourier transform in $t$ and $y$ (boundary direction) $\Rightarrow \omega, k$ 
+
+$$ \omega^2 \hat{u} - v^2 \pdv[2]{\hat{u}}{x} + v^2 k^2 \hat{u} = 0 $$
+
+ordinary DE with solution $\hat{u}=\sum a_i e^{\lambda x}$ with $\lambda^2 = k^2 - \omega^2/v^2$
+
+# Modern methods
+
+## Solution in wavenumber domain
+
+Fourier transform of 3D problem into wavenumbers
+
+$$\hat F(k_x, y, z)=\int\limits_{-\infty}^{\infty} F(x,y,z) e^{-\imath k_x x} \dd x$$
+
+partial derivative $\pdv[2]{\hat F}{x}=k_x^2 \pdv[2]{F}{x}$
+
+Poisson equation $\nabla_{3D}^2 u=0$ $\Rightarrow$ Helmholtz equation $\nabla_{3D}^2 \hat u - k_x^2\hat u=0$ $\Rightarrow$ solve many 2D problems & get solution by inverse Fourier transform
+
+## Spectral element method
+
+typically used for global wave phenomena
+
+::: {.columns}
+::: {.column}
+$u=\sum u_i\phi_i(\pv r)$
+
+$\phi$ Lagrangian polynoms $l_i^N=\prod\limits_k^N \frac{\xi-\xi_k}{\xi_i-\xi_k}$ 
+
+or Chebychev polynoms
+:::
+::: {.column}
+![First six Lagrangian polynomials](pics/Legendrepolynomials6.svg)
+:::
+:::
+
+## Discontinuous Galerkin method
+
+typical for hyperbolic problems
+
+weak form of wave equation with fluxes (FV)
+
+$$M\partial_t q(t) - A^T q(t) = -F(a, q(t))$$
+$$\Rightarrow \partial_t q=\vb M^{-1}(A^T q(t) - F(a, q(t)))$$
+
+locally for each element & communication through fluxes (like in FV)
+
+## Infinite Elements 
+
+![](pics/infiniteelements.png)
+
+## Meshless modelling
+
+![](pics/meshless.png)
+
+## Meshless divergence operator (Wittke, 2017)
+
+![](pics/meshlessDivergence.png)
+
+# Error estimation and mesh refinement
+
+* get idea of accuracy of the solution
+* refinement of cells with high error (e.g. large gradients)
+* comparison between successive refinement solutions
+
+## Error estimation (residual-based)
+
+Poisson problem $-\nabla^2=f$ with bilinear form $a(u,v)=\int \grad u \grad v \dd\Omega$
+
+finite-dimensional function space $V_h$: $a(u_h, v_h)=l(v_h)$
+
+estimate error $e_h$ in bilinear form $a(e_h,v)=a(u, v)-a(u_h, v)$
+
+residual $R=f+\nabla^2 u_h$ leads to $a(e_h,v)=\sum\limits_c\int\limits_{\Omega_c} R v \dd\Omega_c$
+
+## Error estimation (recovery-based)
+
+gradients across element boundaries tend to be discontinuous
+
+compare original (unsmoothed) gradient of the solution with improved
+$$(E_h)^2 = \int |M(u_h)-\grad u_h|^2\dd\Omega $$
+
+$M$ obtained by smoothing over patch of elements around each element
+
+## Goal-oriented mesh refinement
+
+primal and dual (adjoint) problem (with receiver as hypothetical source)
+
+inner product of solutions
+$$\Phi_{lmn}=\int_{c_n} \vb F^l \vb F^m \dd\Omega_n$$
+

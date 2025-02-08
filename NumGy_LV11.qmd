@@ -1,0 +1,304 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 11: Solving problems"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+# jupyter: python3 
+--- 
+# Recap
+
+1. Types of PDEs in geophysics
+1. The Finite Difference (FD) method
+   * Poisson equation in 1D, look into 2D/3D
+   * Heat transfer (diffusion equation) in 1D, time-stepping 
+1. Solving the hyperbolic (acoustic) wave equation in 1D
+1. The Finite Element (FE) method
+   * Poisson and diffusion equation in 1D
+   * (complex) Helmholtz equation in 2D for EM problems
+
+## Topics yet to be covered
+
+* solving vectorial EM problems in 2D/3D
+  * staggered grid techniques 2D/3D
+  * 2.5D solution techniques
+  * 3D vector solution using Nedelec elements
+* The Finite Volume (FV) method
+* solving advection-dispersion problems
+* equation solvers and high-performance computing
+
+Three lectures (22/1, 29/1, 5/2) and exercises (23+30/1, 6/2)
+
+## The solver module
+```{python}
+#| echo: false
+#| eval: true
+import numpy as np
+import pygimli as pg
+import pygimli.meshtools as mt
+world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
+mesh = mt.createMesh(world, quality=34, area=1e5)
+mesh["my"] = 4 * np.pi * 1e-7
+sigma0 = 1 / 100  # 100 Ohmm
+sigma = mesh.populate("sigma", {1: sigma0, 2: sigma0*10})
+
+```
+```{python}
+#| echo: false
+#| eval: true
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+```{python}
+#| echo: true
+#| eval: true
+import pygimli.solver as ps
+mesh["my"] = 4 * np.pi * 1e-7
+A = ps.createStiffnessMatrix(mesh, a=1/mesh["my"])
+M = ps.createMassMatrix(mesh, mesh["sigma"])
+fig, ax = plt.subplots(ncols=2)
+ax[0].spy(pg.utils.toCSR(A), markersize=1)
+ax[1].spy(pg.utils.toCSR(M).todense(), markersize=1)
+```
+
+## The complex problem matrix
+
+$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+w = 0.1
+nd = mesh.nodeCount()
+B = pg.BlockMatrix()
+B.Aid = B.addMatrix(A)
+B.Mid = B.addMatrix(M)
+B.addMatrixEntry(B.Aid, 0, 0)
+B.addMatrixEntry(B.Aid, nd, nd)
+B.addMatrixEntry(B.Mid, 0, nd, scale=-w)
+B.addMatrixEntry(B.Mid, nd, 0, scale=w)
+pg.show(B)
+```
+
+## Sparse matrices
+
+Up to now: regular (dense) array: save every element including 0
+
+Save only non-zero components (e.g. using `scipy.sparse`)
+
+* COO - coordinate format
+* CSC/CRS - compressed sparse column/row
+* BSR - block sparse row format, ...
+
+# Equation solvers
+## Solve systems of equations 
+direct solvers
+
+* Gauss elimination (expensive and dense)
+* Cholesky (or ILU) decomposition
+
+indirect solvers (fixed point iteration)
+
+* gradient methods: steepest descent, conjugate gradients
+* preconditioning: incomplete factorizations (of submatrices)
+
+## Cholesky decomposition
+
+$$\vb A = \vb L \vb L^T \qqtext{or} \vb A = \vb L \vb D \vb L^T $$
+
+## Reordering
+
+![original (left) & reordered (right) matrix (Rücker et al. 2006)](pics/reordering.png)
+
+## Iterative solvers - Fixpunktverfahren
+
+$$\vb A \vb x = \vb b$$
+decompose $\vb A=\vb M - \vb N$ and solve
+$$\vb M\vb x = \vb N \vb x + \vb b$$
+iterativily by $\vb x^{k+1}=\vb M^{-1}\left(\vb N\vb x^k + \vb b\right)$
+
+e.g. $\vb M=\mbox{diag}(\vb A)$ (Jacobi method) or<br> 
+$\vb M=\mbox{tril}(\vb A)$ (Gauss-Seidel method)
+
+## Gradient methods
+
+minimize residual $\vb r = \vb b - \vb A\vb x$
+
+## Steepest descent method
+$$\vb r_0 = \vb b - \vb A \vb x_0 $$
+
+go towards $\vb r_0$ and minimize step length $\alpha$
+
+$$\vb r_1^T\vb r_0 = 0 = \vb b - \vb A(\vb x_0+\alpha\vb r_0)$$
+
+$$ \Rightarrow \alpha = \frac{\vb r_0^T\vb r_0}{\vb r_0\vb A \vb r_0} $$
+
+## Steepest descent algorithm
+`for i = 0,1, ...`
+$$\vb r_i = \vb b - \vb A \vb x_i $$
+
+$$ \Rightarrow \alpha_i = \frac{\vb r_i^T\vb r_i}{\vb r_i\vb A \vb r_i} $$
+
+$$\vb x_{i+1} = \vb x_i + \alpha_i\vb r_i$$
+
+## Conjugate directions
+
+Set of orthogonalen directions $\vb d$ with
+
+$$ \vb d^T_i \vb A \vb d_j = 0 \qquad \forall i\ne j $$
+
+::: {.callout-note}
+every search direction is only used once
+:::
+
+$$\vb x_{i+1} = \vb x_i + \alpha_i\vb d_i$$
+
+## Conjugate directions
+
+![](pics/conjugate_directions.png)
+
+## Conjugate gradient (Hestenes&Stiefel, 1952)
+
+$$\vb d_0 = \vb r_0 = \vb b - \vb A \vb x_0 $$
+$$ \alpha_i = \frac{\vb r_i^T\vb r_i}{\vb d_i\vb A \vb d_i} $$
+$$\vb x_{i+1} = \vb x_i + \alpha_i\vb d_i$$
+$$\vb r_{i+1} = \vb r_i - \alpha_i\vb A \vb d_i$$
+$$d_{i+1} = \vb r_{i+1} + \vb d_{i+1} \frac{\vb r_{i+1}^T\vb r_{i+1}}{\vb r_i^T\vb r_i}$$
+
+## Steepest descent vs. conjugate gradient
+::::{.columns}
+:::{.column width="50%"}
+![](pics/shewchukSD.png){fig-align="center"}
+:::
+:::{.column width="50%"}
+![](pics/shewchukCG.png){fig-align="center"}
+:::
+::::
+
+## Preconditioning
+
+$\vb A \vb x=\vb b$ often badly conditioned (elongated) $\Rightarrow$ slow convergence 
+
+Idea: transform (precondition) equation system by preconditioner $\vb K$
+
+$$\vb K^{-1} \vb A \vb x = \vb K^{-1}\vb b$$
+
+Extreme cases: 1. $\vb K=\vb I$, cheap PC but no gain
+
+2. $\vb K=\vb A$, perfect conditioning but expensive PC<br>
+e.g. $\vb K=\mbox{diag}A$ or $\vb K=\epsilon\mbox{tril}A$
+
+## Incomplete Cholesky decomposition
+::::{.columns}
+:::{.column width="50%"}
+$$\vb A\approx \vb L \vb L^T$$
+
+with certain accuracy or sparsity
+:::
+:::{.column width="50%"}
+![](pics/preconditioners.png){fig-align="center"}
+:::
+::::
+
+## Preconditioning 
+
+EM problem
+$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+$$\vb K = \mqty(\vb A + \omega\vb M & 0 \\ 0 & \vb A + \omega\vb M)$$
+
+or Schur complement. E.g., hold factorization of $\vb A$ and $\vb M$ in memory
+
+# Development of EM modelling
+* approaches: integral equations (IE), finite differences (FD) and elements (FE)
+* decompose 3D source (2D inverse) problems in wavenumber domains
+* improvement of equation solvers and preconditioners
+* 
+
+## Solving EM problems with staggered grid
+![Staggered grid cell after Yee (1966)](pics/yeeCell.png){fig-align="center"}
+
+## The way from FD to FE
+
+![Orthogonal, non-orthogonal and irregular grids (Rücker et al., 2006)](pics/rueckerGrids.png)
+
+## The Finite Element zoo (1D & 2D)
+
+![](pics/element_zoo1d2d.png){fig-align="center"}
+
+## The Finite Element zoo (3D)
+
+![Arnold, Periodic table of elements](pics/element_zoo3d.png){fig-align="center"}
+
+## Elements used in EM modelling
+![Types of elements relevant for EM problems (Spitzer, 2024)](pics/EMelements.png)
+
+## Meshing complicated geometries
+
+![Meshing workflow in custEM (Rochlitz et al., 2019)](pics/custem/meshes.png)
+
+## Modelling example
+
+![Modelling example of a conductive dike (Rochlitz et al., 2019)](pics/custem/examples.png)
+
+## Packages
+
+Mesh generation: [TetGen](https://tetgen.org) (3D), [GMsh](https://gmsh.info) (2D/3D)
+
+FE packages: [FEniCS](https://fenicsproject.org), [NETGEN/NGsolve](https://ngsolve.org)
+
+Equation solvers: [Suitesparse](https://doc.sagemath.org/html/en/reference/spkg/suitesparse.html), [MUMPS](https://mumps-solver.org), [SciPy](https://scipy.org)
+
+Computational frameworks: [PetSc](https://petsc.org), [MPI](https://www.mcs.anl.gov/research/projects/mpi/)
+
+EM modelling (and inversion) packages: [Mare2DEM](https://mare2dem.bitbucket.io), [emg3d](https://emg3d.emsig.xyz), GoFEM, [PETGEM](https://petgem.bsc.es/), [custEM](https://custem.readthedocs.io), [SimPEG](https://simpeg.xyz), ModEM, FEMTIC 
+
+# Performance on Parallel machines
+
+## Amdahlsches Gesetz
+Zerlegung in seriellen und parallelen Anteil $t=t_s+t_p/N(+t_c(N))$
+
+![](pics/amdahl.png){fig-align="center"}
+
+## Computational size
+![](pics/EMdatasets.png){fig-align="center"}
+
+## Perfomance analysis - Memory
+![](pics/presb/memoryComplexity.png){fig-align="center"}
+
+## Perfomance analysis - Time
+![](pics/presb/timeComplexity.png){fig-align="center"}
+
+## Perfomance analysis - MPI scaling
+![](pics/presb/mpiPerformance.png){fig-align="center"}
+
+## Perfomance analysis - MPI scaling
+![](pics/presb/speedup.png){fig-align="center"}
+
+## Multiple right-hand sides
+![](pics/presb/rhs.png){fig-align="center" width="50%"}

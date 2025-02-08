@@ -1,0 +1,131 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Exercise 13: I open at the close"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu: 
+      side: left
+# jupyter: python3 
+--- 
+
+# Plane waves in the Earth
+
+We consider an MT case with a horizontally polarized magnetic field up in the air.
+
+Task: Compute electromagnetic fields in the Earth
+
+For theory, see [Theory EM (Börner)](https://ruboerner.github.io/ThEM/mtfields.html)
+
+## Helmholtz equations for $E$ and $H$
+
+The magnetic field in the frequency domain is governed by the Helmholtz equations (no displacement currents, no sources)
+
+$$ \curl \mu^{-1} \curl \vb E + \imath\omega\sigma\vb E = 0$$  {#eq-helmE}
+
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H = 0$$  {#eq-helmH}
+
+2D E/H polarization: $\div\grad E_x + \imath\omega\sigma\mu E_x = 0$
+
+## Equation to be solved
+
+For the source field
+$$ \mathbf H(z, \omega) = \begin{bmatrix} H_x^0\\ 0\\ 0 \end{bmatrix} e^{i \omega t}, \quad z < 0 $$
+
+we end up in the equation for $H_x$
+
+$$ \pdv[2]{H_x}{y} + \pdv[2]{H_x}{z} + k^2 H_x = 0 \qqtext{with} k^2 = - i \omega \mu \sigma $$
+
+
+## Analytical solution
+
+For homogeneous $\sigma=\sigma_0$, the solution is
+
+$$ H_x(z) = H_x^0 e^{- i k z} = H_x^0 e^{-i \sqrt{-i \omega \mu \sigma_0} z} $$ {#eq-sol-h}
+
+## Secondary field for EM
+
+$$-\grad^2 (\vb E_0 + \vb E_a) +\imath\omega\mu\sigma (\vb E_0 + \vb E_a)=0$$
+
+$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma_0 \vb E_0=0$$
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous conductivities and increase with primary field
+:::
+
+## Secondary field for EM
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+leads to the discretized form ($\vb A$-stiffness, $\vb M$-mass)
+
+$$ \vb A \vb E_a + \imath\omega\vb M_\sigma \vb E_a = -\imath\omega\vb M_{\delta\sigma} \vb E_0 $$
+
+
+<!-- $$ \curl\vb E = -\imath\omega\mu\vb H $$  -->
+## Secondary field for H
+
+$$-\div \rho \grad (\vb H_0 + \vb H_s) +\imath\omega\mu (\vb H_0 + \vb H_s)=0$$
+
+$$-\div \rho_0 \grad \vb H_0 +\imath\omega\mu \vb H_0=0$$
+
+$$ -\div \rho \grad \vb H_a + \imath\omega\mu \vb H_a = \div \delta\rho \grad \vb H_0 $$
+
+and approximated by stiffness and mass matrix 
+$$ \vb A_\rho \vb H_a + \imath\omega\vb M \vb H_a = \vb A_{\delta\rho} \vb H_0 $$
+
+
+
+## Report II - 2D plane-wave EM 
+
+1. Design a subsurface 2D model with a good conductor in a halfspace
+1. Compute the primary magnetic field analytically and numerically by solving the Helmholtz equation for homogeneous conductivity, use a constant field on the upper boundary and zero on the others
+1. Visualize and compare with the analytical solution
+1. Compute the secondary field for the anomalous conductivity
+1. Visualize the secondary and total fields
+1. Replace the good conductor with a bad conductor and repeat
+1. Rerun the computations with a higher and lower (x10) period
+
+## Secondary field for H
+
+$$-\div \sigma_0^{-1} \grad \vb H_0 +\imath\omega\mu \vb H_0=0$$
+
+$$-\div \sigma^{-1} \grad (\vb H_0 + \vb H_s) +\imath\omega\mu (\vb H_0 + \vb H_s)=0$$
+
+$$ -\div \sigma^{-1} \grad \vb H_a + \imath\omega\mu \vb H_a = \div \delta\sigma^{-1} \grad \vb H_0 $$
+
+
+## The rot-rot term in the $H$ polarization
+
+$$\curl(\curl\vb A) = \grad(\div\vb A) - \laplacian\vb A$$
+
+$$\curl (a\vb A)=a\curl \vb A + \grad a \cross \vb A $$
+
+$$\Rightarrow \curl (\rho\curl\vb H) = \rho\curl\curl\vb H + \grad \rho \cross \curl \vb H $$
+
+$$\curl (\rho\curl\vb H) = \rho\grad(\div\vb H) - \rho\nabla^2\vb H + \grad \rho \cross \curl \vb H $$
+
+The 1st term on the right-hand side vanishes ($\div\vb B=0$), the 2nd is the classical stiffness ($\rho$ is element-wise constant), but the 3rd?

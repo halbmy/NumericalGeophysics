@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="NumGy_LV13_files/libs/clipboard/clipboard.min.js"></script>
-<script src="NumGy_LV13_files/libs/quarto-html/tabby.min.js"></script>
-<script src="NumGy_LV13_files/libs/quarto-html/popper.min.js"></script>
-<script src="NumGy_LV13_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="NumGy_LV13_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="NumGy_LV13_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="NumGy_LV13_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="NumGy_LV13_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="currentlecture_files/libs/clipboard/clipboard.min.js"></script>
+<script src="currentlecture_files/libs/quarto-html/tabby.min.js"></script>
+<script src="currentlecture_files/libs/quarto-html/popper.min.js"></script>
+<script src="currentlecture_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="currentlecture_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="currentlecture_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="currentlecture_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="currentlecture_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.57">
 
   <meta name="author" content="thomas.guenther@geophysik.tu-freiberg.de">
-  <title>Numerical Simulation Methods in Geophysics, Part 13: A few more details</title>
+  <title>Numerical Simulation Methods in Geophysics, Exercise 13: I open at the close</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="NumGy_LV13_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="NumGy_LV13_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="currentlecture_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="currentlecture_files/libs/revealjs/dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -30,13 +30,13 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="NumGy_LV13_files/libs/revealjs/dist/theme/quarto.css">
-  <link href="NumGy_LV13_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="NumGy_LV13_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="NumGy_LV13_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="NumGy_LV13_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
-  <link href="NumGy_LV13_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
-  <link href="NumGy_LV13_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link rel="stylesheet" href="currentlecture_files/libs/revealjs/dist/theme/quarto.css">
+  <link href="currentlecture_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="currentlecture_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="currentlecture_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="currentlecture_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="currentlecture_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="currentlecture_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
   .callout {
@@ -338,7 +338,7 @@
     <div class="slides">
 
 <section id="title-slide" data-background-image="pics/tubaf-logo.png" data-background-position="10% 95%" data-background-size="20%" class="quarto-title-block center">
-  <h1 class="title">Numerical Simulation Methods in Geophysics, Part 13: A few more details</h1>
+  <h1 class="title">Numerical Simulation Methods in Geophysics, Exercise 13: I open at the close</h1>
   <p class="subtitle">1. MGPY+MGIN</p>
 
 <div class="quarto-title-authors">
@@ -351,184 +351,88 @@ thomas.guenther@geophysik.tu-freiberg.de
 
 </section>
 <section>
-<section id="recap" class="title-slide slide level1 center">
-<h1>Recap</h1>
+<section id="plane-waves-in-the-earth" class="title-slide slide level1 center">
+<h1>Plane waves in the Earth</h1>
+<p>We consider an MT case with a horizontally polarized magnetic field up in the air.</p>
+<p>Task: Compute electromagnetic fields in the Earth</p>
+<p>For theory, see <a href="https://ruboerner.github.io/ThEM/mtfields.html">Theory EM (Börner)</a></p>
+</section>
+<section id="helmholtz-equations-for-e-and-h" class="slide level2">
+<h2>Helmholtz equations for <span class="math inline">\(E\)</span> and <span class="math inline">\(H\)</span></h2>
+<p>The magnetic field in the frequency domain is governed by the Helmholtz equations (no displacement currents, no sources)</p>
+<p><span id="eq-helmE"><span class="math display">\[ \curl \mu^{-1} \curl \vb E + \imath\omega\sigma\vb E = 0 \tag{1}\]</span></span></p>
+<p><span id="eq-helmH"><span class="math display">\[ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H = 0 \tag{2}\]</span></span></p>
+<p>2D E/H polarization: <span class="math inline">\(\div\grad E_x + \imath\omega\sigma\mu E_x = 0\)</span></p>
+</section>
+<section id="equation-to-be-solved" class="slide level2">
+<h2>Equation to be solved</h2>
+<p>For the source field <span class="math display">\[ \mathbf H(z, \omega) = \begin{bmatrix} H_x^0\\ 0\\ 0 \end{bmatrix} e^{i \omega t}, \quad z &lt; 0 \]</span></p>
+<p>we end up in the equation for <span class="math inline">\(H_x\)</span></p>
+<p><span class="math display">\[ \pdv[2]{H_x}{y} + \pdv[2]{H_x}{z} + k^2 H_x = 0 \qqtext{with} k^2 = - i \omega \mu \sigma \]</span></p>
+</section>
+<section id="analytical-solution" class="slide level2">
+<h2>Analytical solution</h2>
+<p>For homogeneous <span class="math inline">\(\sigma=\sigma_0\)</span>, the solution is</p>
+<p><span id="eq-sol-h"><span class="math display">\[ H_x(z) = H_x^0 e^{- i k z} = H_x^0 e^{-i \sqrt{-i \omega \mu \sigma_0} z}  \tag{3}\]</span></span></p>
+</section>
+<section id="secondary-field-for-em" class="slide level2">
+<h2>Secondary field for EM</h2>
+<p><span class="math display">\[-\grad^2 (\vb E_0 + \vb E_a) +\imath\omega\mu\sigma (\vb E_0 + \vb E_a)=0\]</span></p>
+<p><span class="math display">\[-\grad^2 \vb E_0 +\imath\omega\mu\sigma_0 \vb E_0=0\]</span></p>
+<p><span class="math display">\[ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 \]</span></p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Source terms only arise at anomalous conductivities and increase with primary field</p>
+</div>
+</div>
+</div>
+</section>
+<section id="secondary-field-for-em-1" class="slide level2">
+<h2>Secondary field for EM</h2>
+<p><span class="math display">\[ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 \]</span></p>
+<p>leads to the discretized form (<span class="math inline">\(\vb A\)</span>-stiffness, <span class="math inline">\(\vb M\)</span>-mass)</p>
+<p><span class="math display">\[ \vb A \vb E_a + \imath\omega\vb M_\sigma \vb E_a = -\imath\omega\vb M_{\delta\sigma} \vb E_0 \]</span></p>
+<!-- $$ \curl\vb E = -\imath\omega\mu\vb H $$  -->
+</section>
+<section id="secondary-field-for-h" class="slide level2">
+<h2>Secondary field for H</h2>
+<p><span class="math display">\[-\div \rho \grad (\vb H_0 + \vb H_s) +\imath\omega\mu (\vb H_0 + \vb H_s)=0\]</span></p>
+<p><span class="math display">\[-\div \rho_0 \grad \vb H_0 +\imath\omega\mu \vb H_0=0\]</span></p>
+<p><span class="math display">\[ -\div \rho \grad \vb H_a + \imath\omega\mu \vb H_a = \div \delta\rho \grad \vb H_0 \]</span></p>
+<p>and approximated by stiffness and mass matrix <span class="math display">\[ \vb A_\rho \vb H_a + \imath\omega\vb M \vb H_a = \vb A_{\delta\rho} \vb H_0 \]</span></p>
+</section>
+<section id="report-ii---2d-plane-wave-em" class="slide level2">
+<h2>Report II - 2D plane-wave EM</h2>
 <ol type="1">
-<li>The Finite Difference (FD) method
-<ul>
-<li>Poisson equation in 1D, look into 2D/3D</li>
-<li>diffusion equation in 1D, time-stepping, (1D wave equation)</li>
-</ul></li>
-<li>The Finite Element (FE) method
-<ul>
-<li>Poisson and diffusion equation in 1D</li>
-<li>(complex) Helmholtz equation in 2D for EM problems</li>
-<li>solving EM problems and computational aspects</li>
-</ul></li>
-<li>Finite Volume (FV) method for advection problems</li>
+<li>Design a subsurface 2D model with a good conductor in a halfspace</li>
+<li>Compute the primary magnetic field analytically and numerically by solving the Helmholtz equation for homogeneous conductivity, use a constant field on the upper boundary and zero on the others</li>
+<li>Visualize and compare with the analytical solution</li>
+<li>Compute the secondary field for the anomalous conductivity</li>
+<li>Visualize the secondary and total fields</li>
+<li>Replace the good conductor with a bad conductor and repeat</li>
+<li>Rerun the computations with a higher and lower (x10) period</li>
 </ol>
 </section>
-<section id="the-methods" class="slide level2">
-<h2>The methods</h2>
-<div title="The Finite Difference method">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>The Finite Difference method</strong></p>
-</div>
-<div class="callout-content">
-<p>approximates the partial derivatives by difference quotients (beware <span class="math inline">\(\Delta x\)</span> and <span class="math inline">\(\Delta a\)</span>)</p>
-</div>
-</div>
-</div>
-</div>
-<div title="The Finite Element method">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>The Finite Element method</strong></p>
-</div>
-<div class="callout-content">
-<p>approximates the solution through base functions in integrative sense</p>
-</div>
-</div>
-</div>
-</div>
-<div title="The Finite Volume method">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>The Finite Volume method</strong></p>
-</div>
-<div class="callout-content">
-<p>approximates the solution by piecewise constant values and keeps conservation law by fluxes</p>
-</div>
-</div>
-</div>
-</div>
-</section></section>
-<section>
-<section id="boundary-conditions" class="title-slide slide level1 center">
-<h1>Boundary conditions</h1>
-
+<section id="secondary-field-for-h-1" class="slide level2">
+<h2>Secondary field for H</h2>
+<p><span class="math display">\[-\div \sigma_0^{-1} \grad \vb H_0 +\imath\omega\mu \vb H_0=0\]</span></p>
+<p><span class="math display">\[-\div \sigma^{-1} \grad (\vb H_0 + \vb H_s) +\imath\omega\mu (\vb H_0 + \vb H_s)=0\]</span></p>
+<p><span class="math display">\[ -\div \sigma^{-1} \grad \vb H_a + \imath\omega\mu \vb H_a = \div \delta\sigma^{-1} \grad \vb H_0 \]</span></p>
 </section>
-<section id="mixed-boundary-conditions" class="slide level2">
-<h2>Mixed boundary conditions</h2>
-<p>So far…</p>
-<ul>
-<li>Dirichlet Boundary conditions <span class="math inline">\(u=u_0\)</span></li>
-<li>Neumann Boundary conditions <span class="math inline">\(\pdv{u}{n}=g_B\)</span><br> for vectorial problems <span class="math inline">\(\vb n\cdot \vb E=0\)</span> or <span class="math inline">\(\vb\curl \vb E=0\)</span></li>
-</ul>
-<p>In general mixed, also called Robin (or impedance convective) BC <span class="math display">\[ a u + b \pdv{u}{n} = c \]</span></p>
-</section>
-<section id="example-dc-resistivity-with-point-source" class="slide level2">
-<h2>Example DC resistivity with point source</h2>
-<p><span class="math display">\[\div \sigma \grad u = \div \vb j = I \delta(\vb r - \vb r_s)\]</span></p>
-<p>solution for homogeneous <span class="math inline">\(\sigma\)</span> on surface: <span class="math inline">\(u=\frac{I}{2\pi\sigma} \frac{1}{|\vb r - \vb r_s|}\)</span></p>
-<p>E-field <span class="math inline">\(\vb E=-\frac{I}{2\pi\sigma} \frac{\vb r - \vb r_s}{|\vb r - \vb r_s|^3}\)</span></p>
-<p>normal direction <span class="math inline">\(\vb E \cdot \vb n=-\frac{u}{|\vb r - \vb r_s|}\cos \phi\)</span> purely geometric</p>
-<p><span class="math display">\[\pdv{u}{n} + \frac{\cos\phi}{|\vb r - \vb r_s|}=0\]</span></p>
-</section>
-<section id="perfectly-matched-layers" class="slide level2">
-<h2>Perfectly matched layers</h2>
-<div class="columns">
-<div class="column">
-<p><img data-src="pics/FDTD_TFSF.png"></p>
-</div><div class="column">
-<p><span class="math display">\[ \pdv{x} \rightarrow \frac{1}{1+i\sigma/\omega} \pdv{x}  \]</span></p>
-<p><span class="math display">\[ x \rightarrow x + \frac{i}{\omega}\int^x \sigma(x')\dd x' \]</span></p>
-</div></div>
-</section>
-<section id="absorbing-boundary-conditions" class="slide level2">
-<h2>Absorbing boundary conditions</h2>
-<p>wave equation (e.g.&nbsp;in 2D) <span class="math display">\[ \pdv[2]{u}{t} - v^2 \laplacian u = 0 \]</span></p>
-<p>Fourier transform in <span class="math inline">\(t\)</span> and <span class="math inline">\(y\)</span> (boundary direction) <span class="math inline">\(\Rightarrow \omega, k\)</span></p>
-<p><span class="math display">\[ \omega^2 \hat{u} - v^2 \pdv[2]{\hat{u}}{x} + v^2 k^2 \hat{u} = 0 \]</span></p>
-<p>ordinary DE with solution <span class="math inline">\(\hat{u}=\sum a_i e^{\lambda x}\)</span> with <span class="math inline">\(\lambda^2 = k^2 - \omega^2/v^2\)</span></p>
-</section></section>
-<section>
-<section id="modern-methods" class="title-slide slide level1 center">
-<h1>Modern methods</h1>
-
-</section>
-<section id="solution-in-wavenumber-domain" class="slide level2">
-<h2>Solution in wavenumber domain</h2>
-<p>Fourier transform of 3D problem into wavenumbers</p>
-<p><span class="math display">\[\hat F(k_x, y, z)=\int\limits_{-\infty}^{\infty} F(x,y,z) e^{-\imath k_x x} \dd x\]</span></p>
-<p>partial derivative <span class="math inline">\(\pdv[2]{\hat F}{x}=k_x^2 \pdv[2]{F}{x}\)</span></p>
-<p>Poisson equation <span class="math inline">\(\nabla_{3D}^2 u=0\)</span> <span class="math inline">\(\Rightarrow\)</span> Helmholtz equation <span class="math inline">\(\nabla_{3D}^2 \hat u - k_x^2\hat u=0\)</span> <span class="math inline">\(\Rightarrow\)</span> solve many 2D problems &amp; get solution by inverse Fourier transform</p>
-</section>
-<section id="spectral-element-method" class="slide level2">
-<h2>Spectral element method</h2>
-<p>typically used for global wave phenomena</p>
-<div class="columns">
-<div class="column">
-<p><span class="math inline">\(u=\sum u_i\phi_i(\pv r)\)</span></p>
-<p><span class="math inline">\(\phi\)</span> Lagrangian polynoms <span class="math inline">\(l_i^N=\prod\limits_k^N \frac{\xi-\xi_k}{\xi_i-\xi_k}\)</span></p>
-<p>or Chebychev polynoms</p>
-</div><div class="column">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="pics/Legendrepolynomials6.svg"></p>
-<figcaption>First six Lagrangian polynomials</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="discontinuous-galerkin-method" class="slide level2">
-<h2>Discontinuous Galerkin method</h2>
-<p>typical for hyperbolic problems</p>
-<p>weak form of wave equation with fluxes (FV)</p>
-<p><span class="math display">\[M\partial_t q(t) - A^T q(t) = -F(a, q(t))\]</span> <span class="math display">\[\Rightarrow \partial_t q=\vb M^{-1}(A^T q(t) - F(a, q(t)))\]</span></p>
-<p>locally for each element &amp; communication through fluxes (like in FV)</p>
-</section>
-<section id="infinite-elements" class="slide level2">
-<h2>Infinite Elements</h2>
-
-<img data-src="pics/infiniteelements.png" class="r-stretch"></section>
-<section id="meshless-modelling" class="slide level2">
-<h2>Meshless modelling</h2>
-
-<img data-src="pics/meshless.png" class="r-stretch"></section>
-<section id="meshless-divergence-operator-wittke-2017" class="slide level2">
-<h2>Meshless divergence operator (Wittke, 2017)</h2>
-
-<img data-src="pics/meshlessDivergence.png" class="r-stretch"></section></section>
-<section>
-<section id="error-estimation-and-mesh-refinement" class="title-slide slide level1 center">
-<h1>Error estimation and mesh refinement</h1>
-<ul>
-<li>get idea of accuracy of the solution</li>
-<li>refinement of cells with high error (e.g.&nbsp;large gradients)</li>
-<li>comparison between successive refinement solutions</li>
-</ul>
-</section>
-<section id="error-estimation-residual-based" class="slide level2">
-<h2>Error estimation (residual-based)</h2>
-<p>Poisson problem <span class="math inline">\(-\nabla^2=f\)</span> with bilinear form <span class="math inline">\(a(u,v)=\int \grad u \grad v \dd\Omega\)</span></p>
-<p>finite-dimensional function space <span class="math inline">\(V_h\)</span>: <span class="math inline">\(a(u_h, v_h)=l(v_h)\)</span></p>
-<p>estimate error <span class="math inline">\(e_h\)</span> in bilinear form <span class="math inline">\(a(e_h,v)=a(u, v)-a(u_h, v)\)</span></p>
-<p>residual <span class="math inline">\(R=f+\nabla^2 u_h\)</span> leads to <span class="math inline">\(a(e_h,v)=\sum\limits_c\int\limits_{\Omega_c} R v \dd\Omega_c\)</span></p>
-</section>
-<section id="error-estimation-recovery-based" class="slide level2">
-<h2>Error estimation (recovery-based)</h2>
-<p>gradients across element boundaries tend to be discontinuous</p>
-<p>compare original (unsmoothed) gradient of the solution with improved <span class="math display">\[(E_h)^2 = \int |M(u_h)-\grad u_h|^2\dd\Omega \]</span></p>
-<p><span class="math inline">\(M\)</span> obtained by smoothing over patch of elements around each element</p>
-</section>
-<section id="goal-oriented-mesh-refinement" class="slide level2">
-<h2>Goal-oriented mesh refinement</h2>
-<p>primal and dual (adjoint) problem (with receiver as hypothetical source)</p>
-<p>inner product of solutions <span class="math display">\[\Phi_{lmn}=\int_{c_n} \vb F^l \vb F^m \dd\Omega_n\]</span></p>
+<section id="the-rot-rot-term-in-the-h-polarization" class="slide level2">
+<h2>The rot-rot term in the <span class="math inline">\(H\)</span> polarization</h2>
+<p><span class="math display">\[\curl(\curl\vb A) = \grad(\div\vb A) - \laplacian\vb A\]</span></p>
+<p><span class="math display">\[\curl (a\vb A)=a\curl \vb A + \grad a \cross \vb A \]</span></p>
+<p><span class="math display">\[\Rightarrow \curl (\rho\curl\vb H) = \rho\curl\curl\vb H + \grad \rho \cross \curl \vb H \]</span></p>
+<p><span class="math display">\[\curl (\rho\curl\vb H) = \rho\grad(\div\vb H) - \rho\nabla^2\vb H + \grad \rho \cross \curl \vb H \]</span></p>
+<p>The 1st term on the right-hand side vanishes (<span class="math inline">\(\div\vb B=0\)</span>), the 2nd is the classical stiffness (<span class="math inline">\(\rho\)</span> is element-wise constant), but the 3rd?</p>
 <div class="quarto-auto-generated-content">
 <p><img src="_extensions/ruboerner/tubaf/TUBAF_logo.svg" class="slide-logo"></p>
 <div class="footer footer-default">
@@ -540,20 +444,20 @@ thomas.guenther@geophysik.tu-freiberg.de
   </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="NumGy_LV13_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="currentlecture_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="NumGy_LV13_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="currentlecture_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>

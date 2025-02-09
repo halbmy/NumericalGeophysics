@@ -184,7 +184,7 @@
     "href": "02_finite-differences.html",
     "title": "2  Finite Differences",
     "section": "",
-    "text": "2.1 Taylor expansion\nAssume the general Poisson equation \\[-\\div(a\\grad u)=f\\]\nwith some conductivity \\(a\\), a source term \\(f\\) and the potential \\(u\\). This can be an electric potential with \\(a=\\sigma\\), the hydraulic head with hydraulic conductivity \\(k\\), the temperature with the thermal conductivity or the gravity potential with \\(a=1\\). Note that we are using the form with the leading minus. First, \\(-\\grad u\\) is typically the field (e.g. electric) and \\(a\\grad u\\) is usually the flow (e.g. streaming velocity or current density) towards decreasing potential.\nNeglecting \\(a\\) for a moment, the left-hand side is the second derivative, i.e. a curvature. A positive source field \\(f\\) leads to a negative curvature, i.e. a decreasing slope of the potential curve. This is a maximum of the potential caused by the source, e.g., an increased temperature for a heat source.",
+    "text": "2.1 FD Approximation\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -193,8 +193,8 @@
     "objectID": "02_finite-differences.html#fd-approximation",
     "href": "02_finite-differences.html#fd-approximation",
     "title": "2  Finite Differences",
-    "section": "2.2 FD Approximation",
-    "text": "2.2 FD Approximation\n\n\n\n\n\n\nApproximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\nand solution \\(u\\) by finite values \\(u_i\\) at points \\(x_i\\), e.g. \\[ \\dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) \\]\n\n\\[\\pdv[2]{u_3}{x}\\approx\n\\frac{\\dv*{u}{x}_{3.5}-\\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}\n= \\frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \\]",
+    "section": "",
+    "text": "Approximate derivative operators by differences\n\n\n\n\\[ \\pdv{u}{x}\\approx\\frac{\\Delta u}{\\Delta x} \\]\n\n\n\n\n\n\n2.1.1 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\frac{1}{\\Delta x} \\begin{bmatrix}   \n-1 & +2 & -1 & 0 & \\ldots & &  \\\\\n0 & -1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & -1 & +2 & -1\n\\end{bmatrix}  \\]\nThis is illustrated by the Finite Difference stencil (Figure 2.1): Every point, e.g. the red point, is constructed by using its neighbors.\n\n\n\n\n\n\nFigure 2.1: 1D Finite-Difference stencil",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -204,7 +204,7 @@
     "href": "02_finite-differences.html#difference-stencil",
     "title": "2  Finite Differences",
     "section": "2.3 Difference stencil",
-    "text": "2.3 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\frac{1}{\\Delta x} \\begin{bmatrix}   \n+1 & -2 & +1 & 0 & \\ldots & &  \\\\\n0 & +1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix}  \\]\n\n\n\n1D Finite-Difference stencil",
+    "text": "2.3 Difference stencil\nAssumption: equidistant discretization \\(\\Delta x\\), conductivity 1\n1st derivative: \\([-1, +1] / dx\\), 2nd derivative \\([+1, -2, +1] / dx^2\\)\nMatrix-Vector product \\(\\vb{A}\\cdot\\vb{u}=\\vb{f}\\) with\n\\[ \\vb{A} = \\frac{1}{\\Delta x} \\begin{bmatrix}   \n-1 & +2 & -1 & 0 & \\ldots & &  \\\\\n0 & -1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & -1 & +2 & -1\n\\end{bmatrix}  \\]\n\n\n\n1D Finite-Difference stencil",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -213,8 +213,8 @@
     "objectID": "02_finite-differences.html#fdm-on-the-general-poisson-equation",
     "href": "02_finite-differences.html#fdm-on-the-general-poisson-equation",
     "title": "2  Finite Differences",
-    "section": "2.4 FDM on the general Poisson equation",
-    "text": "2.4 FDM on the general Poisson equation\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\] with a conductivity term \\(a\\)\n\\[ \\pdv{(a \\pdv*{u})}{z} = a\\pdv[2]{u}{z} + \\pdv{a}{z} \\pdv{u}{z}  \\]",
+    "section": "2.2 FDM on the general Poisson equation",
+    "text": "2.2 FDM on the general Poisson equation\nAssume the Poisson equation \\[\\div(a\\grad u)=f\\] with a conductivity term \\(a\\)\n\\[ \\pdv{(a \\pdv*{u}{z})}{z} = a\\pdv[2]{u}{z} + \\pdv{a}{z} \\pdv{u}{z}  \\]",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -223,8 +223,8 @@
     "objectID": "02_finite-differences.html#boundary-conditions",
     "href": "02_finite-differences.html#boundary-conditions",
     "title": "2  Finite Differences",
-    "section": "2.5 Boundary conditions",
-    "text": "2.5 Boundary conditions\nDirichlet conditions: \\(u_0=u_B\\) (homogeneous if 0)\nNeumann conditions (homogeneous if 0) \\[ \\pdv*{u}{x}_0=g_B \\]\nMixed boundary conditions \\(u_0+\\alpha du_0/dx=\\gamma\\)\n\n2.5.1 Dirichlet BC implementation way 1\n\\(u_0 = u_B\\)\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n2.5.2 Dirichlet BC implementation way 2\n\\(u_B - 2 u_1 + u_3 = f_1\\)\n\\[ \\begin{bmatrix}   \n-2 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 - u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]\n\n\n2.5.3 Neumann BC implementation way 1\n\\[ u_1 - u_0 = g_B\\]\n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_0+g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n2.5.4 Neumann BC implementation way 2\n\\[u_0 - 2 u_1+u_2 = f_1 \\qquad u_1 - u_0 = g_B \\Rightarrow u_2-u_1=f_1+g_B \\] \n\\[ \\begin{bmatrix}   \n-1 & +1 & 0 & \\ldots & &  \\\\\n+1 & -2 & +1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & +1 & -2 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
+    "section": "2.3 Boundary conditions",
+    "text": "2.3 Boundary conditions\nDirichlet conditions: \\(u_0=u_B\\) (homogeneous if 0)\nNeumann conditions (homogeneous if 0) \\[ \\pdv*{u}{x}_0=g_B \\]\nMixed boundary conditions \\(u_0+\\alpha du_0/dx=\\gamma\\)\n\n2.3.1 Dirichlet boundary conditions\nAssume the dirichlet condition on the upper boundary \\[u_0 = u_B \\tag{2.1}\\] fixes the potential to a specific value \\(u_B\\). #### Implementation 1 : explicit (2.1) can be directly added as an equation in the matrix and the right-hand-side:\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\n-1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & -1 & +2 & -1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n2.3.1.1 Implementation 2: Node removal\nThe Dirichlet condition (2.1) is directly inserted into the second equation \\(-u_B + 2 u_1 - u_2 = f_1\\) and the first equation is omitted\n\\[ \\begin{bmatrix}   \n+2 & -1 & 0 & \\ldots & &  \\\\\n-1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & -1 & +2 & -1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + u_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]\nConsequently, the first column is removed and the first equation is the sum of the preceding two other equations.\n\n\n\n2.3.2 Neumann BC\nThe Neumann boundary condition \\[ u_1 - u_0 = g_B \\tag{2.2}\\] fixes the gradient of the potential at the left end.\n\n2.3.2.1 Implementation 1: explicit\nThe equation (2.2) replaces the first equation \\[ \\begin{bmatrix}\n-1 & +1 & 0 & \\ldots & &  \\\\\n-1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & -1 & +2 & -1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\] Note that this would result in an unsymmetric matrix for the left boundary, but in a symmetric matrix for the right boundary. Therefore we better use the outward normal direction \\[ u_0 - u_1 = g_B \\tag{2.3}\\] leading to the symmetric matrix \\[ \\begin{bmatrix}\n+1 & -1 & 0 & \\ldots & &  \\\\\n-1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\vdots & \\ddots & \\vdots \\\\\n\\ldots & \\ldots & -1 & +2 & -1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} g_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\end{bmatrix}  \\]\n\n\n\n2.3.3 Implementation 2: node removal\nThe equation (2.3) is directly inserted into the second equation \\[-u_0 +2 u_1-u_2 = f_1\\] This leads to \\[u_2-u_1=f_1+g_B \\] and thus to the matrix \\[ \\begin{bmatrix}   \n+1 & -1 & 0 & \\ldots & &  \\\\\n-1 & +2 & -1 & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & 0 & -1 & +2 & -1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_1 + g_B\\\\ f_2 \\\\ \\vdots \\\\ f_N \\end{bmatrix} \\]",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -263,8 +263,8 @@
     "objectID": "02_finite-differences.html#example-velocity-distribution",
     "href": "02_finite-differences.html#example-velocity-distribution",
     "title": "2  Finite Differences",
-    "section": "3.4 Example: velocity distribution",
-    "text": "3.4 Example: velocity distribution\n\n\nShow the code\nimport numpy as np\nimport matplotlib.pyplot as plt\nx=np.arange(0, 600.01, 0.5)\nc = 1.0*np.ones_like(x) # velocity in m/s\nc[100:300] = 1 + np.arange(0,0.5,0.0025) \nc[900:1100] = 0.5  # low velocity zone\n\n# Plot velocity distribution.\nplt.plot(x,c,'k')\nplt.xlabel('x [m]')\nplt.ylabel('c [m/s]')\nplt.grid()",
+    "section": "2.9 Example: velocity distribution",
+    "text": "2.9 Example: velocity distribution\n\n\nShow the code\nimport numpy as np\nimport matplotlib.pyplot as plt\nx=np.arange(0, 600.01, 0.5)\nc = 1.0*np.ones_like(x) # velocity in m/s\nc[100:300] = 1 + np.arange(0,0.5,0.0025) \nc[900:1100] = 0.5  # low velocity zone\n\n# Plot velocity distribution.\nplt.plot(x,c,'k')\nplt.xlabel('x [m]')\nplt.ylabel('c [m/s]')\nplt.grid()",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -273,8 +273,8 @@
     "objectID": "02_finite-differences.html#initial-displacement",
     "href": "02_finite-differences.html#initial-displacement",
     "title": "2  Finite Differences",
-    "section": "3.5 Initial displacement",
-    "text": "3.5 Initial displacement\nDerivative of Gaussian (Ricker wavelet)\n\n\nShow the code\nl=5.0\n\n# Initial displacement field [m].\nu=(x-300.0)*np.exp(-(x-300.0)**2/l**2) \n# Plot initial displacement field.\nplt.plot(x,u,'k')\nplt.xlabel('x [m]')\nplt.ylabel('u [m]')\nplt.title('initial displacement field')\nplt.show()",
+    "section": "2.10 Initial displacement",
+    "text": "2.10 Initial displacement\nDerivative of Gaussian (Ricker wavelet)\n\n\nShow the code\nl=5.0\n\n# Initial displacement field [m].\nu=(x-300.0)*np.exp(-(x-300.0)**2/l**2) \n# Plot initial displacement field.\nplt.plot(x,u,'k')\nplt.xlabel('x [m]')\nplt.ylabel('u [m]')\nplt.title('initial displacement field')\nplt.show()",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -283,8 +283,8 @@
     "objectID": "02_finite-differences.html#time-propagation",
     "href": "02_finite-differences.html#time-propagation",
     "title": "2  Finite Differences",
-    "section": "3.6 Time propagation",
-    "text": "3.6 Time propagation\n\n\nShow the code\nu_last=u\ndt = 0.5\nddu = np.zeros_like(u)\ndx = np.diff(x)\nfor i in range(100):\n    dudx = np.diff(u)/dx\n    ddu[1:-1] = np.diff(dudx)/dx[:-1]\n    u_next = 2*u-u_last+ddu*c**2 * dt**2 \n    u_last = u\n    u = u_next\n  \nplt.plot(x,u,'k')",
+    "section": "2.11 Time propagation",
+    "text": "2.11 Time propagation\n\n\nShow the code\nu_last=u\ndt = 0.5\nddu = np.zeros_like(u)\ndx = np.diff(x)\nfor i in range(100):\n    dudx = np.diff(u)/dx\n    ddu[1:-1] = np.diff(dudx)/dx[:-1]\n    u_next = 2*u-u_last+ddu*c**2 * dt**2 \n    u_last = u\n    u = u_next\n  \nplt.plot(x,u,'k')",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
@@ -407,6 +407,136 @@
     "text": "1.2 Partial differential equations (PDEs)\nMostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities\n\n1.2.1 PDE Types\n(\\(u\\)-function, \\(f\\)-source, \\(a\\)/\\(c\\)-parameter):\n\nelliptic PDE: \\(-\\nabla^2 u=f\\) (Poisson) or \\(\\nabla^2 u + k^2 u = f\\) (Helmholtz)\nparabolic PDE \\(-\\nabla^2 u + a \\pdv{u}{t} \\frac{\\partial u}{\\partial t}=f\\)\nhyperbolic \\(-\\nabla^2 u + c^2 \\frac{\\partial^2 u}{\\partial t^2}=f\\) (plus diffusive term) \\[\\frac{\\partial^2\\ u}{{\\partial x}^2} - c^2\\frac{\\partial^2 u}{\\partial t^2} = 0\\]\ncoupled \\(\\nabla\\cdot u=f\\) & \\(u = K \\nabla p=0\\) (Darcy flow)\nnonlinear \\((\\nabla u)^2=s^2\\) (Eikonal equation)\n\n\n\n1.2.2 Poisson equation\npotential field \\(u\\) generates field \\(\\vec{F}=-\\nabla u\\)\ncauses some flow \\(\\vec{j}=a \\vec{F}\\)\n\\(a\\) is some sort of conductivity (electric, hydraulic, thermal)\ncontinuity of flow: divergence of total current \\(\\vb j + \\vb j_s\\) is zero\n\\[ \\div (a \\nabla u) = - \\div \\vb j_s \\]\n\n\n1.2.3 The heat equation in 1D\nsought: Temperature \\(T\\) as a function of space and time\nheat flux density \\(\\vb q = \\lambda\\grad T\\)\n\\(q\\) in W/m², \\(\\lambda\\) - heat conductivity/diffusivity in W/(m.K)\nFourier’s law: \\(\\pdv{T}{t} - a \\nabla^2 T = s\\) (\\(s\\) - heat source)\ntemperature conduction \\(a=\\frac{\\lambda}{\\rho c}\\) (\\(\\rho\\) - density, \\(c\\) - heat capacity)",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#parabolic-pdes",
+    "href": "02_finite-differences.html#parabolic-pdes",
+    "title": "2  Finite Differences",
+    "section": "2.5 Parabolic PDEs",
+    "text": "2.5 Parabolic PDEs\n\n2.5.1 Heat transfer in 1D\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nwith the periodic boundary conditions:\n\n\\(T(z=0,t)=T_0 + \\Delta T \\sin \\omega t\\) (daily/yearly cycle)\n\\(\\pdv{T}{z}(z=z_1) = 0\\) (no change at depth)\n\nand the initial condition \\(T(z, t=0)=\\sin \\pi z\\) has the analytical solution \\[ T(z, t) = \\Delta T e^{-\\pi^2 t} \\sin \\pi z \\]\n\n\n2.5.2 Periodic boundary conditions\n\\[ \\pdv{T}{t} - \\div (a\\grad{T}) = \\div q_s \\]\n\n\\(a=\\frac{k}{\\rho c_p}\\) [m²/s] thermal diffusivity - measure of heat transfer\n\\(k\\) [W/m/K] thermal conductivity - measure of temperature transfer\n\\(c_p\\) [J/kg/K] - heat capacity - measure of heat storage per mass\n\\(\\rho\\) (kg/m³) density\n\nWater \\(k\\)=0.6 W/m/K, \\(\\rho\\)=1000 kg/m³, \\(c\\)=4180 J/kg/K \\(\\Rightarrow\\) \\(a\\)=1.43e-7 m²/s\nUpper boundary: daily/yearly variation\n\\[ T_0(t) = T_m + \\Delta T \\sin \\omega t \\]\n\\(T_m\\) mean temperature (e.g. 12°C), \\(\\Delta T\\) variation, e.g. 8°C\n\\(\\omega=2\\pi/t_P\\) daily (\\(T_d\\)=3600*24s) or yearly (\\(T_y=365 T_d\\)) cycle ::: ::: {.column}\n\n\nShow the code\nday = 3600 * 24\nT0, dT = 12, 8\nt = np.arange(100) / 50 * day\nT = T0+dT*np.sin(t/day*2*np.pi)\nplt.plot(t/day*24, T)\nplt.xlabel(\"t (h)\")\nplt.ylabel(\"T (°C)\")\nplt.grid()\n\n\n\n\n\n\n\n\n\n\n\n2.5.3 Separation of variables\n\\[ \\pdv{T}{t} = a\\pdv[2]{T}{z} \\]\n\\(T(t, z)/\\Delta T - T_0 = \\theta(t) Z(z)\\)\n\\[ Z \\pdv{\\theta}{t} = a \\theta \\pdv[2]{Z}{z} \\]\n\\[ \\frac1\\theta \\pdv{\\theta}{t} = C = a \\frac{1}{Z}\\pdv[2]{Z}{z} \\]\n\n\n2.5.4 Solution\nregarding the BC \\(e^{\\imath\\omega t}\\) leads to \\(C=\\imath\\omega\\) and thus \\(\\theta=\\theta_0 e^{\\imath\\omega t}\\)\n\\[ \\pdv[2]{Z}{z} - \\imath \\frac{\\omega}{a} Z = \\pdv[2]{Z}{z} + n^2 Z = 0  \\]\nHelmholtz equation with solution \\(Z=Z_0 e^{\\imath n z}\\) (\\(n^2=\\imath\\omega/a\\))\n\\[ Z=Z_0 e^{\\imath n z} = Z_0 e^{\\sqrt{\\imath\\omega/a}z} =\nZ_0 e^{\\sqrt{\\omega/2a}(1+\\imath)z} \\]\n\\[ T(t, z)/\\Delta T + T_0 = Z(z)\\theta(t)=\nZ_0\\theta_0 e^{-\\sqrt{\\omega/2a}z} e^{i(\\omega t-\\sqrt{\\omega/2a}z)} \\]\n\n\n2.5.5 Interpretation\nreplacing the term \\(\\sqrt{2a/\\omega}=\\sqrt{a t_P/\\pi}=d\\) leads to\n\\[ T(z, t) = T_0 + \\Delta T e^{-z/d} \\sin(\\omega t - z/d) \\]\n\nexponential damping of the temperature variation with decay depth \\(d\\)\nphase lag \\(z/d\\) increases with depth, \\(z_\\pi=\\sqrt{2 a/\\omega}\\pi=\\sqrt{a t_P \\pi}\\)\n\n\nDaily cycle: decay depth \\(d\\)=6cm, minimum depth=20cm\nYearly cycle: decay depth \\(d\\)=1.2m, minimum depth=4m\n\n\n\n2.5.6 Depth profiles\n\n\nShow the code\na = 1.5e-7\nyear = day*365\nd = sqrt(a*year/pi)\nt = np.arange(0, 1, 0.1) * year\nz = np.arange(0, 6, 0.1)\nfig, ax = plt.subplots()\nfor ti in t:\n    Tz = np.exp(-z/d)*np.sin(ti*2*pi/year-\n                             z/d) * dT + T0\n    ax.plot(Tz, z, label=\"t={:.1f}\".format(\n        ti/year))\n\nax.invert_yaxis()\nax.legend()\nax.grid()\n\n\n\n\n\n\n\n\n\n\n\n2.5.7 Temporal behaviour\n\n\nShow the code\nt = np.arange(0, 1.01, 0.01) * year\nz = np.arange(0, 3, 0.4)\nfig, ax = plt.subplots()\nfor zi in z:\n    Tt = np.exp(-zi/d)*np.sin(t*2*pi/year-\n                              zi/d) * dT + T0\n    ax.plot(t/year*12, Tt, label=f\"z={zi:.1f}\")\n\nax.set_xlim(0, 12)\nax.set_xlabel(\"t (months)\")\nax.set_ylabel(\"T (°C)\")\nax.legend()\nax.grid()\n\n\n\n\n\n\n\n\n\n\n\n2.5.8 Explicit method\n\\[ \\pdv{T}{t} - a \\pdv[2]{T}{z} = 0 \\]\nSolve Poisson equation \\(\\div(a\\grad u)=f\\)\nfor every time step \\(i\\) (using FDM, FEM, FVM etc.)\nFinite-difference step in time: update field by \\[ T_{i+1} = T_i + a \\pdv[2]{u}{z} \\cdot \\Delta t\\]\n\n\n\nForward difference stencil\n\n\n\n\n2.5.9 Implicit (Euler) method\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = a \\pdv[2]{T}{z} ^{n+1} \\]\n\n\n\nForward difference stencil\n\n\n\n\n2.5.10 Mixed - Crank-Nicholson method\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = \\frac12 a \\pdv[2]{T}{z} ^n + \\frac12 a \\pdv[2]{T}{z} ^{n+1} \\]\n\n\n\nMixed (balanced) difference stencil",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#the-general-case",
+    "href": "02_finite-differences.html#the-general-case",
+    "title": "2  Finite Differences",
+    "section": "2.4 The general case",
+    "text": "2.4 The general case\n\\(\\Delta x \\ne 1\\) & \\(a \\ne 1\\) \\(\\Rightarrow\\) \\(a \\pdv{u}{x} \\approx a_i\\frac{u_{i+1}-u_i}{x_{i+1}-x_i}\\)\n\n\n\n\n\n\n\n\n\n\\(\\dv{x}(a \\pdv{u}{x}) \\approx (a_i\\frac{u_{i+1}-u_i}{x_{i+1}-x_i} - a_{i-1}\\frac{u_{i}-u_{i-1}}{x_{i}-x_{i-1}}) / (x_{i+1}-x_{i-1}) \\cdot 2\\)\n\\[ A_{i, i-1} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\n2.4.1 The coupling coefficients\n\\[ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & -1 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\\\ g_B \\Delta x_N \\end{bmatrix}  \\]\n\n\n2.4.2 Symmetry\n\\[ A_{i+1,i} = C_{i+1}^{left} = a_i / (x_{i+1}-x_{i}) / (x_{i+2}-x_{i}) \\cdot 2 \\]\n\\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\nonly symmetric if \\(\\Delta x\\) is constant around \\(x_i\\), better take \\(a_i/(\\Delta x_i)^2\\)\n\\[ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1})^2 \\]\n\\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i})^2 \\]\n\\(\\Rightarrow\\) inaccuracies expected for non-equidistant discretization\n\n\n2.4.3 A closer look at the Dirichlet boundary\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots &\n\\end{bmatrix} \\begin{bmatrix} u_B\\\\ f_1  \\end{bmatrix}\\]\n\n\\(C\\) can be differently scaled from 1 \\(\\Rightarrow\\) multiply with \\(C_i^L\\)\nMatrix is non-symmetric \n\n\\[ \\begin{bmatrix}   \nC_1^L & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots &\n\\end{bmatrix} \\begin{bmatrix} u_B C_i^L\\\\ f_1  \\end{bmatrix} \\]\n\n\n2.4.4 A closer look at the Neumann boundary\n\\[ \\begin{bmatrix}\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & -1 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_N \\\\ g_B \\Delta x_N \\end{bmatrix}  \\]\n\n\\(C\\) can be differently scaled from 1 \\(\\Rightarrow\\) multiply with \\(C_N^R\\)\nMatrix is non-symmetric \\(\\Rightarrow\\) multiply with -1\n\n\\[ \\begin{bmatrix}\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & C_N^R & -C_N^R\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_N \\\\ -g_B \\Delta x_N C_N^R \\end{bmatrix}  \\]\n\n\n2.4.5 Accuracy\nHow can we prove the accuracy of our solution?\n\ncompare with analytical solutions\nsingle (Point) \\(f\\) lead to piece-wise linear \\(u\\) (correct)\nwhat about continuous source terms? (e.g. radioactive elements in the Earth’s crust)\n\n\n\n2.4.6 Analytical solution\n\\(a\\)=1, \\(f(x)\\)=1 \\(\\Rightarrow\\) double integration \\(\\Rightarrow\\) quadratic function\n\\[u(x) =  C_0 + C_1 x -1/2 x^2 \\]\n\n\n\n\n\n\n\n\n\nLeft BC\nRight BC\n\\(C_0\\)\n\\(C_1\\)\n\n\n\n\nDirichlet\nDirichlet\n\\(u_L\\)\n\\(L/2 + (u_R-u_L)/ L\\)\n\n\nDirichlet\nNeumann\n\\(u_L\\)\n\\(g_R + L\\)\n\n\nNeumann\nDirichlet\n\\(u_R - g_L L + L^2/2\\)\n\\(g_L\\)\n\n\n\nwith \\(L=(x_N-x_0)\\)\n\n\n2.4.7 Next spatial dimension\n\nIf we go from 1D to 2D conditions, we have conductivities between each four nodes (Figure 2.2). The red point is constructed by its four neighbors to the left and right, and to the top and bottom.\n\n\n\n\n\n\nFigure 2.2: Simple 2D conductivity grid with FD stencil\n\n\n\nFor introducing the conductivity into the coupling coefficient, there are always two values adjacent to the connecting edge.\n\\[ C_{i,j}^{right} = a_{i,j-1/2} / (x_{i+1}-x_{i})^2 \\]\n\\(a_{i,j-1/2}=(a_{i,j-1}+a_{i,j})/2\\) ?\nharmonic, geometric? weighting?\n\\(a_{i,j-1/2}=\\frac{a_{i,j-1}\\Delta y_{j-1}+a_{i,j}\\Delta y_{j}}{y_j+1-y_{j-1}}\\)?",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#the-coupling-coefficients",
+    "href": "02_finite-differences.html#the-coupling-coefficients",
+    "title": "2  Finite Differences",
+    "section": "2.5 The coupling coefficients",
+    "text": "2.5 The coupling coefficients\n\\[ C_{left} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\\[ C_{right} = a_{i+1} / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & -1 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\\\ g_B \\end{bmatrix}  \\]",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#next-spatial-dimension",
+    "href": "02_finite-differences.html#next-spatial-dimension",
+    "title": "2  Finite Differences",
+    "section": "2.12 Next spatial dimension",
+    "text": "2.12 Next spatial dimension\n\nIf we go from 1D to 2D conditions, we have conductivities between each four nodes (Figure 2.2). The red point is constructed by its four neighbors to the left and right, and to the top and bottom.\n\n\n\n\n\n\nFigure 2.2: Simple 2D conductivity grid with FD stencil\n\n\n\nFor introducing the conductivity into the coupling coefficient, there are always two values adjacent to the connecting edge.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#implicit-euler-method",
+    "href": "02_finite-differences.html#implicit-euler-method",
+    "title": "2  Finite Differences",
+    "section": "2.6 Implicit (Euler) method",
+    "text": "2.6 Implicit (Euler) method\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = a \\pdv[2]{T}{z} ^{n+1} \\]\n\n\n\nForward difference stencil",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#mixed---crank-nicholson-method",
+    "href": "02_finite-differences.html#mixed---crank-nicholson-method",
+    "title": "2  Finite Differences",
+    "section": "2.7 Mixed - Crank-Nicholson method",
+    "text": "2.7 Mixed - Crank-Nicholson method\n\\[ \\pdv{T}{t}^n \\approx \\frac{T^{n+1}-T^n}{\\Delta t} = \\frac12 a \\pdv[2]{T}{z} ^n + \\frac12 a \\pdv[2]{T}{z} ^{n+1} \\]\n\n\n\nMixed (balanced) difference stencil",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#the-coupling-coefficients-1",
+    "href": "02_finite-differences.html#the-coupling-coefficients-1",
+    "title": "2  Finite Differences",
+    "section": "2.6 The coupling coefficients",
+    "text": "2.6 The coupling coefficients\n\\[ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots & \\\\\n\\vdots & \\vdots & \\ddots & \\vdots &  \\\\\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & -1 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} u_B\\\\ f_1 \\\\ \\vdots \\\\ f_N \\\\ g_B \\Delta x_N \\end{bmatrix}  \\]",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#symmetry",
+    "href": "02_finite-differences.html#symmetry",
+    "title": "2  Finite Differences",
+    "section": "2.7 Symmetry",
+    "text": "2.7 Symmetry\n\\[ A_{i+1,i} = C_{i+1}^{left} = a_i / (x_{i+1}-x_{i}) / (x_{i+2}-x_{i}) \\cdot 2 \\]\n\\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \\cdot 2 \\]\nonly symmetric if \\(\\Delta x\\) is constant around \\(x_i\\), better take \\(a_i/(\\Delta x_i)^2\\)\n\\[ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1})^2 \\]\n\\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i})^2 \\]\n\\(\\Rightarrow\\) inaccuracies expected for non-equidistant discretization",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#a-closer-look-at-the-dirichlet-boundary",
+    "href": "02_finite-differences.html#a-closer-look-at-the-dirichlet-boundary",
+    "title": "2  Finite Differences",
+    "section": "2.8 A closer look at the Dirichlet boundary",
+    "text": "2.8 A closer look at the Dirichlet boundary\n\\[ \\begin{bmatrix}   \n+1 & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots &\n\\end{bmatrix} \\begin{bmatrix} u_B\\\\ f_1  \\end{bmatrix}\\]\n\n\\(C\\) can be differently scaled from 1 \\(\\Rightarrow\\) multiply with \\(C_i^L\\)\nMatrix is non-symmetric \n\n\\[ \\begin{bmatrix}   \nC_1^L & 0 & 0 & \\ldots & &  \\\\\nC_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \\ldots &\n\\end{bmatrix} \\begin{bmatrix} u_B C_i^L\\\\ f_1  \\end{bmatrix} \\]",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#a-closer-look-at-the-neumann-boundary",
+    "href": "02_finite-differences.html#a-closer-look-at-the-neumann-boundary",
+    "title": "2  Finite Differences",
+    "section": "2.9 A closer look at the Neumann boundary",
+    "text": "2.9 A closer look at the Neumann boundary\n\\[ \\begin{bmatrix}\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & -1 & +1\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_N \\\\ g_B \\Delta x_N \\end{bmatrix}  \\]\n\n\\(C\\) can be differently scaled from 1 \\(\\Rightarrow\\) multiply with \\(C_N^R\\)\nMatrix is non-symmetric \\(\\Rightarrow\\) multiply with -1\n\n\\[ \\begin{bmatrix}\n\\ldots & \\ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\\\\n\\ldots & \\ldots & & 0 & C_N^R & -C_N^R\n\\end{bmatrix} \\cdot\\vb{u} =\n\\begin{bmatrix} f_N \\\\ -g_B \\Delta x_N C_N^R \\end{bmatrix}  \\]",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#accuracy",
+    "href": "02_finite-differences.html#accuracy",
+    "title": "2  Finite Differences",
+    "section": "2.10 Accuracy",
+    "text": "2.10 Accuracy\nHow can we prove the accuracy of our solution?\n\ncompare with analytical solutions\nsingle (Point) \\(f\\) lead to piece-wise linear \\(u\\) (correct)\nwhat about continuous source terms? (e.g. radioactive elements in the Earth’s crust)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#analytical-solution",
+    "href": "02_finite-differences.html#analytical-solution",
+    "title": "2  Finite Differences",
+    "section": "2.11 Analytical solution",
+    "text": "2.11 Analytical solution\n\\(a\\)=1, \\(f(x)\\)=1 \\(\\Rightarrow\\) double integration \\(\\Rightarrow\\) quadratic function\n\\[u(x) =  C_0 + C_1 x -1/2 x^2 \\]\n\n\n\n\n\n\n\n\n\nLeft BC\nRight BC\n\\(C_0\\)\n\\(C_1\\)\n\n\n\n\nDirichlet\nDirichlet\n\\(u_L\\)\n\\(L/2 + (u_R-u_L)/ L\\)\n\n\nDirichlet\nNeumann\n\\(u_L\\)\n\\(g_R + L\\)\n\n\nNeumann\nDirichlet\n\\(u_R - g_L L + L^2/2\\)\n\\(g_L\\)\n\n\n\nwith \\(L=(x_N-x_0)\\)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
+    ]
+  },
+  {
+    "objectID": "02_finite-differences.html#hyberbolic-equations",
+    "href": "02_finite-differences.html#hyberbolic-equations",
+    "title": "2  Finite Differences",
+    "section": "2.6 Hyberbolic equations",
+    "text": "2.6 Hyberbolic equations\nAcoustic wave equation in 1D \\[ \\pdv[2]{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]\n\\(u\\)..pressure/velocity/displacement, \\(c\\)..velocity\nDamped (mixed parabolic-hyperbolic) wave equation \\[ \\pdv[2]{u}{t} - a\\pdv{u}{t} - c^2\\pdv[2]{u}{x} = 0 \\]\n\n2.6.1 Discretization\n\\[ \\pdv[2]{u}{t}^{n} \\approx \\frac{u^{n+1}-u^n}{\\Delta t} - \\frac{u^{n}-u^{n-1}}{\\Delta t}\n\\]\n\\[ = \\frac{u^{n+1}+u^{n-1}-2 u^n}{\\Delta t^2} = c^2\\pdv[2]{u}{x}^n \\]\n\\[ u^{n+1} = c^2 \\Delta t^2 \\pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} \\]\n\n\\[ \\vb M \\vb u^{n+1} = (\\vb A + 2\\vb M) \\vb u^n - \\vb M \\vb u^{n-1} \\]\n\n\n\nSecond derivative\n\n\n\n\n2.6.2 Example: velocity distribution\n\n\nShow the code\nimport numpy as np\nimport matplotlib.pyplot as plt\nx=np.arange(0, 600.01, 0.5)\nc = 1.0*np.ones_like(x) # velocity in m/s\nc[100:300] = 1 + np.arange(0,0.5,0.0025) \nc[900:1100] = 0.5  # low velocity zone\n\n# Plot velocity distribution.\nplt.plot(x,c,'k')\nplt.xlabel('x [m]')\nplt.ylabel('c [m/s]')\nplt.grid()\n\n\n\n\n\n\n\n\n\n\n\n2.6.3 Initial displacement\nDerivative of Gaussian (Ricker wavelet)\n\n\nShow the code\nl=5.0\n\n# Initial displacement field [m].\nu=(x-300.0)*np.exp(-(x-300.0)**2/l**2) \n# Plot initial displacement field.\nplt.plot(x,u,'k')\nplt.xlabel('x [m]')\nplt.ylabel('u [m]')\nplt.title('initial displacement field')\nplt.show()\n\n\n\n\n\n\n\n\n\n\n\n2.6.4 Time propagation\n\n\nShow the code\nu_last=u\ndt = 0.5\nddu = np.zeros_like(u)\ndx = np.diff(x)\nfor i in range(100):\n    dudx = np.diff(u)/dx\n    ddu[1:-1] = np.diff(dudx)/dx[:-1]\n    u_next = 2*u-u_last+ddu*c**2 * dt**2 \n    u_last = u\n    u = u_next\n  \nplt.plot(x,u,'k')",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Finite Differences</span>"
     ]
   }
 ]

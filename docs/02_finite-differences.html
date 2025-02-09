@@ -215,25 +215,46 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#taylor-expansion" id="toc-taylor-expansion" class="nav-link active" data-scroll-target="#taylor-expansion"><span class="header-section-number">2.1</span> Taylor expansion</a></li>
-  <li><a href="#fd-approximation" id="toc-fd-approximation" class="nav-link" data-scroll-target="#fd-approximation"><span class="header-section-number">2.2</span> FD Approximation</a></li>
-  <li><a href="#difference-stencil" id="toc-difference-stencil" class="nav-link" data-scroll-target="#difference-stencil"><span class="header-section-number">2.3</span> Difference stencil</a></li>
-  <li><a href="#fdm-on-the-general-poisson-equation" id="toc-fdm-on-the-general-poisson-equation" class="nav-link" data-scroll-target="#fdm-on-the-general-poisson-equation"><span class="header-section-number">2.4</span> FDM on the general Poisson equation</a></li>
-  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">2.5</span> Boundary conditions</a>
+  <li><a href="#fd-approximation" id="toc-fd-approximation" class="nav-link active" data-scroll-target="#fd-approximation"><span class="header-section-number">2.1</span> FD Approximation</a>
   <ul class="collapse">
-  <li><a href="#dirichlet-bc-implementation-way-1" id="toc-dirichlet-bc-implementation-way-1" class="nav-link" data-scroll-target="#dirichlet-bc-implementation-way-1"><span class="header-section-number">2.5.1</span> Dirichlet BC implementation way 1</a></li>
-  <li><a href="#dirichlet-bc-implementation-way-2" id="toc-dirichlet-bc-implementation-way-2" class="nav-link" data-scroll-target="#dirichlet-bc-implementation-way-2"><span class="header-section-number">2.5.2</span> Dirichlet BC implementation way 2</a></li>
-  <li><a href="#neumann-bc-implementation-way-1" id="toc-neumann-bc-implementation-way-1" class="nav-link" data-scroll-target="#neumann-bc-implementation-way-1"><span class="header-section-number">2.5.3</span> Neumann BC implementation way 1</a></li>
-  <li><a href="#neumann-bc-implementation-way-2" id="toc-neumann-bc-implementation-way-2" class="nav-link" data-scroll-target="#neumann-bc-implementation-way-2"><span class="header-section-number">2.5.4</span> Neumann BC implementation way 2</a></li>
+  <li><a href="#difference-stencil" id="toc-difference-stencil" class="nav-link" data-scroll-target="#difference-stencil"><span class="header-section-number">2.1.1</span> Difference stencil</a></li>
   </ul></li>
-  <li><a href="#parabolic-pdes" id="toc-parabolic-pdes" class="nav-link" data-scroll-target="#parabolic-pdes"><span class="header-section-number">3</span> Parabolic PDEs</a>
+  <li><a href="#fdm-on-the-general-poisson-equation" id="toc-fdm-on-the-general-poisson-equation" class="nav-link" data-scroll-target="#fdm-on-the-general-poisson-equation"><span class="header-section-number">2.2</span> FDM on the general Poisson equation</a></li>
+  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">2.3</span> Boundary conditions</a>
   <ul class="collapse">
-  <li><a href="#heat-transfer-in-1d" id="toc-heat-transfer-in-1d" class="nav-link" data-scroll-target="#heat-transfer-in-1d"><span class="header-section-number">3.1</span> Heat transfer in 1D</a></li>
-  <li><a href="#explicit-methods" id="toc-explicit-methods" class="nav-link" data-scroll-target="#explicit-methods"><span class="header-section-number">3.2</span> Explicit methods</a></li>
-  <li><a href="#discretization" id="toc-discretization" class="nav-link" data-scroll-target="#discretization"><span class="header-section-number">3.3</span> Discretization</a></li>
-  <li><a href="#example-velocity-distribution" id="toc-example-velocity-distribution" class="nav-link" data-scroll-target="#example-velocity-distribution"><span class="header-section-number">3.4</span> Example: velocity distribution</a></li>
-  <li><a href="#initial-displacement" id="toc-initial-displacement" class="nav-link" data-scroll-target="#initial-displacement"><span class="header-section-number">3.5</span> Initial displacement</a></li>
-  <li><a href="#time-propagation" id="toc-time-propagation" class="nav-link" data-scroll-target="#time-propagation"><span class="header-section-number">3.6</span> Time propagation</a></li>
+  <li><a href="#dirichlet-boundary-conditions" id="toc-dirichlet-boundary-conditions" class="nav-link" data-scroll-target="#dirichlet-boundary-conditions"><span class="header-section-number">2.3.1</span> Dirichlet boundary conditions</a></li>
+  <li><a href="#neumann-bc" id="toc-neumann-bc" class="nav-link" data-scroll-target="#neumann-bc"><span class="header-section-number">2.3.2</span> Neumann BC</a></li>
+  <li><a href="#implementation-2-node-removal-1" id="toc-implementation-2-node-removal-1" class="nav-link" data-scroll-target="#implementation-2-node-removal-1"><span class="header-section-number">2.3.3</span> Implementation 2: node removal</a></li>
+  </ul></li>
+  <li><a href="#the-general-case" id="toc-the-general-case" class="nav-link" data-scroll-target="#the-general-case"><span class="header-section-number">2.4</span> The general case</a>
+  <ul class="collapse">
+  <li><a href="#the-coupling-coefficients" id="toc-the-coupling-coefficients" class="nav-link" data-scroll-target="#the-coupling-coefficients"><span class="header-section-number">2.4.1</span> The coupling coefficients</a></li>
+  <li><a href="#symmetry" id="toc-symmetry" class="nav-link" data-scroll-target="#symmetry"><span class="header-section-number">2.4.2</span> Symmetry</a></li>
+  <li><a href="#a-closer-look-at-the-dirichlet-boundary" id="toc-a-closer-look-at-the-dirichlet-boundary" class="nav-link" data-scroll-target="#a-closer-look-at-the-dirichlet-boundary"><span class="header-section-number">2.4.3</span> A closer look at the Dirichlet boundary</a></li>
+  <li><a href="#a-closer-look-at-the-neumann-boundary" id="toc-a-closer-look-at-the-neumann-boundary" class="nav-link" data-scroll-target="#a-closer-look-at-the-neumann-boundary"><span class="header-section-number">2.4.4</span> A closer look at the Neumann boundary</a></li>
+  <li><a href="#accuracy" id="toc-accuracy" class="nav-link" data-scroll-target="#accuracy"><span class="header-section-number">2.4.5</span> Accuracy</a></li>
+  <li><a href="#analytical-solution" id="toc-analytical-solution" class="nav-link" data-scroll-target="#analytical-solution"><span class="header-section-number">2.4.6</span> Analytical solution</a></li>
+  <li><a href="#next-spatial-dimension" id="toc-next-spatial-dimension" class="nav-link" data-scroll-target="#next-spatial-dimension"><span class="header-section-number">2.4.7</span> Next spatial dimension</a></li>
+  </ul></li>
+  <li><a href="#parabolic-pdes" id="toc-parabolic-pdes" class="nav-link" data-scroll-target="#parabolic-pdes"><span class="header-section-number">2.5</span> Parabolic PDEs</a>
+  <ul class="collapse">
+  <li><a href="#heat-transfer-in-1d" id="toc-heat-transfer-in-1d" class="nav-link" data-scroll-target="#heat-transfer-in-1d"><span class="header-section-number">2.5.1</span> Heat transfer in 1D</a></li>
+  <li><a href="#periodic-boundary-conditions" id="toc-periodic-boundary-conditions" class="nav-link" data-scroll-target="#periodic-boundary-conditions"><span class="header-section-number">2.5.2</span> Periodic boundary conditions</a></li>
+  <li><a href="#separation-of-variables" id="toc-separation-of-variables" class="nav-link" data-scroll-target="#separation-of-variables"><span class="header-section-number">2.5.3</span> Separation of variables</a></li>
+  <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution"><span class="header-section-number">2.5.4</span> Solution</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">2.5.5</span> Interpretation</a></li>
+  <li><a href="#depth-profiles" id="toc-depth-profiles" class="nav-link" data-scroll-target="#depth-profiles"><span class="header-section-number">2.5.6</span> Depth profiles</a></li>
+  <li><a href="#temporal-behaviour" id="toc-temporal-behaviour" class="nav-link" data-scroll-target="#temporal-behaviour"><span class="header-section-number">2.5.7</span> Temporal behaviour</a></li>
+  <li><a href="#explicit-method" id="toc-explicit-method" class="nav-link" data-scroll-target="#explicit-method"><span class="header-section-number">2.5.8</span> Explicit method</a></li>
+  <li><a href="#implicit-euler-method" id="toc-implicit-euler-method" class="nav-link" data-scroll-target="#implicit-euler-method"><span class="header-section-number">2.5.9</span> Implicit (Euler) method</a></li>
+  <li><a href="#mixed---crank-nicholson-method" id="toc-mixed---crank-nicholson-method" class="nav-link" data-scroll-target="#mixed---crank-nicholson-method"><span class="header-section-number">2.5.10</span> Mixed - Crank-Nicholson method</a></li>
+  </ul></li>
+  <li><a href="#hyberbolic-equations" id="toc-hyberbolic-equations" class="nav-link" data-scroll-target="#hyberbolic-equations"><span class="header-section-number">2.6</span> Hyberbolic equations</a>
+  <ul class="collapse">
+  <li><a href="#discretization" id="toc-discretization" class="nav-link" data-scroll-target="#discretization"><span class="header-section-number">2.6.1</span> Discretization</a></li>
+  <li><a href="#example-velocity-distribution" id="toc-example-velocity-distribution" class="nav-link" data-scroll-target="#example-velocity-distribution"><span class="header-section-number">2.6.2</span> Example: velocity distribution</a></li>
+  <li><a href="#initial-displacement" id="toc-initial-displacement" class="nav-link" data-scroll-target="#initial-displacement"><span class="header-section-number">2.6.3</span> Initial displacement</a></li>
+  <li><a href="#time-propagation" id="toc-time-propagation" class="nav-link" data-scroll-target="#time-propagation"><span class="header-section-number">2.6.4</span> Time propagation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -260,15 +281,12 @@ window.Quarto = {
 </header>
 
 
-<section id="taylor-expansion" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="taylor-expansion"><span class="header-section-number">2.1</span> Taylor expansion</h2>
 <p>Assume the general Poisson equation <span class="math display">\[-\div(a\grad u)=f\]</span></p>
 <p>with some conductivity <span class="math inline">\(a\)</span>, a source term <span class="math inline">\(f\)</span> and the potential <span class="math inline">\(u\)</span>. This can be an electric potential with <span class="math inline">\(a=\sigma\)</span>, the hydraulic head with hydraulic conductivity <span class="math inline">\(k\)</span>, the temperature with the thermal conductivity or the gravity potential with <span class="math inline">\(a=1\)</span>. Note that we are using the form with the leading minus. First, <span class="math inline">\(-\grad u\)</span> is typically the field (e.g.&nbsp;electric) and <span class="math inline">\(a\grad u\)</span> is usually the flow (e.g.&nbsp;streaming velocity or current density) towards decreasing potential.</p>
 <p>Neglecting <span class="math inline">\(a\)</span> for a moment, the left-hand side is the second derivative, i.e.&nbsp;a curvature. A positive source field <span class="math inline">\(f\)</span> leads to a negative curvature, i.e.&nbsp;a decreasing slope of the potential curve. This is a maximum of the potential caused by the source, e.g., an increased temperature for a heat source.</p>
 <!-- Taylor expansion $$f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2$$ -->
-</section>
-<section id="fd-approximation" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="fd-approximation"><span class="header-section-number">2.2</span> FD Approximation</h2>
+<section id="fd-approximation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="fd-approximation"><span class="header-section-number">2.1</span> FD Approximation</h2>
 <div class="callout callout-style-default callout-tip no-icon callout-titled" title="Approximate derivative operators by differences">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -287,84 +305,238 @@ Approximate derivative operators by differences
 <p><span class="math display">\[\pdv[2]{u_3}{x}\approx
 \frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}
 = \frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} \]</span></p>
-</section>
-<section id="difference-stencil" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="difference-stencil"><span class="header-section-number">2.3</span> Difference stencil</h2>
+<section id="difference-stencil" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="difference-stencil"><span class="header-section-number">2.1.1</span> Difference stencil</h3>
 <p>Assumption: equidistant discretization <span class="math inline">\(\Delta x\)</span>, conductivity 1</p>
 <p>1st derivative: <span class="math inline">\([-1, +1] / dx\)</span>, 2nd derivative <span class="math inline">\([+1, -2, +1] / dx^2\)</span></p>
 <p>Matrix-Vector product <span class="math inline">\(\vb{A}\cdot\vb{u}=\vb{f}\)</span> with</p>
 <p><span class="math display">\[ \vb{A} = \frac{1}{\Delta x} \begin{bmatrix}   
-+1 &amp; -2 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
-0 &amp; +1 &amp; -2 &amp; +1 &amp; 0 &amp; \ldots &amp; \\
+-1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; &amp;  \\
+0 &amp; -1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; \\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp;  \\
-\ldots &amp; \ldots &amp; 0 &amp; +1 &amp; -2 &amp; +1
+\ldots &amp; \ldots &amp; 0 &amp; -1 &amp; +2 &amp; -1
 \end{bmatrix}  \]</span></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="pics/fd1dstencil.svg" class="img-fluid figure-img"></p>
-<figcaption>1D Finite-Difference stencil</figcaption>
+<p>This is illustrated by the Finite Difference stencil (<a href="#fig-1dfd-stencil" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>): Every point, e.g.&nbsp;the red point, is constructed by using its neighbors.</p>
+<div id="fig-1dfd-stencil" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-1dfd-stencil-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pics/fd1dstencil.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-1dfd-stencil-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: 1D Finite-Difference stencil
+</figcaption>
 </figure>
 </div>
 </section>
-<section id="fdm-on-the-general-poisson-equation" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="fdm-on-the-general-poisson-equation"><span class="header-section-number">2.4</span> FDM on the general Poisson equation</h2>
-<p>Assume the Poisson equation <span class="math display">\[\div(a\grad u)=f\]</span> with a conductivity term <span class="math inline">\(a\)</span></p>
-<p><span class="math display">\[ \pdv{(a \pdv*{u})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  \]</span></p>
 </section>
-<section id="boundary-conditions" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">2.5</span> Boundary conditions</h2>
+<section id="fdm-on-the-general-poisson-equation" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="fdm-on-the-general-poisson-equation"><span class="header-section-number">2.2</span> FDM on the general Poisson equation</h2>
+<p>Assume the Poisson equation <span class="math display">\[\div(a\grad u)=f\]</span> with a conductivity term <span class="math inline">\(a\)</span></p>
+<p><span class="math display">\[ \pdv{(a \pdv*{u}{z})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  \]</span></p>
+</section>
+<section id="boundary-conditions" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">2.3</span> Boundary conditions</h2>
 <p>Dirichlet conditions: <span class="math inline">\(u_0=u_B\)</span> (homogeneous if 0)</p>
 <p>Neumann conditions (homogeneous if 0) <span class="math display">\[ \pdv*{u}{x}_0=g_B \]</span></p>
 <p>Mixed boundary conditions <span class="math inline">\(u_0+\alpha du_0/dx=\gamma\)</span></p>
-<section id="dirichlet-bc-implementation-way-1" class="level3" data-number="2.5.1">
-<h3 data-number="2.5.1" class="anchored" data-anchor-id="dirichlet-bc-implementation-way-1"><span class="header-section-number">2.5.1</span> Dirichlet BC implementation way 1</h3>
-<p><span class="math inline">\(u_0 = u_B\)</span></p>
+<section id="dirichlet-boundary-conditions" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="dirichlet-boundary-conditions"><span class="header-section-number">2.3.1</span> Dirichlet boundary conditions</h3>
+<p>Assume the dirichlet condition on the upper boundary <span id="eq-Dirichlet"><span class="math display">\[u_0 = u_B \tag{2.1}\]</span></span> fixes the potential to a specific value <span class="math inline">\(u_B\)</span>. #### Implementation 1 : explicit (<a href="#eq-Dirichlet" class="quarto-xref"><span>2.1</span></a>) can be directly added as an equation in the matrix and the right-hand-side:</p>
 <p><span class="math display">\[ \begin{bmatrix}   
 +1 &amp; 0 &amp; 0 &amp; \ldots &amp; &amp;  \\
-+1 &amp; -2 &amp; +1 &amp; 0 &amp; \ldots &amp; \\
+-1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; \\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp;  \\
-\ldots &amp; \ldots &amp; 0 &amp; +1 &amp; -2 &amp; +1
+\ldots &amp; \ldots &amp; 0 &amp; -1 &amp; +2 &amp; -1
 \end{bmatrix} \cdot\vb{u} =
 \begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  \]</span></p>
-</section>
-<section id="dirichlet-bc-implementation-way-2" class="level3" data-number="2.5.2">
-<h3 data-number="2.5.2" class="anchored" data-anchor-id="dirichlet-bc-implementation-way-2"><span class="header-section-number">2.5.2</span> Dirichlet BC implementation way 2</h3>
-<p><span class="math inline">\(u_B - 2 u_1 + u_3 = f_1\)</span></p>
+<section id="implementation-2-node-removal" class="level4" data-number="2.3.1.1">
+<h4 data-number="2.3.1.1" class="anchored" data-anchor-id="implementation-2-node-removal"><span class="header-section-number">2.3.1.1</span> Implementation 2: Node removal</h4>
+<p>The Dirichlet condition (<a href="#eq-Dirichlet" class="quarto-xref"><span>2.1</span></a>) is directly inserted into the second equation <span class="math inline">\(-u_B + 2 u_1 - u_2 = f_1\)</span> and the first equation is omitted</p>
 <p><span class="math display">\[ \begin{bmatrix}   
--2 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
-+1 &amp; -2 &amp; +1 &amp; 0 &amp; \ldots &amp; \\
++2 &amp; -1 &amp; 0 &amp; \ldots &amp; &amp;  \\
+-1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; \\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp;  \\
-\ldots &amp; 0 &amp; +1 &amp; -2 &amp; +1
+\ldots &amp; 0 &amp; -1 &amp; +2 &amp; -1
 \end{bmatrix} \cdot\vb{u} =
-\begin{bmatrix} f_1 - u_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} \]</span></p>
+\begin{bmatrix} f_1 + u_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} \]</span></p>
+<p>Consequently, the first column is removed and the first equation is the sum of the preceding two other equations.</p>
 </section>
-<section id="neumann-bc-implementation-way-1" class="level3" data-number="2.5.3">
-<h3 data-number="2.5.3" class="anchored" data-anchor-id="neumann-bc-implementation-way-1"><span class="header-section-number">2.5.3</span> Neumann BC implementation way 1</h3>
-<p><span class="math display">\[ u_1 - u_0 = g_B\]</span></p>
-<p><span class="math display">\[ \begin{bmatrix}   
+</section>
+<section id="neumann-bc" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="neumann-bc"><span class="header-section-number">2.3.2</span> Neumann BC</h3>
+<p>The Neumann boundary condition <span id="eq-Neumann"><span class="math display">\[ u_1 - u_0 = g_B \tag{2.2}\]</span></span> fixes the gradient of the potential at the left end.</p>
+<section id="implementation-1-explicit" class="level4" data-number="2.3.2.1">
+<h4 data-number="2.3.2.1" class="anchored" data-anchor-id="implementation-1-explicit"><span class="header-section-number">2.3.2.1</span> Implementation 1: explicit</h4>
+<p>The equation (<a href="#eq-Neumann" class="quarto-xref"><span>2.2</span></a>) replaces the first equation <span class="math display">\[ \begin{bmatrix}
 -1 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
-+1 &amp; -2 &amp; +1 &amp; 0 &amp; \ldots &amp; \\
+-1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; \\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-\ldots &amp; \ldots &amp; +1 &amp; -2 &amp; +1
+\ldots &amp; \ldots &amp; -1 &amp; +2 &amp; -1
 \end{bmatrix} \cdot\vb{u} =
-\begin{bmatrix} f_0+g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  \]</span></p>
+\begin{bmatrix} g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  \]</span> Note that this would result in an unsymmetric matrix for the left boundary, but in a symmetric matrix for the right boundary. Therefore we better use the outward normal direction <span id="eq-Neumann-Outward"><span class="math display">\[ u_0 - u_1 = g_B \tag{2.3}\]</span></span> leading to the symmetric matrix <span class="math display">\[ \begin{bmatrix}
++1 &amp; -1 &amp; 0 &amp; \ldots &amp; &amp;  \\
+-1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\ldots &amp; \ldots &amp; -1 &amp; +2 &amp; -1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  \]</span></p>
 </section>
-<section id="neumann-bc-implementation-way-2" class="level3" data-number="2.5.4">
-<h3 data-number="2.5.4" class="anchored" data-anchor-id="neumann-bc-implementation-way-2"><span class="header-section-number">2.5.4</span> Neumann BC implementation way 2</h3>
-<p><span class="math display">\[u_0 - 2 u_1+u_2 = f_1 \qquad u_1 - u_0 = g_B \Rightarrow u_2-u_1=f_1+g_B \]</span> <!-- $-u_1 + u_2 = f_1 - g_B$ --></p>
-<p><span class="math display">\[ \begin{bmatrix}   
--1 &amp; +1 &amp; 0 &amp; \ldots &amp; &amp;  \\
-+1 &amp; -2 &amp; +1 &amp; 0 &amp; \ldots &amp; \\
+</section>
+<section id="implementation-2-node-removal-1" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="implementation-2-node-removal-1"><span class="header-section-number">2.3.3</span> Implementation 2: node removal</h3>
+<p>The equation (<a href="#eq-Neumann-Outward" class="quarto-xref"><span>2.3</span></a>) is directly inserted into the second equation <span class="math display">\[-u_0 +2 u_1-u_2 = f_1\]</span> This leads to <span class="math display">\[u_2-u_1=f_1+g_B \]</span> and thus to the matrix <span class="math display">\[ \begin{bmatrix}   
++1 &amp; -1 &amp; 0 &amp; \ldots &amp; &amp;  \\
+-1 &amp; +2 &amp; -1 &amp; 0 &amp; \ldots &amp; \\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp;  \\
-\ldots &amp; 0 &amp; +1 &amp; -2 &amp; +1
+\ldots &amp; 0 &amp; -1 &amp; +2 &amp; -1
 \end{bmatrix} \cdot\vb{u} =
 \begin{bmatrix} f_1 + g_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} \]</span></p>
 </section>
 </section>
-<section id="parabolic-pdes" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Parabolic PDEs</h1>
-<section id="heat-transfer-in-1d" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="heat-transfer-in-1d"><span class="header-section-number">3.1</span> Heat transfer in 1D</h2>
+<section id="the-general-case" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="the-general-case"><span class="header-section-number">2.4</span> The general case</h2>
+<p><span class="math inline">\(\Delta x \ne 1\)</span> &amp; <span class="math inline">\(a \ne 1\)</span> <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(a \pdv{u}{x} \approx a_i\frac{u_{i+1}-u_i}{x_{i+1}-x_i}\)</span></p>
+<div id="082246de" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_finite-differences_files/figure-html/cell-2-output-1.png" width="629" height="177" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math inline">\(\dv{x}(a \pdv{u}{x}) \approx (a_i\frac{u_{i+1}-u_i}{x_{i+1}-x_i} - a_{i-1}\frac{u_{i}-u_{i-1}}{x_{i}-x_{i-1}}) / (x_{i+1}-x_{i-1}) \cdot 2\)</span></p>
+<p><span class="math display">\[ A_{i, i-1} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 \]</span></p>
+<section id="the-coupling-coefficients" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="the-coupling-coefficients"><span class="header-section-number">2.4.1</span> The coupling coefficients</h3>
+<p><span class="math display">\[ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 \]</span></p>
+<p><span class="math display">\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 \]</span></p>
+<p><span class="math display">\[ \begin{bmatrix}   
++1 &amp; 0 &amp; 0 &amp; \ldots &amp; &amp;  \\
+C_1^L &amp; -(C_1^L+C_1^R) &amp; C_1^R &amp; 0 &amp; \ldots &amp; \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp;  \\
+\ldots &amp; \ldots &amp; 0 &amp; C_N^L &amp; -(C_N^L+C_N^R) &amp; C_N^R \\
+\ldots &amp; \ldots &amp; &amp; 0 &amp; -1 &amp; +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \\ g_B \Delta x_N \end{bmatrix}  \]</span></p>
+</section>
+<section id="symmetry" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="symmetry"><span class="header-section-number">2.4.2</span> Symmetry</h3>
+<p><span class="math display">\[ A_{i+1,i} = C_{i+1}^{left} = a_i / (x_{i+1}-x_{i}) / (x_{i+2}-x_{i}) \cdot 2 \]</span></p>
+<p><span class="math display">\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 \]</span></p>
+<p>only symmetric if <span class="math inline">\(\Delta x\)</span> is constant around <span class="math inline">\(x_i\)</span>, better take <span class="math inline">\(a_i/(\Delta x_i)^2\)</span></p>
+<p><span class="math display">\[ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1})^2 \]</span></p>
+<p><span class="math display">\[ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i})^2 \]</span></p>
+<p><span class="math inline">\(\Rightarrow\)</span> inaccuracies expected for non-equidistant discretization</p>
+</section>
+<section id="a-closer-look-at-the-dirichlet-boundary" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="a-closer-look-at-the-dirichlet-boundary"><span class="header-section-number">2.4.3</span> A closer look at the Dirichlet boundary</h3>
+<p><span class="math display">\[ \begin{bmatrix}   
++1 &amp; 0 &amp; 0 &amp; \ldots &amp; &amp;  \\
+C_1^L &amp; -(C_1^L+C_1^R) &amp; C_1^R &amp; 0 &amp; \ldots &amp;
+\end{bmatrix} \begin{bmatrix} u_B\\ f_1  \end{bmatrix}\]</span></p>
+<ol type="1">
+<li><span class="math inline">\(C\)</span> can be differently scaled from 1 <span class="math inline">\(\Rightarrow\)</span> multiply with <span class="math inline">\(C_i^L\)</span></li>
+<li>Matrix is non-symmetric <!-- $\Rightarrow$ add $C_1^L$ --></li>
+</ol>
+<p><span class="math display">\[ \begin{bmatrix}   
+C_1^L &amp; 0 &amp; 0 &amp; \ldots &amp; &amp;  \\
+C_1^L &amp; -(C_1^L+C_1^R) &amp; C_1^R &amp; 0 &amp; \ldots &amp;
+\end{bmatrix} \begin{bmatrix} u_B C_i^L\\ f_1  \end{bmatrix} \]</span></p>
+</section>
+<section id="a-closer-look-at-the-neumann-boundary" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="a-closer-look-at-the-neumann-boundary"><span class="header-section-number">2.4.4</span> A closer look at the Neumann boundary</h3>
+<p><span class="math display">\[ \begin{bmatrix}
+\ldots &amp; \ldots &amp; 0 &amp; C_N^L &amp; -(C_N^L+C_N^R) &amp; C_N^R \\
+\ldots &amp; \ldots &amp; &amp; 0 &amp; -1 &amp; +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_N \\ g_B \Delta x_N \end{bmatrix}  \]</span></p>
+<ol type="1">
+<li><span class="math inline">\(C\)</span> can be differently scaled from 1 <span class="math inline">\(\Rightarrow\)</span> multiply with <span class="math inline">\(C_N^R\)</span></li>
+<li>Matrix is non-symmetric <span class="math inline">\(\Rightarrow\)</span> multiply with -1</li>
+</ol>
+<p><span class="math display">\[ \begin{bmatrix}
+\ldots &amp; \ldots &amp; 0 &amp; C_N^L &amp; -(C_N^L+C_N^R) &amp; C_N^R \\
+\ldots &amp; \ldots &amp; &amp; 0 &amp; C_N^R &amp; -C_N^R
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_N \\ -g_B \Delta x_N C_N^R \end{bmatrix}  \]</span></p>
+</section>
+<section id="accuracy" class="level3" data-number="2.4.5">
+<h3 data-number="2.4.5" class="anchored" data-anchor-id="accuracy"><span class="header-section-number">2.4.5</span> Accuracy</h3>
+<p>How can we prove the accuracy of our solution?</p>
+<ul>
+<li>compare with analytical solutions</li>
+<li>single (Point) <span class="math inline">\(f\)</span> lead to piece-wise linear <span class="math inline">\(u\)</span> (correct)</li>
+<li>what about continuous source terms?<br> (e.g.&nbsp;radioactive elements in the Earth’s crust)</li>
+</ul>
+</section>
+<section id="analytical-solution" class="level3" data-number="2.4.6">
+<h3 data-number="2.4.6" class="anchored" data-anchor-id="analytical-solution"><span class="header-section-number">2.4.6</span> Analytical solution</h3>
+<p><span class="math inline">\(a\)</span>=1, <span class="math inline">\(f(x)\)</span>=1 <span class="math inline">\(\Rightarrow\)</span> double integration <span class="math inline">\(\Rightarrow\)</span> quadratic function</p>
+<p><span class="math display">\[u(x) =  C_0 + C_1 x -1/2 x^2 \]</span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 33%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Left BC</th>
+<th>Right BC</th>
+<th><span class="math inline">\(C_0\)</span></th>
+<th><span class="math inline">\(C_1\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dirichlet</td>
+<td>Dirichlet</td>
+<td><span class="math inline">\(u_L\)</span></td>
+<td><span class="math inline">\(L/2 + (u_R-u_L)/ L\)</span></td>
+</tr>
+<tr class="even">
+<td>Dirichlet</td>
+<td>Neumann</td>
+<td><span class="math inline">\(u_L\)</span></td>
+<td><span class="math inline">\(g_R + L\)</span></td>
+</tr>
+<tr class="odd">
+<td>Neumann</td>
+<td>Dirichlet</td>
+<td><span class="math inline">\(u_R - g_L L + L^2/2\)</span></td>
+<td><span class="math inline">\(g_L\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>with <span class="math inline">\(L=(x_N-x_0)\)</span></p>
+</section>
+<section id="next-spatial-dimension" class="level3" data-number="2.4.7">
+<h3 data-number="2.4.7" class="anchored" data-anchor-id="next-spatial-dimension"><span class="header-section-number">2.4.7</span> Next spatial dimension</h3>
+<!-- ![Simple 2D conductivity grid](notebooks/grid32sigma.svg) -->
+<p>If we go from 1D to 2D conditions, we have conductivities between each four nodes (<a href="#fig-2dfd-stencil" class="quarto-xref">Figure&nbsp;<span>2.2</span></a>). The red point is constructed by its four neighbors to the left and right, and to the top and bottom.</p>
+<div id="fig-2dfd-stencil" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-2dfd-stencil-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="notebooks/grid32sigmaStencil.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-2dfd-stencil-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: Simple 2D conductivity grid with FD stencil
+</figcaption>
+</figure>
+</div>
+<p>For introducing the conductivity into the coupling coefficient, there are always two values adjacent to the connecting edge.</p>
+<p><span class="math display">\[ C_{i,j}^{right} = a_{i,j-1/2} / (x_{i+1}-x_{i})^2 \]</span></p>
+<p><span class="math inline">\(a_{i,j-1/2}=(a_{i,j-1}+a_{i,j})/2\)</span> ?</p>
+<p>harmonic, geometric? weighting?</p>
+<p><span class="math inline">\(a_{i,j-1/2}=\frac{a_{i,j-1}\Delta y_{j-1}+a_{i,j}\Delta y_{j}}{y_j+1-y_{j-1}}\)</span>?</p>
+</section>
+</section>
+<section id="parabolic-pdes" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="parabolic-pdes"><span class="header-section-number">2.5</span> Parabolic PDEs</h2>
+<section id="heat-transfer-in-1d" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="heat-transfer-in-1d"><span class="header-section-number">2.5.1</span> Heat transfer in 1D</h3>
 <p><span class="math display">\[ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 \]</span></p>
 <p>with the periodic boundary conditions:</p>
 <ul>
@@ -373,108 +545,258 @@ Approximate derivative operators by differences
 </ul>
 <p>and the initial condition <span class="math inline">\(T(z, t=0)=\sin \pi z\)</span> has the analytical solution <span class="math display">\[ T(z, t) = \Delta T e^{-\pi^2 t} \sin \pi z \]</span></p>
 </section>
-<section id="explicit-methods" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="explicit-methods"><span class="header-section-number">3.2</span> Explicit methods</h2>
+<section id="periodic-boundary-conditions" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="periodic-boundary-conditions"><span class="header-section-number">2.5.2</span> Periodic boundary conditions</h3>
+<p><span class="math display">\[ \pdv{T}{t} - \div (a\grad{T}) = \div q_s \]</span></p>
+<ul>
+<li><span class="math inline">\(a=\frac{k}{\rho c_p}\)</span> [m²/s] thermal diffusivity - measure of heat transfer</li>
+<li><span class="math inline">\(k\)</span> [W/m/K] thermal conductivity - measure of temperature transfer</li>
+<li><span class="math inline">\(c_p\)</span> [J/kg/K] - heat capacity - measure of heat storage per mass</li>
+<li><span class="math inline">\(\rho\)</span> (kg/m³) density</li>
+</ul>
+<p>Water <span class="math inline">\(k\)</span>=0.6 W/m/K, <span class="math inline">\(\rho\)</span>=1000 kg/m³, <span class="math inline">\(c\)</span>=4180 J/kg/K <span class="math inline">\(\Rightarrow\)</span> <span class="math inline">\(a\)</span>=1.43e-7 m²/s</p>
+<p>Upper boundary: daily/yearly variation</p>
+<p><span class="math display">\[ T_0(t) = T_m + \Delta T \sin \omega t \]</span></p>
+<p><span class="math inline">\(T_m\)</span> mean temperature (e.g.&nbsp;12°C), <span class="math inline">\(\Delta T\)</span> variation, e.g.&nbsp;8°C</p>
+<p><span class="math inline">\(\omega=2\pi/t_P\)</span> daily (<span class="math inline">\(T_d\)</span>=3600*24s) or yearly (<span class="math inline">\(T_y=365 T_d\)</span>) cycle ::: ::: {.column}</p>
+<div id="ba93c4ee" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>day <span class="op">=</span> <span class="dv">3600</span> <span class="op">*</span> <span class="dv">24</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>T0, dT <span class="op">=</span> <span class="dv">12</span>, <span class="dv">8</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">100</span>) <span class="op">/</span> <span class="dv">50</span> <span class="op">*</span> day</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> T0<span class="op">+</span>dT<span class="op">*</span>np.sin(t<span class="op">/</span>day<span class="op">*</span><span class="dv">2</span><span class="op">*</span>np.pi)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>plt.plot(t<span class="op">/</span>day<span class="op">*</span><span class="dv">24</span>, T)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"t (h)"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"T (°C)"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>plt.grid()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_finite-differences_files/figure-html/cell-4-output-1.png" width="585" height="429" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="separation-of-variables" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="separation-of-variables"><span class="header-section-number">2.5.3</span> Separation of variables</h3>
+<p><span class="math display">\[ \pdv{T}{t} = a\pdv[2]{T}{z} \]</span></p>
+<p><span class="math inline">\(T(t, z)/\Delta T - T_0 = \theta(t) Z(z)\)</span></p>
+<p><span class="math display">\[ Z \pdv{\theta}{t} = a \theta \pdv[2]{Z}{z} \]</span></p>
+<p><span class="math display">\[ \frac1\theta \pdv{\theta}{t} = C = a \frac{1}{Z}\pdv[2]{Z}{z} \]</span></p>
+</section>
+<section id="solution" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" class="anchored" data-anchor-id="solution"><span class="header-section-number">2.5.4</span> Solution</h3>
+<p>regarding the BC <span class="math inline">\(e^{\imath\omega t}\)</span> leads to <span class="math inline">\(C=\imath\omega\)</span> and thus <span class="math inline">\(\theta=\theta_0 e^{\imath\omega t}\)</span></p>
+<p><span class="math display">\[ \pdv[2]{Z}{z} - \imath \frac{\omega}{a} Z = \pdv[2]{Z}{z} + n^2 Z = 0  \]</span></p>
+<p>Helmholtz equation with solution <span class="math inline">\(Z=Z_0 e^{\imath n z}\)</span> (<span class="math inline">\(n^2=\imath\omega/a\)</span>)</p>
+<p><span class="math display">\[ Z=Z_0 e^{\imath n z} = Z_0 e^{\sqrt{\imath\omega/a}z} =
+Z_0 e^{\sqrt{\omega/2a}(1+\imath)z} \]</span></p>
+<p><span class="math display">\[ T(t, z)/\Delta T + T_0 = Z(z)\theta(t)=
+Z_0\theta_0 e^{-\sqrt{\omega/2a}z} e^{i(\omega t-\sqrt{\omega/2a}z)} \]</span></p>
+</section>
+<section id="interpretation" class="level3" data-number="2.5.5">
+<h3 data-number="2.5.5" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">2.5.5</span> Interpretation</h3>
+<p>replacing the term <span class="math inline">\(\sqrt{2a/\omega}=\sqrt{a t_P/\pi}=d\)</span> leads to</p>
+<p><span class="math display">\[ T(z, t) = T_0 + \Delta T e^{-z/d} \sin(\omega t - z/d) \]</span></p>
+<ul>
+<li>exponential damping of the temperature variation with decay depth <span class="math inline">\(d\)</span></li>
+<li>phase lag <span class="math inline">\(z/d\)</span> increases with depth, <span class="math inline">\(z_\pi=\sqrt{2 a/\omega}\pi=\sqrt{a t_P \pi}\)</span></li>
+</ul>
+<ol type="1">
+<li>Daily cycle: decay depth <span class="math inline">\(d\)</span>=6cm, minimum depth=20cm</li>
+<li>Yearly cycle: decay depth <span class="math inline">\(d\)</span>=1.2m, minimum depth=4m</li>
+</ol>
+</section>
+<section id="depth-profiles" class="level3" data-number="2.5.6">
+<h3 data-number="2.5.6" class="anchored" data-anchor-id="depth-profiles"><span class="header-section-number">2.5.6</span> Depth profiles</h3>
+<div id="cd2c3a3b" class="cell" data-output-location="column" data-execution_count="4">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="fl">1.5e-7</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>year <span class="op">=</span> day<span class="op">*</span><span class="dv">365</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> sqrt(a<span class="op">*</span>year<span class="op">/</span>pi)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.1</span>) <span class="op">*</span> year</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">6</span>, <span class="fl">0.1</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ti <span class="kw">in</span> t:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    Tz <span class="op">=</span> np.exp(<span class="op">-</span>z<span class="op">/</span>d)<span class="op">*</span>np.sin(ti<span class="op">*</span><span class="dv">2</span><span class="op">*</span>pi<span class="op">/</span>year<span class="op">-</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                             z<span class="op">/</span>d) <span class="op">*</span> dT <span class="op">+</span> T0</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    ax.plot(Tz, z, label<span class="op">=</span><span class="st">"t=</span><span class="sc">{:.1f}</span><span class="st">"</span>.<span class="bu">format</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        ti<span class="op">/</span>year))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>ax.invert_yaxis()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>ax.grid()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_finite-differences_files/figure-html/cell-5-output-1.png" width="558" height="411" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="temporal-behaviour" class="level3" data-number="2.5.7">
+<h3 data-number="2.5.7" class="anchored" data-anchor-id="temporal-behaviour"><span class="header-section-number">2.5.7</span> Temporal behaviour</h3>
+<div id="83b12b3e" class="cell" data-output-location="column" data-execution_count="5">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="fl">1.01</span>, <span class="fl">0.01</span>) <span class="op">*</span> year</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">3</span>, <span class="fl">0.4</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> zi <span class="kw">in</span> z:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    Tt <span class="op">=</span> np.exp(<span class="op">-</span>zi<span class="op">/</span>d)<span class="op">*</span>np.sin(t<span class="op">*</span><span class="dv">2</span><span class="op">*</span>pi<span class="op">/</span>year<span class="op">-</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                              zi<span class="op">/</span>d) <span class="op">*</span> dT <span class="op">+</span> T0</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    ax.plot(t<span class="op">/</span>year<span class="op">*</span><span class="dv">12</span>, Tt, label<span class="op">=</span><span class="ss">f"z=</span><span class="sc">{</span>zi<span class="sc">:.1f}</span><span class="ss">"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">12</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"t (months)"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"T (°C)"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>ax.grid()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_finite-differences_files/figure-html/cell-6-output-1.png" width="593" height="429" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="explicit-method" class="level3" data-number="2.5.8">
+<h3 data-number="2.5.8" class="anchored" data-anchor-id="explicit-method"><span class="header-section-number">2.5.8</span> Explicit method</h3>
 <p><span class="math display">\[ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 \]</span></p>
 <p>Solve Poisson equation <span class="math inline">\(\div(a\grad u)=f\)</span></p>
 <p>for every time step <span class="math inline">\(i\)</span> (using FDM, FEM, FVM etc.)</p>
 <p>Finite-difference step in time: update field by <span class="math display">\[ T_{i+1} = T_i + a \pdv[2]{u}{z} \cdot \Delta t\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/dtforward.svg" class="img-fluid figure-img"></p>
+<figcaption>Forward difference stencil</figcaption>
+</figure>
+</div>
 </section>
-<section id="discretization" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="discretization"><span class="header-section-number">3.3</span> Discretization</h2>
-<div class="columns">
-<div class="column">
+<section id="implicit-euler-method" class="level3" data-number="2.5.9">
+<h3 data-number="2.5.9" class="anchored" data-anchor-id="implicit-euler-method"><span class="header-section-number">2.5.9</span> Implicit (Euler) method</h3>
+<p><span class="math display">\[ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T}{z} ^{n+1} \]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/dtbackward.svg" class="img-fluid figure-img"></p>
+<figcaption>Forward difference stencil</figcaption>
+</figure>
+</div>
+</section>
+<section id="mixed---crank-nicholson-method" class="level3" data-number="2.5.10">
+<h3 data-number="2.5.10" class="anchored" data-anchor-id="mixed---crank-nicholson-method"><span class="header-section-number">2.5.10</span> Mixed - Crank-Nicholson method</h3>
+<p><span class="math display">\[ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} \]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/dtmixed.svg" class="img-fluid figure-img"></p>
+<figcaption>Mixed (balanced) difference stencil</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="hyberbolic-equations" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="hyberbolic-equations"><span class="header-section-number">2.6</span> Hyberbolic equations</h2>
+<p>Acoustic wave equation in 1D <span class="math display">\[ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 \]</span></p>
+<p><span class="math inline">\(u\)</span>..pressure/velocity/displacement, <span class="math inline">\(c\)</span>..velocity</p>
+<p>Damped (mixed parabolic-hyperbolic) wave equation <span class="math display">\[ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 \]</span></p>
+<section id="discretization" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="discretization"><span class="header-section-number">2.6.1</span> Discretization</h3>
 <p><span class="math display">\[ \pdv[2]{u}{t}^{n} \approx \frac{u^{n+1}-u^n}{\Delta t} - \frac{u^{n}-u^{n-1}}{\Delta t}
 \]</span></p>
 <p><span class="math display">\[ = \frac{u^{n+1}+u^{n-1}-2 u^n}{\Delta t^2} = c^2\pdv[2]{u}{x}^n \]</span></p>
 <p><span class="math display">\[ u^{n+1} = c^2 \Delta t^2 \pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} \]</span></p>
 <!-- \frac{1}{\Delta t}  -->
 <p><span class="math display">\[ \vb M \vb u^{n+1} = (\vb A + 2\vb M) \vb u^n - \vb M \vb u^{n-1} \]</span></p>
-</div><div class="column">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="pics/dtsecond.svg" class="img-fluid figure-img"></p>
 <figcaption>Second derivative</figcaption>
 </figure>
 </div>
-</div>
-</div>
 </section>
-<section id="example-velocity-distribution" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="example-velocity-distribution"><span class="header-section-number">3.4</span> Example: velocity distribution</h2>
-<div id="906711e5" class="cell" data-output-location="column-fragment" data-execution_count="1">
+<section id="example-velocity-distribution" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="example-velocity-distribution"><span class="header-section-number">2.6.2</span> Example: velocity distribution</h3>
+<div id="547a9e4c" class="cell" data-output-location="column-fragment" data-execution_count="6">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x<span class="op">=</span>np.arange(<span class="dv">0</span>, <span class="fl">600.01</span>, <span class="fl">0.5</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="fl">1.0</span><span class="op">*</span>np.ones_like(x) <span class="co"># velocity in m/s</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>c[<span class="dv">100</span>:<span class="dv">300</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> np.arange(<span class="dv">0</span>,<span class="fl">0.5</span>,<span class="fl">0.0025</span>) </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>c[<span class="dv">900</span>:<span class="dv">1100</span>] <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># low velocity zone</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot velocity distribution.</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>plt.plot(x,c,<span class="st">'k'</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'x [m]'</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'c [m/s]'</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>plt.grid()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>x<span class="op">=</span>np.arange(<span class="dv">0</span>, <span class="fl">600.01</span>, <span class="fl">0.5</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="fl">1.0</span><span class="op">*</span>np.ones_like(x) <span class="co"># velocity in m/s</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>c[<span class="dv">100</span>:<span class="dv">300</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> np.arange(<span class="dv">0</span>,<span class="fl">0.5</span>,<span class="fl">0.0025</span>) </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>c[<span class="dv">900</span>:<span class="dv">1100</span>] <span class="op">=</span> <span class="fl">0.5</span>  <span class="co"># low velocity zone</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot velocity distribution.</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>plt.plot(x,c,<span class="st">'k'</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'x [m]'</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'c [m/s]'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>plt.grid()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="02_finite-differences_files/figure-html/cell-2-output-1.png" width="589" height="429" class="figure-img"></p>
+<p><img src="02_finite-differences_files/figure-html/cell-7-output-1.png" width="589" height="429" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="initial-displacement" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="initial-displacement"><span class="header-section-number">3.5</span> Initial displacement</h2>
+<section id="initial-displacement" class="level3" data-number="2.6.3">
+<h3 data-number="2.6.3" class="anchored" data-anchor-id="initial-displacement"><span class="header-section-number">2.6.3</span> Initial displacement</h3>
 <p>Derivative of Gaussian (Ricker wavelet)</p>
-<div id="9597230a" class="cell" data-output-location="column-fragment" data-execution_count="2">
+<div id="caa423d5" class="cell" data-output-location="column-fragment" data-execution_count="7">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l<span class="op">=</span><span class="fl">5.0</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial displacement field [m].</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>u<span class="op">=</span>(x<span class="op">-</span><span class="fl">300.0</span>)<span class="op">*</span>np.exp(<span class="op">-</span>(x<span class="op">-</span><span class="fl">300.0</span>)<span class="op">**</span><span class="dv">2</span><span class="op">/</span>l<span class="op">**</span><span class="dv">2</span>) </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot initial displacement field.</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>plt.plot(x,u,<span class="st">'k'</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'x [m]'</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'u [m]'</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'initial displacement field'</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>l<span class="op">=</span><span class="fl">5.0</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial displacement field [m].</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>u<span class="op">=</span>(x<span class="op">-</span><span class="fl">300.0</span>)<span class="op">*</span>np.exp(<span class="op">-</span>(x<span class="op">-</span><span class="fl">300.0</span>)<span class="op">**</span><span class="dv">2</span><span class="op">/</span>l<span class="op">**</span><span class="dv">2</span>) </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot initial displacement field.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>plt.plot(x,u,<span class="st">'k'</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'x [m]'</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'u [m]'</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'initial displacement field'</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="02_finite-differences_files/figure-html/cell-3-output-1.png" width="587" height="449" class="figure-img"></p>
+<p><img src="02_finite-differences_files/figure-html/cell-8-output-1.png" width="587" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="time-propagation" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="time-propagation"><span class="header-section-number">3.6</span> Time propagation</h2>
-<div id="38832e4e" class="cell" data-output-location="column-fragment" data-execution_count="3">
+<section id="time-propagation" class="level3" data-number="2.6.4">
+<h3 data-number="2.6.4" class="anchored" data-anchor-id="time-propagation"><span class="header-section-number">2.6.4</span> Time propagation</h3>
+<div id="b8effa1c" class="cell" data-output-location="column-fragment" data-execution_count="8">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>u_last<span class="op">=</span>u</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ddu <span class="op">=</span> np.zeros_like(u)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>dx <span class="op">=</span> np.diff(x)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    dudx <span class="op">=</span> np.diff(u)<span class="op">/</span>dx</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    ddu[<span class="dv">1</span>:<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> np.diff(dudx)<span class="op">/</span>dx[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    u_next <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>u<span class="op">-</span>u_last<span class="op">+</span>ddu<span class="op">*</span>c<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> dt<span class="op">**</span><span class="dv">2</span> </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    u_last <span class="op">=</span> u</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> u_next</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>plt.plot(x,u,<span class="st">'k'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>u_last<span class="op">=</span>u</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ddu <span class="op">=</span> np.zeros_like(u)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>dx <span class="op">=</span> np.diff(x)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    dudx <span class="op">=</span> np.diff(u)<span class="op">/</span>dx</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    ddu[<span class="dv">1</span>:<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> np.diff(dudx)<span class="op">/</span>dx[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    u_next <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>u<span class="op">-</span>u_last<span class="op">+</span>ddu<span class="op">*</span>c<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> dt<span class="op">**</span><span class="dv">2</span> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    u_last <span class="op">=</span> u</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> u_next</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>plt.plot(x,u,<span class="st">'k'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="02_finite-differences_files/figure-html/cell-4-output-1.png" width="582" height="411" class="figure-img"></p>
+<p><img src="02_finite-differences_files/figure-html/cell-9-output-1.png" width="582" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>

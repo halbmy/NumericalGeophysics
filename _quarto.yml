@@ -13,7 +13,7 @@ book:
     - part: "Finite Differences"
       chapters:
       - 02_finite-differences.qmd
-    - part: "Finite Differences"
+    - part: "Finite Elements"
       chapters:
       - 03_finite-elements.qmd
 format:

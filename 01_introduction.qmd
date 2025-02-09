@@ -2,7 +2,7 @@
 title: "Introduction"
 ---
 
-# Differential operators
+## Differential operators
 
 * single derivative in space $\pdv{x}$ or time $\pdv t$
 
@@ -22,7 +22,7 @@ $$\int_V \div\vb F\ dV = \iint_S \vb F \vdot \vb n\ dS$$
 ::::
 :::::
 
-## Curl (rotation)
+### Curl (rotation)
 
 * curl $\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T$
 
@@ -46,11 +46,11 @@ $$\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl$$
 * potential fields have no curl $\curl (\grad u)=0$ 
 :::
 
-# Partial differential equations (PDEs)
+## Partial differential equations (PDEs)
 
 Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities
 
-## PDE Types 
+### PDE Types 
 
 ($u$-function, $f$-source, $a$/$c$-parameter):
  
@@ -61,7 +61,7 @@ $$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 
 * coupled $\nabla\cdot u=f$ & $u = K \nabla p=0$ (Darcy flow)
 * nonlinear $(\nabla u)^2=s^2$ (Eikonal equation)
 
-## Poisson equation
+### Poisson equation
 potential field $u$ generates field $\vec{F}=-\nabla u$
 
 causes some flow $\vec{j}=a \vec{F}$ 
@@ -72,7 +72,7 @@ continuity of flow: divergence of total current $\vb j + \vb j_s$ is zero
 
 $$ \div (a \nabla u) = - \div \vb j_s $$
 
-## The heat equation in 1D
+### The heat equation in 1D
 
 sought: Temperature $T$ as a function of space and time
 

@@ -4,11 +4,17 @@ jupyter: python3
 ---
 
 ## Taylor expansion
-Assume the Poisson equation $$\div(a\grad u)=f$$
+Assume the general Poisson equation $$-\div(a\grad u)=f$$
 
-Taylor expansion $$f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2$$
+with some conductivity $a$, a source term $f$ and the potential $u$.
+This can be an electric potential with $a=\sigma$, the hydraulic head with hydraulic conductivity $k$, the temperature with the thermal conductivity or the gravity potential with $a=1$.
+Note that we are using the form with the leading minus.
+First, $-\grad u$ is typically the field (e.g. electric) and $a\grad u$ is usually the flow (e.g. streaming velocity or current density) towards decreasing potential.
 
-# The Poisson equation
+Neglecting $a$ for a moment, the left-hand side is the second derivative, i.e. a curvature. A positive source field $f$ leads to a negative curvature, i.e. a decreasing slope of the potential curve. This is a maximum of the potential caused by the source, e.g., an increased temperature for a heat source.
+
+<!-- Taylor expansion $$f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2$$ -->
+
 ## FD Approximation
 
 :::{.callout-tip icon="false" title="Approximate derivative operators by differences"} 

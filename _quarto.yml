@@ -7,15 +7,9 @@ book:
   date: today
   chapters:
     - index.qmd
-    - part: "Introduction"
-      chapters:
-      - 01_introduction.qmd
-    - part: "Finite Differences"
-      chapters:
-      - 02_finite-differences.qmd
-    - part: "Finite Elements"
-      chapters:
-      - 03_finite-elements.qmd
+    - 01_introduction.qmd
+    - 02_finite-differences.qmd
+    - 03_finite-elements.qmd
 format:
   html:
     crossref:

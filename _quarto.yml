@@ -2,7 +2,7 @@ project:
   type: book
   output-dir: docs
 book:
-  title: "Numerical methods in geophysics"
+  title: "Numerical Simulation Methods in Geophysics"
   author: "Prof. Dr. Thomas Günther (TU Bergakademie Freiberg)"
   date: today
   chapters:

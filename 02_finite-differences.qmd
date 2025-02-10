@@ -1,6 +1,6 @@
 ---
 title: "Finite Differences"
-jupyter: python3
+jupyter: pg
 ---
 
 Assume the general Poisson equation $$-\div(a\grad u)=f$$
@@ -226,9 +226,11 @@ How can we prove the accuracy of our solution?
 
 ### Analytical solution
 
-$a$=1, $f(x)$=1 $\Rightarrow$ double integration $\Rightarrow$ quadratic function
+For a constant conductivity $a$=1 and a constant source $f(x)$=1, the solution can be analytically obtained by double integration and represents a quadratic function
 
-$$u(x) =  C_0 + C_1 x -1/2 x^2 $$
+$$u(x) =  C_0 + C_1 x -1/2 x^2 $${#eq-analytic}
+
+Depending on the combination of boundary conditions, the integration leads to the following solutions for the integration constants
 
 Left BC   | Right BC  | $C_0$                 | $C_1$                
 ----------|-----------|-----------------------|-------------------------
@@ -237,6 +239,24 @@ Dirichlet | Neumann   | $u_L$                 | $g_R + L$
 Neumann   | Dirichlet | $u_R - g_L L + L^2/2$ | $g_L$                
 
 with $L=(x_N-x_0)$
+
+USE NOTEBOOKS
+
+### Summary of 1D Poisson equation
+In case of equidistant discretization and homogeneous conductivity
+
+1. without sources, the potential is a linear function
+1. sources lead to changes of the slope (kinks)
+1. positive to maxima (negative curvature) and negative to minima (positive curvature)
+1. Neumann conditions determine slope of the function at the boundary
+1. (one-sided) Dirichlet conditions shift the curve up and down
+1. two-sided Dirichlet determines slope in the interior
+1. continuous (homogeneous) sources lead to parabolic potential
+1. coarse discretization of the latter underestimates the variations
+
+Furthermore, 
+1. a gradient in the conductivity acts like a source
+1. changes in 
 
 ### Next spatial dimension
 

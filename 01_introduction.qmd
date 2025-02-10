@@ -1,19 +1,37 @@
 ---
 title: "Introduction"
+jupyter: pg
 ---
+
+<!-- 
+jupyter:
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: pg 
+-->
+
+<!-- ## Content  -->
+
 
 ## Differential operators
 
-* single derivative in space $\pdv{x}$ or time $\pdv t$
+The physical fields are governed by partial differential equations with differential operators in space and time
+There are single derivative in space $\pdv{x}$ or time $\pdv{t}$.
+All derivatives into all spatial dimensions are subsumed in the *nabla* operator $\grad=(\pdv x, \pdv y, \pdv z)^T$.
+The (negative) gradient of a potential is the corresponding vector field with directions perpendicular to the isosurfaces into the direction of decreasing potential. 
 
-* gradient $\grad=(\pdv x, \pdv y, \pdv z)^T$
 
-* divergence $\div \vb F = \pdv{F_x}{x} + \pdv{F_y}{y} + \pdv{F_z}{z}$
+The divergence applies the nabla operator to a vectorial field by the dot product:
+$$\div \vb F = \pdv{F_x}{x} + \pdv{F_y}{y} + \pdv{F_z}{z}$$
+The *divergence* of a field describes the source strength using Gauss' law.
 
 ::::: {.fragment}
 :::: {.columns}
 ::: {.column width="70%"}
-Gauss': *what's in (volume) comes out (surface)*
+Gauss' law: 
+
+*what's in (volume) comes out (surface)*
 $$\int_V \div\vb F\ dV = \iint_S \vb F \vdot \vb n\ dS$$
 :::
 ::: {.column width="25%"}
@@ -22,14 +40,16 @@ $$\int_V \div\vb F\ dV = \iint_S \vb F \vdot \vb n\ dS$$
 ::::
 :::::
 
-### Curl (rotation)
-
-* curl $\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T$
+The *curl* (rotation) operator occurs particularly in electromagnetic problems, where magnetic fields are caused by (conduction or displacement) currents and electric fields infer changes in the magnetic field.
+It is described by the cross-product between nabla operator and the field
+$$\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T$$
 
 ::::: {.fragment}
 :::: {.columns}
 ::: {.column width="70%"}
-Stoke: *what goes around comes around*
+Stokes law:
+
+ *what goes around comes around*
 $$\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl$$
 :::
 ::: {.column width="25%"}
@@ -38,26 +58,26 @@ $$\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl$$
 ::::
 :::::
 
-:::{.fragment}
-* curls have no divergence: $\div (\curl \vb F)=0$
-:::
+There are two laws concerning curl fields:
 
-:::{.fragment}
-* potential fields have no curl $\curl (\grad u)=0$ 
-:::
+1. curls have no divergence: $$\div (\curl \vb F)=0$${#eq-divcurl}
+2. potential fields have no curl $$\curl (\grad u)=0$${#eq-curlgrad}
 
 ## Partial differential equations (PDEs)
 
-Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities
+fdgdfhrfgh
+
+Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities.
 
 ### PDE Types 
 
 ($u$-function, $f$-source, $a$/$c$-parameter):
  
-* elliptic PDE: $-\nabla^2 u=f$ (Poisson) or $\nabla^2 u + k^2 u = f$ (Helmholtz)
-* parabolic PDE $-\nabla^2 u + a \pdv{u}{t} \frac{\partial u}{\partial t}=f$
-* hyperbolic  $-\nabla^2 u + c^2 \frac{\partial^2 u}{\partial t^2}=f$ (plus diffusive term)
-$$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$
+* elliptic (potential) PDE of Poisson type $$-\nabla^2 u=f$$ or Helmholtz type $$\nabla^2 u + k^2 u = f$$
+* parabolic (diffusion) PDE $$-\nabla^2 u + a \pdv{u}{t} \frac{\partial u}{\partial t}=f$$
+* hyperbolic (wave) PDE $$-\nabla^2 u + c^2 \frac{\partial^2 u}{\partial t^2}=f$$
+<!-- (plus diffusive term) -->
+<!-- $$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$ -->
 * coupled $\nabla\cdot u=f$ & $u = K \nabla p=0$ (Darcy flow)
 * nonlinear $(\nabla u)^2=s^2$ (Eikonal equation)
 
@@ -167,3 +187,6 @@ $u$..pressure/velocity/displacement, $c$..velocity
 Damped (mixed parabolic-hyperbolic) wave equation
 $$ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
 
+```{python}
+import pygimli
+```

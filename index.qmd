@@ -4,30 +4,27 @@ jupyter: python3
 
 ## Prerequisites {.unnumbered}
 
-Here are the lecture notes for the 2024/2025 module **Numerical Simulation methods in Geophysics.** 
-These notes are tailored for Master's students of Geophysics or Geoinformatics at the [Institute of Geophysics and Geoinformatics, TU Bergakademie Freiberg](https://tu-freiberg.de/geophysik).
-
+Here are the lecture notes for the module **Numerical Simulation methods in Geophysics.**, tailored for Master's students of Geophysics or Geoinformatics at the [Institute of Geophysics and Geoinformatics, TU Bergakademie Freiberg](https://tu-freiberg.de/geophysik).
 You can access all the materials on the GitHub repository <https://github.com/halbmy/NumericalGeophysics>.
 
 Enjoy studying!
 
 ## Background
 
-While this course was around already since 2000 in Freiberg, it did not meet the general title before I started and I found no text book about learning the background of the simulation methods being increasingly used in geophysics, particularly solving partial differential equations by own codes and understanding the physics by doing so. I aim at all common PDE types from elliptic, parabolic to hyperbolic, going from 1D to 2D and 3D, from Finite Differences to Finite Elements and Finite Volumes. 
+While this course was around already since 2000 in Freiberg (when I did my PhD), it did never meet the general title before my comeback. Striving to do so, I found no text book about learning the background of the simulation methods being increasingly used in geophysics, particularly solving partial differential equations by own codes and understanding the physics by doing so. We aim at learning to solve all common PDE types from elliptic, parabolic to hyperbolic, going from 1D to 2D and 3D, from Finite Differences to Finite Elements and Finite Volumes. 
 
 ## Code
 
 The website's course material includes sections with embedded Python code.
-
 You can easily copy the code and execute it in a compatible Python runtime environment.
-
 For an optimal experience, we recommend installing Python via [*miniforge*](https://github.com/conda-forge/miniforge).
+You mainly need the numerical base library [NumPy](https://numpy.org) for doing the computations, and [Matplotlib](https://matplotlib.org) for visualization purposes.
+For higher-dimensional problems, we use the [pyGIMLi](https://pygimli.org) package to generate meshes and matrices, but stay with its core and equation levels for didactic reasons.
 
 Moreover, you have the freedom to explore your own concepts and delve deeper into the course content by creating your personalized Jupyter notebooks. You can utilize use either [Visual Studio Code](https://code.visualstudio.com/) or [Jupyterlab](https://jupyter.org)
+Working with Jupyter Notebooks in Visual Studio Code is [exceptionally straightforward](https://code.visualstudio.com/docs/datascience/jupyter-notebooks).
 
 The material was created by [Quarto](https://quarto.org).
-
-Working with Jupyter Notebooks in Visual Studio Code is [exceptionally straightforward](https://code.visualstudio.com/docs/datascience/jupyter-notebooks).
 
 ## Self study
 
@@ -39,11 +36,18 @@ You can easily identify these callouts.
 
 ## Recommended Reading
 
-The most important source of supplementary information is the book by @ward1988electromagnetic. 
+There is not much literature around in this field. 
+
+* For geoscientists diving into Python I recommend the freely available book [Pythonic Geodynamics](https://doi.org/10.1007/978-3-319-55682-6) by *Gabrielle Morra*, particularly for background and flow problems 
+* The [online lectures of Heiner Igel (LMU Munich)](https://www.geophysik.uni-muenchen.de/~igel/downloads/) are great to look at, particularly for seismic wave modelling
+* The book **Computational methods geophysical electromagnetics** by *Eldad Haber (2015)* specifically covers EM
+* The [FEniCS book](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) mainly focuses on Finite Elements
+* [Theory of electromagnetics lecture notes](https://ruboerner.github.io/ThEM/) by my colleague Ralph-Uwe Börner
+* a classic book is *Press (2007)*: **Numerical recipes: the art of scientific computing**
 
 ## License
 
-This material is licensed under the Creative Commons License.
+This material is licensed under the Creative Commons License CC-by 2.0.
 
 ## Current lecture
 

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Introduction – Numerical Simulation Methods in Geophysics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./02_finite-differences.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ['[tex]/physics']
+  },
+  tex: {
+    packages: {'[+]': ['physics']}
+  }
+};
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Numerical Simulation Methods in Geophysics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prerequisites</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_finite-differences.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_finite-elements.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Finite Elements</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#differential-operators" id="toc-differential-operators" class="nav-link active" data-scroll-target="#differential-operators"><span class="header-section-number">1.1</span> Differential operators</a></li>
+  <li><a href="#partial-differential-equations-pdes" id="toc-partial-differential-equations-pdes" class="nav-link" data-scroll-target="#partial-differential-equations-pdes"><span class="header-section-number">1.2</span> Partial differential equations (PDEs)</a>
+  <ul class="collapse">
+  <li><a href="#pde-types" id="toc-pde-types" class="nav-link" data-scroll-target="#pde-types"><span class="header-section-number">1.2.1</span> PDE Types</a></li>
+  <li><a href="#poisson-equation" id="toc-poisson-equation" class="nav-link" data-scroll-target="#poisson-equation"><span class="header-section-number">1.2.2</span> Poisson equation</a></li>
+  <li><a href="#the-heat-equation-in-1d" id="toc-the-heat-equation-in-1d" class="nav-link" data-scroll-target="#the-heat-equation-in-1d"><span class="header-section-number">1.2.3</span> The heat equation in 1D</a></li>
+  </ul></li>
+  <li><a href="#flow-and-transport" id="toc-flow-and-transport" class="nav-link" data-scroll-target="#flow-and-transport"><span class="header-section-number">1.3</span> Flow and transport</a>
+  <ul class="collapse">
+  <li><a href="#darcys-law" id="toc-darcys-law" class="nav-link" data-scroll-target="#darcys-law"><span class="header-section-number">1.3.1</span> Darcy’s law</a></li>
+  <li><a href="#stokes-equation" id="toc-stokes-equation" class="nav-link" data-scroll-target="#stokes-equation"><span class="header-section-number">1.3.2</span> Stokes equation</a></li>
+  <li><a href="#navier-stokes-equations" id="toc-navier-stokes-equations" class="nav-link" data-scroll-target="#navier-stokes-equations"><span class="header-section-number">1.3.3</span> Navier-Stokes equations</a></li>
+  </ul></li>
+  <li><a href="#electromagnetics" id="toc-electromagnetics" class="nav-link" data-scroll-target="#electromagnetics"><span class="header-section-number">1.4</span> Electromagnetics</a>
+  <ul class="collapse">
+  <li><a href="#maxwells-equations" id="toc-maxwells-equations" class="nav-link" data-scroll-target="#maxwells-equations"><span class="header-section-number">1.4.1</span> Maxwell’s equations</a></li>
+  </ul></li>
+  <li><a href="#helmholtz-equations" id="toc-helmholtz-equations" class="nav-link" data-scroll-target="#helmholtz-equations"><span class="header-section-number">1.5</span> Helmholtz equations</a></li>
+  <li><a href="#helmholtz-equations-1" id="toc-helmholtz-equations-1" class="nav-link" data-scroll-target="#helmholtz-equations-1"><span class="header-section-number">1.6</span> Helmholtz equations</a></li>
+  <li><a href="#wave-equations" id="toc-wave-equations" class="nav-link" data-scroll-target="#wave-equations"><span class="header-section-number">2</span> Wave equations</a>
+  <ul class="collapse">
+  <li><a href="#the-eikonal-equation" id="toc-the-eikonal-equation" class="nav-link" data-scroll-target="#the-eikonal-equation"><span class="header-section-number">2.1</span> The eikonal equation</a></li>
+  <li><a href="#hyberbolic-equations" id="toc-hyberbolic-equations" class="nav-link" data-scroll-target="#hyberbolic-equations"><span class="header-section-number">2.2</span> Hyberbolic equations</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- 
+jupyter:
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: pg 
+-->
+<!-- ## Content  -->
+<section id="differential-operators" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="differential-operators"><span class="header-section-number">1.1</span> Differential operators</h2>
+<p>The physical fields are governed by partial differential equations with differential operators in space and time There are single derivative in space <span class="math inline">\(\pdv{x}\)</span> or time <span class="math inline">\(\pdv{t}\)</span>. All derivatives into all spatial dimensions are subsumed in the <em>nabla</em> operator <span class="math inline">\(\grad=(\pdv x, \pdv y, \pdv z)^T\)</span>. The (negative) gradient of a potential is the corresponding vector field with directions perpendicular to the isosurfaces into the direction of decreasing potential.</p>
+<p>The divergence applies the nabla operator to a vectorial field by the dot product: <span class="math display">\[\div \vb F = \pdv{F_x}{x} + \pdv{F_y}{y} + \pdv{F_z}{z}\]</span> The <em>divergence</em> of a field describes the source strength using Gauss’ law.</p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:70%;">
+<p>Gauss’ law:</p>
+<p><em>what’s in (volume) comes out (surface)</em> <span class="math display">\[\int_V \div\vb F\ dV = \iint_S \vb F \vdot \vb n\ dS\]</span></p>
+</div><div class="column" style="width:25%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/Divergence_theorem_in_EM.svg" class="img-fluid figure-img"></p>
+<figcaption>Gauss’s theorem in EM</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>The <em>curl</em> (rotation) operator occurs particularly in electromagnetic problems, where magnetic fields are caused by (conduction or displacement) currents and electric fields infer changes in the magnetic field. It is described by the cross-product between nabla operator and the field <span class="math display">\[\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T\]</span></p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:70%;">
+<p>Stokes law:</p>
+<p><em>what goes around comes around</em> <span class="math display">\[\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl\]</span></p>
+</div><div class="column" style="width:25%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/Curl_theorem_in_EM.svg" class="img-fluid figure-img"></p>
+<figcaption>Stokes’ theorem in EM</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>There are two laws concerning curl fields:</p>
+<ol type="1">
+<li>curls have no divergence: <span id="eq-divcurl"><span class="math display">\[\div (\curl \vb F)=0 \tag{1.1}\]</span></span></li>
+<li>potential fields have no curl <span id="eq-curlgrad"><span class="math display">\[\curl (\grad u)=0 \tag{1.2}\]</span></span></li>
+</ol>
+</section>
+<section id="partial-differential-equations-pdes" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="partial-differential-equations-pdes"><span class="header-section-number">1.2</span> Partial differential equations (PDEs)</h2>
+<p>fdgdfhrfgh</p>
+<p>Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities.</p>
+<section id="pde-types" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="pde-types"><span class="header-section-number">1.2.1</span> PDE Types</h3>
+<p>(<span class="math inline">\(u\)</span>-function, <span class="math inline">\(f\)</span>-source, <span class="math inline">\(a\)</span>/<span class="math inline">\(c\)</span>-parameter):</p>
+<ul>
+<li>elliptic (potential) PDE of Poisson type <span class="math display">\[-\nabla^2 u=f\]</span> or Helmholtz type <span class="math display">\[\nabla^2 u + k^2 u = f\]</span></li>
+<li>parabolic (diffusion) PDE <span class="math display">\[-\nabla^2 u + a \pdv{u}{t} \frac{\partial u}{\partial t}=f\]</span></li>
+<li>hyperbolic (wave) PDE <span class="math display">\[-\nabla^2 u + c^2 \frac{\partial^2 u}{\partial t^2}=f\]</span> <!-- (plus diffusive term) --> <!-- $$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$ --></li>
+<li>coupled <span class="math inline">\(\nabla\cdot u=f\)</span> &amp; <span class="math inline">\(u = K \nabla p=0\)</span> (Darcy flow)</li>
+<li>nonlinear <span class="math inline">\((\nabla u)^2=s^2\)</span> (Eikonal equation)</li>
+</ul>
+</section>
+<section id="poisson-equation" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="poisson-equation"><span class="header-section-number">1.2.2</span> Poisson equation</h3>
+<p>potential field <span class="math inline">\(u\)</span> generates field <span class="math inline">\(\vec{F}=-\nabla u\)</span></p>
+<p>causes some flow <span class="math inline">\(\vec{j}=a \vec{F}\)</span></p>
+<p><span class="math inline">\(a\)</span> is some sort of conductivity (electric, hydraulic, thermal)</p>
+<p>continuity of flow: divergence of total current <span class="math inline">\(\vb j + \vb j_s\)</span> is zero</p>
+<p><span class="math display">\[ \div (a \nabla u) = - \div \vb j_s \]</span></p>
+</section>
+<section id="the-heat-equation-in-1d" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="the-heat-equation-in-1d"><span class="header-section-number">1.2.3</span> The heat equation in 1D</h3>
+<p>sought: Temperature <span class="math inline">\(T\)</span> as a function of space and time</p>
+<p>heat flux density <span class="math inline">\(\vb q = \lambda\grad T\)</span></p>
+<p><span class="math inline">\(q\)</span> in W/m², <span class="math inline">\(\lambda\)</span> - heat conductivity/diffusivity in W/(m.K)</p>
+<p>Fourier’s law: <span class="math inline">\(\pdv{T}{t} - a \nabla^2 T = s\)</span> (<span class="math inline">\(s\)</span> - heat source)</p>
+<p>temperature conduction <span class="math inline">\(a=\frac{\lambda}{\rho c}\)</span> (<span class="math inline">\(\rho\)</span> - density, <span class="math inline">\(c\)</span> - heat capacity)</p>
+</section>
+</section>
+<section id="flow-and-transport" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="flow-and-transport"><span class="header-section-number">1.3</span> Flow and transport</h2>
+<section id="darcys-law" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="darcys-law"><span class="header-section-number">1.3.1</span> Darcy’s law</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>volumetric flow rate <span class="math inline">\(Q\)</span> caused by gradient of pressure <span class="math inline">\(p\)</span></p>
+<p><span class="math display">\[ Q = \frac{k A}{\mu L} \Delta p \]</span></p>
+<p><span class="math display">\[\vb q = -\frac{k}{\mu} \nabla p \]</span></p>
+<p><span class="math display">\[\div\vb q = -\div (k/\mu \grad p) = 0\]</span></p>
+</div><div class="column" style="width:45%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pics/darcy_law.svg" class="img-fluid figure-img"></p>
+<figcaption>Darcy’s law</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="stokes-equation" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="stokes-equation"><span class="header-section-number">1.3.2</span> Stokes equation</h3>
+<p><span class="math display">\[ \mu \nabla^2 \vb v - \grad p + f = 0 \]</span></p>
+<p><span class="math display">\[\div\vb v = 0 \]</span></p>
+</section>
+<section id="navier-stokes-equations" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="navier-stokes-equations"><span class="header-section-number">1.3.3</span> Navier-Stokes equations</h3>
+<p>(incompressible, uniform viscosity)</p>
+<p><span class="math display">\[ \pdv{\vb u}{t} +(\vb u \vdot \grad) \vb u = \nu \nabla^2 \vb u - 1/\rho \grad p + f \]</span></p>
+</section>
+</section>
+<section id="electromagnetics" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="electromagnetics"><span class="header-section-number">1.4</span> Electromagnetics</h2>
+<section id="maxwells-equations" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="maxwells-equations"><span class="header-section-number">1.4.1</span> Maxwell’s equations</h3>
+<ul>
+<li>Faraday’s law: currents &amp; varying electric fields <span class="math inline">\(\Rightarrow\)</span> magnetic field <span class="math display">\[ \curl \vb H = \pdv{\vb D}{t} + \vb j \]</span></li>
+<li>Ampere’s law: time-varying magnetic fields induce electric field <span class="math display">\[ \curl\vb E = -\pdv{\vb B}{t}\]</span></li>
+<li><span class="math inline">\(\div\vb D = \varrho\)</span> (charge <span class="math inline">\(\Rightarrow\)</span>), <span class="math inline">\(\div\vb B = 0\)</span> (no magnetic charge)</li>
+<li>material laws <span class="math inline">\(\vb D = \epsilon \vb E\)</span> and <span class="math inline">\(\vec B = \mu \vb H\)</span></li>
+</ul>
+</section>
+</section>
+<section id="helmholtz-equations" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="helmholtz-equations"><span class="header-section-number">1.5</span> Helmholtz equations</h2>
+<p>e.g.&nbsp;from Fourier assumption <span class="math inline">\(u=u_0 e^{\imath\omega t}\)</span></p>
+<p><span class="math display">\[ \div (a\grad u) + k^2 u = f \]</span></p>
+<ul>
+<li>Poisson operator assembled in stiffness matrix <span class="math inline">\(\vb A\)</span></li>
+<li>additional terms with <span class="math inline">\(u_i\)</span> <span class="math inline">\(\Rightarrow\)</span> mass matrix <span class="math inline">\(\vb M\)</span></li>
+</ul>
+<p><span class="math display">\[ \Rightarrow \vb A + \vb M = \vb b \]</span></p>
+</section>
+<section id="helmholtz-equations-1" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="helmholtz-equations-1"><span class="header-section-number">1.6</span> Helmholtz equations</h2>
+<p><span class="math display">\[ \nabla^2 u + k^2 u = f \]</span></p>
+<p>results from wavenumber decomposition of diffusion or wave equations</p>
+<p>approach: <span class="math inline">\(\vb F = \vb{F_0}e^{\imath\omega t} \quad\Rightarrow\quad \pdv{\vb F}{t}=\imath\omega\vb F \quad\Rightarrow\quad \pdv[2]{\vb F}{t}=-\omega^2\vb F\)</span></p>
+<p><span class="math display">\[ \nabla^2 \vb F - a \nabla_t \vb F - c^2 \nabla^2_t \vb F = 0 \]</span></p>
+<p><span class="math display">\[ \Rightarrow \nabla^2\vb F - a\imath\omega\vb F + c^2 \omega^2\vb F = 0 \]</span></p>
+</section>
+<section id="wave-equations" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Wave equations</h1>
+<section id="the-eikonal-equation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="the-eikonal-equation"><span class="header-section-number">2.1</span> The eikonal equation</h2>
+<p>Describes first-arrival times <span class="math inline">\(t\)</span> as a function of velocity (<span class="math inline">\(v\)</span>) or slowness (<span class="math inline">\(s\)</span>)</p>
+<p><span class="math display">\[ |\grad t| = s = 1/v \]</span></p>
+<p><img src="pics/tt4.png" class="fragment" width="458" height="420"></p>
+</section>
+<section id="hyberbolic-equations" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="hyberbolic-equations"><span class="header-section-number">2.2</span> Hyberbolic equations</h2>
+<p>Acoustic wave equation in 1D <span class="math display">\[ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 \]</span></p>
+<p><span class="math inline">\(u\)</span>..pressure/velocity/displacement, <span class="math inline">\(c\)</span>..velocity</p>
+<p>Damped (mixed parabolic-hyperbolic) wave equation <span class="math display">\[ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 \]</span></p>
+<div id="4c3b3bcb" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygimli</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Prerequisites">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Prerequisites</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./02_finite-differences.html" class="pagination-link" aria-label="Finite Differences">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finite Differences</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

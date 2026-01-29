@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 8: 2D Helmholtz equation"
+title: "Numerical Simulation Methods in Geophysics, Part 8: 2D Electromagnetics"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -25,44 +25,59 @@ format:
     slide-number: c/t
     transition: slide
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
-## Recap 
+# jupyter: python3
+---
+# Recap & Motivation
 
-* finite differences approximate partial derivatives
-* finite elements approximate solution $\Rightarrow$ preferred
+* use *pyGIMLi*  for generating meshes, matrices & applying BC
 * spatial discretization determines accuracy of solution
-* different time-stepping approaches, implicit and mixed schemes most accurate and stable
-* tasks for report on 1D instationary heat equation with periodic boundary conditions
-* basic elements and higher order shape functions 
-* shape functions on the triangle 
-* numerical integration , e.g. by Gaussian quadrature
+* source fields (1/$r$ etc.) require fine mesh or higher order elements
+* boundaries for decaying fields need to be far away
+* secondary field approach addresses both problems
 
-# Helmholtz equation in 2D
 
-* move to another type of PDE
+## Remaining lectures & topics
+
+8. 11.12. 2D electromagnetics
+9. 18.12. 2D/3D EM and other element types
+10. 08.01. 3D vectorial electromagnetics
+(dies academicus on 15.1.)
+11. 22.01.
+12. 29.01. Advection problems and Finite Volumes
+13. 05.02. (online) special simulation methods
+14. 12.02. (not available) shift to later
+
+* 7 excercises
+
+# Electromagnetics in 2D
+
+* move from Poisson to Helmhotlz type of PDE
+* real-valued to complex-valued problem
 * move from 1D to 2D (and eventually 3D)
-* complex-valued system
+* scalar to vectorial solution
 * secondary field approach
 
 ## Maxwells equations
 
-* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field 
-$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$ 
+* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field
+$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$
 * Ampere's law: time-varying magnetic fields induce electric field
-$$ \curl\vb E = -\pdv{\vb B}{t}$$ 
-* $\div\vb D = \varrho$ (charge $\Rightarrow$), $\div\vb B = 0$ (no magnetic charge)
-* material laws $\vb D = \epsilon \vb E$ and $\vb B = \mu \vb H$
+$$ \curl\vb E = -\pdv{\vb B}{t}$$
+* $\div\vb D = \varrho$, $\div\vb B = 0$, $\vb D = \epsilon \vb E$ & $\vb B = \mu \vb H$
 
 ## Maxwell in frequency domain
 
+Assumption: AC fields with angular frequency $\omega$ (decomposition)
+
 $$\vb E = \vb E_0 e^{\imath\omega t} \qq{or} \vb H = \vb H_0 e^{\imath\omega t}$$
 
-$$ \curl \vb H = \imath\omega\epsilon\vb E + \vb \sigma \vb E $$
+$$ \curl \vb H = \imath\omega\epsilon\vb E + \sigma \vb E = (\sigma+\imath\omega\epsilon)\vb E $$
 
-$$ \curl\vb E = -\imath\omega\mu\vb H$$ 
+$$ \curl\vb E = -\imath\omega\mu\vb H$$
+
+take curl of one of the equations and insert in the other
 
 ## Helmholtz equation
 
@@ -70,21 +85,90 @@ see also [Theory EM](https://ruboerner.github.io/ThEM/mtfields.html)
 
 take curl of one of the equations and insert in the other
 
-$$ \curl\curl \vb E + \imath\omega\mu\sigma\vb E - \omega^2\mu\epsilon \vb E = \curl \vb j_s$$ 
+$$ \curl \mu^{-1}\curl \vb E + \imath\omega\sigma\vb E - \omega^2\epsilon \vb E = \curl \vb j_s$$
 
-$$ \curl \rho \curl \vb H + \imath\omega\mu\vb H - \omega^2\mu\epsilon\rho \vb H=0$$ 
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H - \omega^2\mu\epsilon \vb H=0$$
+
+* Helmholtz type of PDE, vectorial
 
 ## Quasi-static approximation
 
-Assume: $\omega^2\mu\epsilon<\omega\mu\sigma$,  no sources ($\div\vb j_s=0$), + vector identity 
+Assume: $\omega^2\mu\epsilon<\omega\mu\sigma$,  no sources ($\div\vb j_s=0$), + vector identity
 $$\curl\curl \vb F = \grad \div \vb F - \grad^2 \vb F$$
 leads with $\div \vb E=0=\div\vb B$ to the vector Helmholtz PDE
 
-$$-\grad^2 \vb E + \imath\omega\mu\sigma \vb E=0$$
+$$-\laplacian{\vb E} + \imath\omega\mu\sigma \vb E=0$$
 
-$$-\div \rho \nabla c\vb H + \imath\omega\mu \vb H=0$$
+$$-\div \sigma^{-1} \nabla \vb H + \imath\omega\mu \vb H=0$$
 
-## Variational form
+Helmholtz equation $-\laplacian \vb H-k^2 \vb H=0$ with $k^2=-\imath\omega\mu\sigma$
+
+## TM polarization
+
+::: {.callout-note title="Transverse magnetic (TM) mode"}
+Assume the source field is oscillating perpendicular to the modelling plane, i.e.
+
+$\vb H=[H_x, 0, 0]^T e^{\imath\omega t}$.
+:::
+
+Then the PDE holds for the scalar $H_x$ (now only $H$)
+
+$$-\div \sigma^{-1} \grad H_x(y,z) + \imath\omega\mu H_x(y,z) = 0$$
+
+## Halfspace solution
+
+$$ \pdv[2]{H}{z} + k^2 H = 0 \quad\text{with}\quad k^2=-\imath\omega\mu\sigma $$
+
+In the Earth, the solution is
+$H(z)=H_0 e^{-\imath k z} \quad \partial_{zz} H=-k^2 H$
+
+$k=\sqrt{-\imath\omega\mu\sigma} = \sqrt{\omega\mu\sigma/2} (1-\imath)=1/d (1-\imath)$
+
+with skin depth (1/e decay) $d=\sqrt{2/\omega\mu\sigma}=\sqrt{T/\pi\mu\sigma}$ (~500$\sqrt{\rho/f}$)
+
+$$ -\imath k = -(1+i)/d \Rightarrow H=H_0 e^{-z/d} e^{-\imath z/d} \quad \equiv\cos(\omega t-z/d)$$
+
+## Fields in homogeneous half-space
+
+<video autoplay="true" controls width="100%" loop="true">
+<source src="pics/mt1dH.mp4">
+</video>
+
+## Electromagnetic fields in the Earth
+
+Assume E field in x direction
+
+$$E_x=-\frac{1}{\mu_0\sigma}\pdv{B_y}{z}=\frac{B_0}{\mu_0\sigma d}e^{-z/d}\sqrt{2}\cos(\omega t-z/d+\pi/4)$$
+
+$\Rightarrow$ phase shift of 45° ($\pi/4$) between $E_x$ und $B_y$
+
+$$\frac{|E_x|}{|B_y|}=\frac{\sqrt{2}}{\mu_0\sigma d} \Rightarrow \rho=\frac{\mu_0}{\omega}\left|\frac{E_x}{B_y}\right|^2$$
+
+
+# Magnetotellurics (MT)
+::::{.columns}
+:::{.column width="40%"}
+![](pics/MT_Prinzip.png){fig-align="center"}
+:::
+:::{.column width="60%"}
+* depth sounding with $T$=0.01-1000s ($f$=0.001-100\,Hz)
+* source in ionosphere (natural source) or on ground (controlled source)
+* measure magnetic and electric fields
+* analyse (complex) ratio in frequ. domain
+* depth sounding ($\rho_a$ & $\phi$) with $T$
+* MT course of Anna Marti (U Barcelona)
+:::
+::::
+
+## Magnetotelluric depth sounding
+
+![](pics/mt1d.png){fig-align="center"}
+
+## 2D/3D Magnetotellurics
+
+![Imaging of a subduction zone (Worszewski et al., 2011)](pics/mt2d.png){fig-align="center"}
+
+# EM with finite elements
 
 $$-\grad^2 u + \imath\omega\mu\sigma u = f$$
 
@@ -96,49 +180,35 @@ $$\int_\Omega \grad w \cdot \grad u \dd\Omega + \imath\omega \int_\Omega  \mu\si
 
 ## Weak formulation
 
-$u=\sum_i u_i \vb v_i$ and $w_i\in \{v_i\}$ leads to 
+$u=\sum_i u_i \vb v_i$ and $w_i\in \{v_i\}$ leads to
 
-$$\int_\Omega \grad v_i \cdot \grad v_j \dd\Omega + \imath\omega \int_\Omega \mu\sigma v_i v_j \dd\Omega = \int_\Omega v_i f \dd\Omega $$
+$$\int_\Omega \grad v_i \cdot \grad v_j \dd\Omega + \imath\omega\mu \int_\Omega \sigma v_i v_j \dd\Omega = \int_\Omega v_i f \dd\Omega $$
 
-$$\braket{\grad v_i}{\grad v_j} + \imath\omega \braket{v_i}{\mu\sigma v_j} = \braket{v_i}{f}  \qq{inner products}$$
+$$\braket{\grad v_i}{\grad v_j} + \imath\omega\mu \braket{v_i}{\sigma v_j} = \braket{v_i}{f}  \qq{inner products}$$
 
-representation by matrix-vector product $(\vb A + \imath\omega\vb M)\vb u=\vb b$
+representation by matrix-vector product $(\vb A + \imath\omega\vb M^\sigma)\vb u=\vb b$
 
-$A_{ij}=\braket{\grad v_i}{\grad v_j}$ and $b_i=\braket{v_i}{f}$
+with $A_{ij}=\braket{\grad v_i}{\grad v_j}$, $M^\sigma_{ij}=\braket{v_i}{v_j}$ and $b_i=\braket{v_i}{f}$
 
 ## The finite element mass matrix
 
-The mass matrix 
+The mass matrix
 $$M_{i,j}=\int_\Omega \mu\sigma v_i v_j \dd\Omega=\sum_c \int_{\Omega_c} \mu_c\sigma_c v_i v_j \dd\Omega$$
 
 can be written for element-wise conductivity and permittivity
 
 $$ M_{i,j} =\sum_c \mu_c\sigma_c \int_{\Omega_c} v_i v_j $$
 
-## Hat functions 
-
-![](pics/shapefunctions1d.svg){width="100%"}
-
-## Mass matrix in 1D
-
-hat functions in 1D: $v_i=(x-x_i)/\Delta x_i=\xi$ , $v_j=(x_{i+1}-x)/\Delta x_i$ <br>with $\dd \xi / \dd x=1/\Delta x$ also $\dd x=\Delta x \dd \xi$
-
-$\int_0^1 \xi (1-\xi) dx=\int_0^1 (\xi-\xi^2)dx=\Delta x\int_0^1 (\xi-\xi^2)\dd \xi=\Delta x (\frac{\xi^2}{2}-\frac{\xi^3}{3})|_0^1$
-
-$$ \Rightarrow M_{i,i+1} = \Delta x_i / 6 $$
-
-
-$$M_{i,i}^\text{left} = \int_0^1 \xi \xi \dd x = \Delta x_i \int_0^1 \xi^2 \dd\xi = \frac{\xi^3}{3}|_0^1 = \frac{\Delta x_i}{3}$$
-$$M_{i,i} = M_{i,i}^\text{left} + M_{i,i}^\text{right} = \frac{\Delta x_i}{3} + \frac{\Delta x_{i+1}}{3}$$
-
-
 ## Complex or real-valued?
 
-The complex valued system
+The complex-valued system
 
-$$\vb A+\imath\omega\vb M = \vb u = b$$
+$$(\vb A+\imath\omega\vb M)\vb u = (\vb A+\imath\omega\vb M) (\vb u_r + \imath \vb u_i) = \vb b_r + \imath \vb b_i$$
+
 
 can be transferred into a doubled real-valued system
+
+$$\vb A\vb u_r + \imath\vb A u_i + \imath\omega\vb M \vb u_r - \omega\vb M \vb u_i = \vb b_r + \imath \vb b_i$$
 
 $$\mqty(A & -\omega M\\ \omega M & A) \mqty(u_r\\ u_i) = \mqty(b_r\\ b_i) $$
 
@@ -153,8 +223,6 @@ $\Rightarrow$ form equations for $F_a$, because
 
 * $F_a$ is weaker or smoother (e.g. $F_0\propto 1/$ at sources)
 * boundary conditions easier to set (e.g. homogeneous Dirichlet)
-
-
 
 ## Secondary field Helmholtz equation
 
@@ -183,3 +251,103 @@ $$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sig
 ::: {.callout-note}
 Source terms only arise at anomalous conductivities and increase with primary field
 :::
+
+## Secondary field for EM
+
+Maxwells equations $k^2=-\imath\omega\mu\sigma$
+
+$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
+
+leads to
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous conductivities and increase with primary field
+:::
+
+## Secondary field for EM
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+leads to the discretized form ($\vb A$-stiffness, $\vb M$-mass)
+
+$$ \vb A \vb E_a + \imath\omega\vb M_\sigma E_a = -\imath\omega\vb M_{\delta\sigma} \vb E_0 $$
+
+```{python}
+#| echo: true
+#| eval: false
+A = stiffnessMatrix1DFE(x=z)
+M = massMatrix1DFE(x=z, a=w*mu*sigma)
+dM = massMatrix1DFE(x=z, a=w*mu*(sigma-sigma0))
+u = uAna + solve(A+M*w*1j, dM@uAna * w*1j)
+```
+
+# 2D/3D problems
+Make use of pyGIMLi
+
+See documentation on [pyGIMLi.org](https://pygimli.org)
+
+## Generating a 2D model
+```{python}
+#| echo: true
+#| eval: true
+import pygimli as pg
+import pygimli.meshtools as mt
+world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
+anomaly = mt.createRectangle(start=[0, -8000], end=[1000, -1000], marker=2)
+mesh = mt.createMesh(world+anomaly, quality=34, smooth=True, area=1e5)
+pg.show(mesh, markers=True, showMesh=True);
+```
+
+
+## Creating a 2D conductivity model
+```{python}
+#| echo: true
+#| eval: true
+sigma0 = 1 / 100  # 100 Ohmm
+sigma = mesh.populate("sigma", {1: sigma0, 2: sigma0*10})
+pg.show(mesh, "sigma", showMesh=True);
+```
+
+## The solver module
+```{python}
+#| echo: false
+#| eval: true
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+```{python}
+#| echo: true
+#| eval: true
+import pygimli.solver as ps
+mesh["my"] = 4 * np.pi * 1e-7
+A = ps.createStiffnessMatrix(mesh, a=1/mesh["my"])
+M = ps.createMassMatrix(mesh, mesh["sigma"])
+fig, ax = plt.subplots(ncols=2)
+pg.show(A, ax=ax[0], markersize=1)
+pg.show(M, ax=ax[1], markersize=1)
+```
+<!-- ax[0].spy(pg.utils.toCSR(A), markersize=1)
+ax[1].spy(pg.utils.toCSR(M).todense(), markersize=1) -->
+
+## The complex problem matrix
+
+$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+w = 0.1
+nd = mesh.nodeCount()
+B = pg.BlockMatrix()
+B.Aid = B.addMatrix(A)
+B.Mid = B.addMatrix(M)
+B.addMatrixEntry(B.Aid, 0, 0)
+B.addMatrixEntry(B.Aid, nd, nd)
+B.addMatrixEntry(B.Mid, 0, nd, scale=-w)
+B.addMatrixEntry(B.Mid, nd, 0, scale=w)
+pg.show(B)
+```

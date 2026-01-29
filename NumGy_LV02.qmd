@@ -23,284 +23,291 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
+jupyter: python3
+---
 
-# Some mathematical background
-## Differential operators
+# What have we learned?
+- Poisson equation better with - (source leads to maximum)
+$$-\div(a\grad u)=f$$
+- Finite Difference (FD) easy to implement
+- source leads to maximum (negative curvature)
+- piece-wise linear solution for source-free regions
+- quadratic solution for constant source
+- boundary conditions fix potential (Dirichlet) or gradient (Neumann)
 
-* single derivative in space $\pdv{x}$ or time $\pdv t$
+## Finite Differences (FD)
+![compute each value (red) using its neighbors (blue)](pics/fd1dstencil.svg)
 
-* gradient $\grad=(\pdv x, \pdv y, \pdv z)^T$
-
-* divergence $\div \vb F = \pdv{F_x}{x} + \pdv{F_y}{y} + \pdv{F_z}{z}$
-
-::::: {.fragment}
-:::: {.columns}
-::: {.column width="70%"}
-Gauss': *what's in (volume) comes out (surface)*
-$$\int_V \div\vb F\ dV = \iint_S \vb F \vdot \vb n\ dS$$
-:::
-::: {.column width="25%"}
-![Gauss's theorem in EM](pics/Divergence_theorem_in_EM.svg)
-:::
-::::
-:::::
-
-## Curl (rotation)
-
-* curl $\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T$
-
-::::: {.fragment}
-:::: {.columns}
-::: {.column width="70%"}
-Stoke: *what goes around comes around*
-$$\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl$$
-:::
-::: {.column width="25%"}
-![Stokes' theorem in EM](pics/Curl_theorem_in_EM.svg)
-:::
-::::
-:::::
-
-:::{.fragment}
-* curls have no divergence: $\div (\curl \vb F)=0$
-:::
-
-:::{.fragment}
-* potential fields have no curl $\curl (\grad u)=0$ 
-:::
-
-# Numerical simulation
-## Partial differential equations (PDEs)
-
-Mostly: solution of PDEs for either scalar (potentials) or vectorial (fields) quantities
-
-PDE Types ($u$-function, $f$-source, $a$/$c$-parameter):
- 
-* elliptic PDE: $\nabla^2 u=f$
-* parabolic PDE $\nabla^2 u - a \frac{\partial u}{\partial t}=f$
-* hyperbolic  $\nabla^2 u - c^2 \frac{\partial^2 u}{\partial t^2}=f$ (plus diffusive term)
-$$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$
-* coupled $\nabla\cdot u=f$ & $u = K \nabla p=0$ (Darcy flow)
-* nonlinear $(\nabla u)^2=s^2$ (Eikonal equation)
-
-## Poisson equation
-potential field $u$ generates field $\vec{F}=-\nabla u$
-
-causes some flow $\vec{j}=a \vec{F}$ 
-
-$a$ is some sort of conductivity (electric, hydraulic, thermal)
-
-continuity of flow: divergence of total current $\vb j + \vb j_s$ is zero
-
-$$ \div (a \nabla u) = - \div \vb j_s $$
-
-## Darcy's law
-
-:::: {.columns}
-::: {.column width="50%"}
-
-volumetric flow rate $Q$ caused by gradient of pressure $p$
-
-$$ Q = \frac{k A}{\mu L} \Delta p $$
-
-$$\vb q = -\frac{k}{\mu} \nabla p $$
-
-$$\div\vb q = -\div (k/\mu \grad p) = 0$$
-
-:::
-::: {.column width="45%"}
-![Darcy's law](pics/darcy_law.svg)
-:::
-::::
-
-## The heat equation in 1D
-
-sought: Temperature $T$ as a function of space and time
-
-heat flux density $\vb q = \lambda\grad T$
-
-$q$ in W/m², $\lambda$ - heat conductivity/diffusivity in W/(m.K)
-
-Fourier's law: $\pdv{T}{t} - a \nabla^2 T = s$  ($s$ - heat source)
-
-temperature conduction $a=\frac{\lambda}{\rho c}$ ($\rho$ - density, $c$ - heat capacity)
-
-## Navier-Stokes equation
-
-Stokes equation
-$$ \mu \nabla^2 \vb v - \grad p + f = 0 $$
-
-$$\div\vb v = 0 $$
-
-Navier-Stokes equation
-(incompressible, uniform viscosity)
-
-$$ \pdv{\vb u}{t} +(\vb u \vdot \grad) \vb u = \nu \nabla^2 \vb u - 1/\rho \grad p + f $$
-
-## Maxwell's equations
-
-* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field 
-$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$ 
-* Ampere's law: time-varying magnetic fields induce electric field
-$$ \curl\vb E = -\pdv{\vb B}{t}$$ 
-* $\div\vb D = \varrho$ (charge $\Rightarrow$), $\div\vb B = 0$ (no magnetic charge)
-* material laws $\vb D = \epsilon \vb E$ and $\vec B = \mu \vb H$
-
-## Helmholtz equations
-
-$$ \nabla^2 \vb F + k^2 \vb F = f $$
-
-results from wavenumber decomposition of diffusion or wave equations
-
-approach: $\vb F = \vb{F_0}e^{\imath\omega t} \quad\Rightarrow\quad \pdv{\vb F}{t}=\imath\omega\vb F \quad\Rightarrow\quad \pdv[2]{\vb F}{t}=-\omega^2\vb F$
-
-$$ \nabla^2 \vb F - a \nabla_t \vb F - c^2 \nabla^2_t \vb F = 0 $$
-
-$$ \Rightarrow \nabla^2\vb F - a\imath\omega\vb F + c^2 \omega^2\vb F = 0 $$
-
-## The Eikonal equation
-
-Describes first-arrival times $t$ as a function of velocity ($v$) or slowness ($s$)
-
-$$ |\grad t| = s = 1/v $$
-
-:::{.r-stack}
-![](pics/tt0.png){.fragment width="458" height="420"}
-
-![](pics/tt1.png){.fragment width="458" height="420"}
-
-![](pics/tt2.png){.fragment width="458" height="420"}
-
-![](pics/tt3.png){.fragment width="458" height="420"}
-
-![](pics/tt4.png){.fragment width="458" height="420"}
-:::
-
-# The Finite Difference Method (FDM)
-## Taylor expansion
-Assume the Poisson equation $$\div(a\grad u)=f$$
-
-Taylor expansion $$f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2$$
 
 ## Finite differences
 
-:::{.callout-tip icon="false" title="Approximate derivative operators by differences"} 
+:::{.callout-tip icon="false" title="Approximate derivative operators by differences"}
 $$ \pdv{u}{x}\approx\frac{\Delta u}{\Delta x} $$
 :::
 and solution $u$ by finite values $u_i$ at points $x_i$, e.g.
 $$ \dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) $$
 
 <!-- $$ \dv*[2]{u}{x}_{3} :=   -->
-$$\pdv[2]{u_3}{x}\approx 
-\frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2} 
+$$\pdv[2]{u_3}{x}\approx
+\frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}
 = \frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} $$
 
-## Difference stencil 
-Assumption: equidistant discretization $\Delta x$, conductivity 1
+## Summarize in a matrix
+Assumption: equidistant discretization $\Delta x$=1, conductivity $a$=1
 
 1st derivative: $[-1, +1] / dx$, 2nd derivative $[+1, -2, +1] / dx^2$
 
-Matrix-Vector product $\vb{A}\cdot\vb{u}=\vb{f}$ with
+Matrix-Vector product $\vb{A}\cdot\vb{u}=\vb{f}$ with matrix $A\in R^{N-2\times N}$
 
-$$ \vb{A} = \begin{bmatrix}   
-+1 & -2 & +1 & 0 & \ldots & &  \\
-0 & +1 & -2 & +1 & 0 & \ldots & \\
+$$ \vb{A} = \begin{bmatrix}
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
 \vdots & \vdots & \vdots & \ddots & \vdots &  \\
-\ldots & \ldots & 0 & +1 & -2 & +1
+\ldots & \ldots & 0 & -1 & +2 & -1
 \end{bmatrix}  $$
 
-## FDM on the general Poisson equation
-Assume the Poisson equation $$\div(a\grad u)=f$$
+# Boundary conditions
 
-$$ \pdv{(a \dv*{u})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  $$
+$A\in R^{N-2\times N}$ is not enough information to compute $N$ potentials
 
+- add 2 rows in matrix (or remove columns!)
 
-## Boundary conditions
+- Dirichlet conditions: $u_0=u_B$ (homogeneous if 0)
 
-Dirichlet conditions: $u_0=u_B$ (homogeneous if 0)
+- Neumann conditions (homogeneous if 0) $\pdv*{u}{x}_0=g_B$
 
-Neumann conditions (homogeneous if 0)
-$$ \pdv*{u}{x}_0=g_B $$
-
-Mixed boundary conditions $u_0+\alpha du_0/dx=\gamma$
+- Mixed boundary conditions $u_0+\alpha du_0/dx=\gamma$
 
 ## Dirichlet BC implementation way 1
-$u_0 = u_B$
+$u_0 = u_L$ & $u_N = u_R$
 
-$$ \begin{bmatrix}   
+$$ \begin{bmatrix}
 +1 & 0 & 0 & \ldots & &  \\
-+1 & -2 & +1 & 0 & \ldots & \\
-\vdots & \vdots & \ddots & \vdots &  \\
-\ldots & \ldots & 0 & +1 & -2 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  $$
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & 0 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} u_B\\ f_1 \\ f_2 \\ \vdots \\ f_{N-1} \\ f_N \end{bmatrix}  $$
 
 ## Dirichlet BC implementation way 2
-$u_B - 2 u_1 + u_3 = f_1$
+$-u_L + 2 u_1 - u_2 = f_1 \Rightarrow 2 u_1 - u_2 = f_1+u_L$
 
-$$ \begin{bmatrix}   
--2 & +1 & 0 & \ldots & &  \\
-+1 & -2 & +1 & 0 & \ldots & \\
-\vdots & \vdots & \ddots & \vdots &  \\
-\ldots & 0 & +1 & -2 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} f_1 - u_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} $$
+$$ \begin{bmatrix}
++2 & -1 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & -1 & +2
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_1 + u_L\\ f_2 \\ f_3 \\ \vdots \\ f_{N-2} \\ f_{N-1} + u_R \end{bmatrix}
+$$
 
 ## Neumann BC implementation way 1
-$$ u_1 - u_0 = g_B$$ 
+$$ u_1 - u_0 = g_L$$
 
-$$ \begin{bmatrix}   
--1 & +1 & 0 & \ldots & &  \\
-+1 & -2 & +1 & 0 & \ldots & \\
-\vdots & \vdots & \vdots & \ddots & \vdots \\
-\ldots & \ldots & +1 & -2 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} f_0+g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  $$
+$$ \begin{bmatrix}
++1 & -1 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} g_L\\ f_1 \\ f_2 \\ \vdots \\ f_{N-1} \\ g_R \end{bmatrix}
+$$
 
 ## Neumann BC implementation way 2
-$$u_0 - 2 u_1+u_2 = f_1 \qquad u_1 - u_0 = g_B \Rightarrow u_2-u_1=f_1+g_B $$ 
-<!-- $-u_1 + u_2 = f_1 - g_B$ -->
+$$-u_L +2 u_1-u_2 = f_1 \qquad u_1-u_0=g_L \Rightarrow u_2-u_1=f_1+g_L $$
 
-$$ \begin{bmatrix}   
--1 & +1 & 0 & \ldots & &  \\
-+1 & -2 & +1 & 0 & \ldots & \\
+$$ \begin{bmatrix}
++1 & -1 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_1 + g_L\\ f_2 \\ f_3 \\ \vdots \\ f_{N-1} \\ f_{N-1} + g_R \end{bmatrix}
+$$
+
+## Accuracy: analytical solution
+
+Assume $a$=1 & $f(x)=1$ $\Rightarrow$ $-\pdv[2]{u}{x}=1$ can be integrated twice:
+
+$$\pdv{u}{x}=-x+C_1$$
+
+$$u(x) = -\frac{1}{2} x^2 + C_1 x + C_0$$
+
+For $x$=0, $u_0=C_0$, for $x$=$X$?
+
+## Solution for $f$=1
+
+$$u(x) = -\frac{1}{2} x^2 + C_1 x + C_0 \quad\Rightarrow\quad
+u'(x) = -x+C_1$$
+
+| BC $x$=0 | BC $x=X$ |$C_0$ |$C_1$               |
+|----------|----------|------|--------------------|
+|Dirichlet |Dirichlet |$u_0$ |$X/2+(u_X-u_0)/X$   |
+|Dirichlet |Neumann   |$u_0$ |$u'_X+X$            |
+|Neumann   |Dirichlet |$u'_0$|$u_X-u'_0 X + X^2/2$|
+
+
+## Tasks
+
+1. Create a system matrix for unit quantities
+1. Implement Dirichlet BC on one and Neumann on other side
+1. Solve system for different right-hand sides:
+    * no source at all
+    * single source in the middle or at the boundary
+    * several sources with different strengths (& signs)
+    * source on part of the domain
+1. Alwas plot the solution and its Laplacian
+
+<!-- ## FDM on the general Poisson equation
+Assume the Poisson equation $$-\div(a\grad u)=f$$
+
+$$ \pdv{(a \dv*{u})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  $$ -->
+
+## The general case
+
+$\Delta x \ne 1$ & $a \ne 1$ with $\bf x\in R^N$ and $a\in R^{N-1}$ (in-between)
+
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pygimli as pg
+import pygimli.meshtools as mt
+nx = 6
+grid = mt.createGrid(nx, 2)
+ax, cb = pg.show(grid)
+ax.set_yticks([])
+for i in range(nx):
+    ax.plot(i, 0, "ko", ms=10)
+for i in range(nx-1):
+    ax.text(i+0.5, 0.5, rf"$a_{i}$", ha="center", va="center", fontsize=18)
+```
+
+$\pdv{u}{x}$ live on .5 space like $a$ $\Rightarrow$ `a/np.diff(x)`
+
+second derivative: `np.diff(a*np.diff(x))/...`
+
+
+## Coupling coefficients
+
+$$ A_{i,i-1} = C_i^{left} = -a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
+
+$$ A_{i,i+1} = C_i^{right} = -a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
+
+$$ \begin{bmatrix}
++1 & 0 & 0 & \ldots & &  \\
+C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots & \\
 \vdots & \vdots & \ddots & \vdots &  \\
-\ldots & 0 & +1 & -2 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} f_1 + g_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} $$
+\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
+\ldots & \ldots & & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \\ g_B \Delta x_N \end{bmatrix}  $$
 
-# Parabolic PDEs
+## Symmetry
 
-## Heat transfer in 1D
-$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
+$$ A_{i+1,i} = C_{i+1}^{left} = a_i / (x_{i+1}-x_{i}) / (x_{i+2}-x_{i}) \cdot 2 $$
 
-with the periodic boundary conditions:
+$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
 
-* $T(z=0,t)=T_0 + \Delta T \sin \omega t$ (daily/yearly cycle)
-* $\pdv{T}{z}(z=z_1) = 0$ (no change at depth)
+only symmetric if $\Delta x$ is constant around $x_i$, better take $a_i/(\Delta x_i)^2$
 
-and the initial condition $T(z, t=0)=\sin \pi z$ has the analytical solution
-$$ T(z, t) = \Delta T e^{-\pi^2 t} \sin \pi z $$
+$$ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1})^2 $$
 
-## Explicit methods
+$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i})^2 $$
 
-$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
+$\Rightarrow$ inaccuracies expected for non-equidistant discretization
 
-Solve Poisson equation $\div(a\grad u)=f$ 
+## A closer look at the Dirichlet boundary
 
-for every time step $i$ (using FDM, FEM, FVM etc.)
+$$ \begin{bmatrix}
++1 & 0 & 0 & \ldots & &  \\
+C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots &
+\end{bmatrix} \begin{bmatrix} u_B\\ f_1  \end{bmatrix}$$
 
-Finite-difference step in time: update field by 
-$$ T_{i+1} = T_i + a \pdv[2]{u}{z} \cdot \Delta t$$
+1. $C$ can be differently scaled from 1 $\Rightarrow$ multiply with $C_i^L$
+1. Matrix is non-symmetric
+<!-- $\Rightarrow$ add $C_1^L$ -->
 
-## Implicit methods
+$$ \begin{bmatrix}
+C_1^L & 0 & 0 & \ldots & &  \\
+C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots &
+\end{bmatrix} \begin{bmatrix} u_B C_i^L\\ f_1  \end{bmatrix} $$
 
-next lecture
+## A closer look at the Neumann boundary
 
-## Mixed methods
+$$ \begin{bmatrix}
+\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
+\ldots & \ldots & & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_N \\ g_B \Delta x_N \end{bmatrix}  $$
+
+1. $C$ can be differently scaled from 1 $\Rightarrow$ multiply with $C_N^R$
+1. Matrix is non-symmetric  $\Rightarrow$ multiply with -1
+
+$$ \begin{bmatrix}
+\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
+\ldots & \ldots & & 0 & C_N^R & -C_N^R
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_N \\ -g_B \Delta x_N C_N^R \end{bmatrix}  $$
+
+
+## Tasks
+
+1. Derive the coefficients for the general case
+1. Write a function implementing the general case
+1. Divide the "subsurface" in regions with different $a$
+1. Compute the solution for different source fields
+1. Use a non-equidistant discretisation
+1. Always plot solution along with source and Laplacian
+
+# Higher dimensions
+
+## FD in 2D: discretization
+
+:::: {.columns}
+::: {.column}
+::: {.r-stack}
+$\nabla$ operator in $x$ and $y$ direction
+
+![Simple 2D conductivity grid](pics/grid32a.svg)
+
+![Simple 2D conductivity grid with FD stencil](pics/grid32stencil.svg){.fragment}
+:::
+:::
+::: {.column}
+:::: {.fragment}
+$$ C_{i,j}^{right} = a_{i,j-1/2} / (x_{i+1}-x_{i})^2 $$
+
+$a_{i,j-1/2}=(a_{i,j-1}+a_{i,j})/2$ ?
+
+harmonic, geometric? weighting?
+
+$a_{i,j-1/2}=\frac{a_{i,j-1}\Delta y_{j-1}+a_{i,j}\Delta y_{j}}{y_j+1-y_{j-1}}$?
+::::
+:::
+::::
+
+## FD in 2D: discretization
+:::: {.columns}
+::: {.column}
+![3D discretization](pics/fd3ddiscr.png)
+:::
+::: {.column}
+![coupling coefficient ](pics/fd3d_ctop.png)
+:::
+::::

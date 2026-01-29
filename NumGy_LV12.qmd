@@ -23,28 +23,110 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
---- 
+jupyter: python3
+---
 # Recap
 
 1. The Finite Difference (FD) method
-   * Poisson equation in 1D, look into 2D/3D
-   * diffusion equation in 1D, time-stepping 
-1. Solving the hyperbolic (acoustic) wave equation in 1D
+   * elliptic: Poisson equation in 1D, look into 2D/3D
+   * parabolic: diffusion equation in 1D, time-stepping
+   * hyperbolic: acoustic wave equation in 1D
 1. The Finite Element (FE) method
-   * Poisson and diffusion equation in 1D
-   * (complex) Helmholtz equation in 2D for EM problems
+   * Poisson equation in 1D & 2D
+   * complex Helmholtz equation in 2D for EM problems
    * solving EM problems and computational aspects
+
+# Boundary conditions
+
+**Neumann** (implicitly by choice of shape functions)
+
+$\pdv{u}{n}=0$ $\Rightarrow$ $\vb n\cross \curl \vb E = 0$ $\Rightarrow$ $\vb n \cross \vb B=0$
+
+**Dirichlet**
+
+$u=0$ $\Rightarrow$ $\vb n\cross \vb E = 0$ $\Rightarrow$ $\vb n\dotproduct \vb B=0$
+
+
+## Mixed boundary conditions
+So far...
+
+* Dirichlet Boundary conditions $u=u_0$
+* Neumann Boundary conditions $\pdv{u}{n}=g_B$<br>
+
+vectorial problems: $\vb n\cdot \vb E=0$ (Neumann) or $\vb\curl \vb E=0$ (Dirichlet)
+
+In general mixed, also called Robin (or impedance convective) BC
+$$ a u + b \pdv{u}{n} = c $$
+
+## Example DC resistivity with point source
+$$\div \sigma \grad u = \div \vb j = I \delta(\vb r - \vb r_s)$$
+
+solution for homogeneous $\sigma$ on surface: $u=\frac{I}{2\pi\sigma} \frac{1}{|\vb r - \vb r_s|}$
+
+E-field $\vb E=-\frac{I}{2\pi\sigma} \frac{\vb r - \vb r_s}{|\vb r - \vb r_s|^3}$
+
+normal direction $\vb E \cdot \vb n=-\frac{u}{|\vb r - \vb r_s|}\cos \phi$ purely geometric
+
+$$\pdv{u}{n} + \frac{\cos\phi}{|\vb r - \vb r_s|}=0$$
+
+## Perfectly matched layers
+
+::: {.columns}
+::: {.column}
+![](pics/FDTD_TFSF.png)
+:::
+::: {.column}
+$$ \pdv{x} \rightarrow \frac{1}{1+i\sigma/\omega} \pdv{x}  $$
+
+$$ x \rightarrow x + \frac{i}{\omega}\int^x \sigma(x')\dd x' $$
+
+:::
+:::
+
+
+## Absorbing boundary conditions
+wave equation (e.g. in 2D)
+$$ \pdv[2]{u}{t} - v^2 \laplacian u = 0 $$
+
+Fourier transform in $t$ and $y$ (boundary direction) $\Rightarrow \omega, k$
+
+$$ \omega^2 \hat{u} - v^2 \pdv[2]{\hat{u}}{x} + v^2 k^2 \hat{u} = 0 $$
+
+ordinary DE with solution $\hat{u}=\sum a_i e^{\lambda x}$ with $\lambda^2 = k^2 - \omega^2/v^2$
+
+## No-slip boundary condition
+
+![](pics/slip-bc-03.png)
+
+# Time-domain EM
+
+* Fourier transform excitation $\Rightarrow$ solve in FD $\Rightarrow$ backtransform
+* solve with Time-Stepping: Governing equation
+
+$$ \curl\mu^{-1}\curl \vb e + \sigma \pdv{\vb e}{t} = -\pdv{\vb j_s}{t} $$
+
+$$ \vb K \vb u (t) + \vb M \partial_t \vb u(t) = \vb s(t) $$
+
+## Implicit time stepping
+
+$$ \vb K \vb u^{n+1} + \vb M \frac{\vb u^{n+1}-\vb u^n}{\Delta t} = \vb s(t) $$
+
+$$ (\Delta t \vb K + \vb M) \vb u^{n+1} = \vb M \vb u^n +\Delta t \vb s^{n+1} $$
+
+second-order
+$$ (2\Delta t \vb K + 3 \vb M) \vb u^{n+2} = \vb M (4 \vb u^{n+1} - \vb u^n) - 2\Delta t \vb s^{n+2} $$
+
 
 ## Solution in pyGIMLi
 
 :::: {.columns}
 ::: {.column}
 step by step
-```
+```python
 import pygimli.solver as ps
 A = ps.createStiffnessMatrix(mesh, a)
 M = ps.createMassMatrix(mesh, b)
@@ -58,32 +140,47 @@ u = ps.linSolve(A, b)
 ::: {.column}
 or shortly
 
-```
+```python
+from pygimli.physics.seismics import solvePressureWave
 bc = {'Dirichlet': {4: 1.0, 3: 0.0},
       'Neumann': {2: 1.0}}
-u = ps.solveFiniteElements(mesh, a, b, f, bc=bc, 
-                           t=times, c)
-u = pygimli.physics.seismics.solvePressureWave(
-    mesh, velocities, times, sourcePos, uSource)
+u = ps.solveFiniteElements(mesh, a, b, f,
+                           bc=bc, t=times, c)
+u = solvePressureWave(mesh, velocities, times,
+                      sourcePos, uSource)
 ```
 :::
 ::::
 
 $$ c\pdv{u}{t}= \div(a\grad u) + b u + f(\vb r, t)$$
 
-## Advection
+# Advection problems
 
 Volume elements move with velocity $\vb v$ and take (advectio=move with)
 
-$$\pdv{T}{t} \Rightarrow \pdv{T}{t} + \dv{z}{t}\pdv{T}{z}$$ 
+$$\pdv{T}{t} \Rightarrow \pdv{T}{t} + \dv{z}{t}\pdv{T}{z}$$
 in 3D $\vb{v}\cdot\grad{T}$ $\Rightarrow$ advection-dispersion equation
 
-$$\pdv{T}{t} = \div a\grad{T} + Q - \vb{v}\cdot\grad{T}$$
+$$\pdv{T}{t} - \div a\grad{T} + \vb{v}\cdot\grad{T} = \div q_s$$
+
+## Continuity equation
+
+$$ \dv{t}\int_V u(\vb r, t) \dd V = \int_V \pdv{u(\vb r, t)}{t} + \int_V \vb v \vdot \grad u(\vb r, t) \dd V $$
+
+$$ \dv{t}\int_V u(\vb r, t) \dd V = \int_V \pdv{u(\vb r, t)}{t} + \int_{\partial V} u(\vb r, t) \vb v\vdot \vb n $$
+
+Conservation of mass ($u$=$\varrho$) $\Rightarrow$ divergence of flux $u\vb v$
+
+$$ \pdv{u}{t} + \div(u \vb v) = 0 $$
+
+can also be conservation of impuls or energy
 
 ## Advection-dispersion equation (general)
-$$ \pdv{u}{t}+\vb v\cdot\grad u = \div(a\grad u) + b u + f(\vb r, t)$$
+$$ \pdv{u}{t}+\vb v\cdot\grad u - \div(a\grad u) = b u + f(\vb r, t)$$
 
-$\vb v\cdot\grad u$ (Advection), $\div(a\grad u)$ (Dispersion=Diffusion)
+flux $\vb v\cdot\grad u$ (Advection), stiffness $-\div(a\grad u)$ (Dispersion=Diffusion)
+
+arising in *Computational Fluid Dynamics*
 
 Solve, e.g., by [`pyGIMLi.solver.solveFiniteVolume` (Link)](https://www.pygimli.org/pygimliapi/_generated/pygimli.solver.html#pygimli.solver.solveFiniteVolume)
 
@@ -92,7 +189,7 @@ bc = dict(Dirichlet={4: 1.0, 3: 0.0}, Neumann={2: 1.0})
 u = ps.solveFiniteVolume(mesh, a, b, f, bc=bc, t=times, c)
 ```
 
-## Computational fluid dynamics
+## Computational magnetohydrodynamics
 
 Magnetohydrodynamic induction equation
 
@@ -101,7 +198,7 @@ $$\pdv{\vb B}{t} =  \curl \frac{1}{\mu\sigma} \curl \vb B + \curl(\vb v \cross \
 Forces on fluid (induction, Coriolis, pressure, gravity, Lorentz)
 $$ \rho \pdv{\vb v}{t} + \rho (\vb v \cdot \grad) \vb v + \grad p = -2\omega\cross\vb v+\alpha T \vb g + \vb j \cross \vb B / \rho $$
 
-## FE solution for inhomogeneous viscosity
+## FE solution can bear instabilities
 
 ![](pics/morra10_1.png){fig-align="center"}
 
@@ -113,15 +210,31 @@ Solution $u_i$ at node $i$ represents average value over cell
 
 $$ \overline{u}_i(t) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}} u(x, t)\dd x $$
 
-$$ \int_{t_1}^{t_2} \pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$ 
+$$ \int_{t_1}^{t_2} \pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$
 
-## FV
+## Finite Volume schemes
 
+:::: {.columns}
+::: {.column}
 ![](pics/finite_volume.png)
+:::
+::: {.column}
+upwind method:
+
+$$Q_i^{n+1} = Q_i^n - a\frac{\Delta t}{\Delta x} (Q_i^n-Q_{i-1}^N)$$
+
+Lax-Wendroff (2nd order)
+
+$$Q_i^{n+1} = Q_i^n - a\frac{\Delta t}{2\Delta x} (Q_{i+1}^n-Q_{i-1}^N)$$
+
+$$+\frac12 (a\frac{\Delta t}{2\Delta x})^2 (Q_{i+1}^n-2Q_{i}^N+Q_{i-1}^N)$$
+
+:::
+::::
 
 ## Simple 1D advection problem
 
-$$ u(x, t_2) = u(x, t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$ 
+$$ u(x, t_2) = u(x, t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$
 
 $$ \overline{u}(t_2) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}}\qty\Big(u(x,t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x})  $$
 
@@ -133,7 +246,7 @@ $$ \overline{u}(t_2) = \overline{u}(t_1) - \frac{1}{x_{i+1/2}-x_{i-1/2}}
 $$ \pdv{\overline{u}_i}{t} +\frac{1}{\Delta x_i} (v_{i+1/2}-v_{i-1/2}) = 0 $$
 
 ::: {.callout-note}
-Finite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell's loss is always another cell's gain! 
+Finite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell's loss is always another cell's gain!
 :::
 
 ## Visualization
@@ -150,7 +263,37 @@ $$\pdv{\vb u}{t} + \div\vb v(u)= 0$$
 
 volume integral over cell, using Gauss' law
 
-$$\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Omega_i} \div\vb v(u) \dd\Omega = 0 = 
+$$\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Omega_i} \div\vb v(u) \dd\Omega = 0 =
 \int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Gamma_i} \vb v(u) \cdot \vb n \dd{\Gamma} $$
 
 $$\Rightarrow \pdv{\overline{u}}{t} +\frac{1}{V_i}\int_{\Gamma_i}\vb v(u)\cdot \vb n \dd{\Gamma} =0  $$
+
+## Godunov's scheme
+
+1. Define piece-wise constant approximation $u^{n+1}$
+1. Obtain solution for local Riemann problem at cell interfaces
+1. Average state variables from 2. over
+
+## The methods
+
+::: {.callout-tip title="The Finite Difference method"}
+approximates the partial derivatives by difference quotients (beware $\Delta x$ and $\Delta a$)
+:::
+
+::: {.callout-tip title="The Finite Element method"}
+approximates the solution through base functions in integrative sense
+:::
+
+::: {.callout-tip title="The Finite Volume method"}
+approximates the solution by piecewise constant values and ensures conservation law by fluxes
+:::
+
+## Discontinuous Galerkin scheme
+
+* use Galerkin method (multiply test function and take as basis)
+* discretize fields by piece-wise constant functions
+  - fields are becoming discontinuous
+* communicate flux between elements by Riemann problem scheme
+
+* every element independent (also mesh size)
+* fully parallelized (element-wise)

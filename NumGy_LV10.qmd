@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 10: 2D Helmholtz equation"
+title: "Numerical Simulation Methods in Geophysics, Lecture 10:<br/>2D/3D EM modelling"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -9,7 +9,7 @@ title-slide-attributes:
 format:
   tubaf-revealjs:
     html-math-method: mathjax
-    chalkboard: true
+    # chalkboard: true
     include-in-header:
         - text: |
             <script>
@@ -23,279 +23,81 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
+jupyter: python3
+---
 # Recap
 
-* Maxwell equations in time domain
-* harmonic approach (or decomposition)<br>
-  $\Rightarrow$ (complex-valued) Helmholtz equation for $E$ and $B$
-* solve 1D Helmholtz equation complex-values
-  * compare with analytic solution
-
-## Next lectures and exercises
-
-* LV10: 15.01. exercise on 16.01.
-* LV11: 22.01. exercise on 23.01.
-* LV12: 29.01. exercise on 30.01.
-* VL13: 05.02., exercise on 06.02.
-* report on 2D Helmholtz equations
-
-## Todo
-
-* solve 2D Helmholtz equation 
-  * use secondary field approach
-* use wide range of frequencies
-  * combine E and H to yield MT sounding curves
-* excurse on 3D vectorial Maxwell solvers
-* overview on equation solvers and high-performance computing
-* outlook to computational fluid dynamics
-
-## Electromagnetic fields in the Earth
-
-Maxwell equations lead to diffusion equation
-
-$$\pdv[2]{\vb B}{z}=\mu_0\sigma\pdv{\vb B}{t}$$
-
-A periodic excitation ($B_0 e^{\imath\omega t}$) leads to (cf. temperature problem)
-
-$$B=B_0 e^{-z/d}\cos(\omega t-z/d)$$
-
-with the skin depth $d=\sqrt{2/(\mu_0 \sigma\omega)}\approx 503\sqrt{\rho/f}$
-
-## Electromagnetic fields in the Earth
-
-Assume E field in x direction
-
-$$E_x=-\frac{1}{\mu_0\sigma}\pdv{B_y}{z}=\frac{B_0}{\mu_0\sigma d}e^{-z/d}\sqrt{2}\cos(\omega t-z/d+\pi/4)$$
-
-$\Rightarrow$ phase shift of 45° ($\pi/4$) between $E_x$ und $B_y$
-
-$$\frac{|E_x|}{|B_y|}=\frac{\sqrt{2}}{\mu_0\sigma d} \Rightarrow \rho=\frac{\mu_0}{\omega}\left|\frac{E_x}{B_y}\right|^2$$
-
-
-## The magnetotelluric (MT) method
-::::{.columns}
-:::{.column width="40%"}
-![](pics/MT_Prinzip.png){fig-align="center"}
-:::
-:::{.column width="60%"}
-* inductive electromagnetics with $f$=0.001-100\,Hz ($T$=0.01-1000s)
-* source in ionosphere (natural source) or on ground (controlled source)
-* measure magnetic and electric fields
-* analyse (complex) ratio in frequency domain
-* depth sounding ($\rho_a$ & $\phi$) with $T$
-* MT course of Anna Marti (U Barcelona)
-:::
-::::
-
-## Magnetotelluric depth sounding
-
-![](pics/mt1d.png){fig-align="center"}
-
-## 2D/3D Magnetotellurics
-
-![Imaging of a subduction zone (Worszewski et al., 2011)](pics/mt2d.png){fig-align="center"}
-
-## Helmholtz equations
-
-$$ \curl \mu^{-1} \curl \vb E + \imath\omega\sigma\vb E - \omega^2\epsilon \vb E = - \imath\omega \vb j_s$$ 
-
-$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H - \omega^2\epsilon\mu/\sigma \vb H=\curl \sigma^{-1}\vb j_s$$ 
-
-PDEs identical $\vb E$ and $\vb H$ through exchanging $\mu$ and $\sigma$
-
-component perpendicular to modelling frame (E/H polarization)
-
-$$ \curl a \curl = -\div a \grad $$
-
-
-## Finite element discretization
-
-* weak formulation (for E)
-$$ \int_\Omega \mu^{-1}\grad v_i \cdot \grad v_j \dd\Omega + \imath\omega \int_\Omega \sigma v_i v_j \dd\Omega = \int_\Omega v_i f \dd\Omega $$
-* stiffness = second derivative $\div\vb v_i$, expressed by 2 gradients
-$$ \vb A_{i,j} = \int_\Omega \mu^{-1} \grad v_i \cdot \grad v_j \dd\Omega$$
-
-## Finite element discretization
-
-* weak formulation (for E)
-$$ \int_\Omega \mu^{-1}\grad v_i \cdot \grad v_j \dd\Omega + \imath\omega \int_\Omega \sigma v_i v_j \dd\Omega = \int_\Omega v_i f \dd\Omega $$
-* mass matrix resembles functions $\vb v_i$
-$$ \vb M_{i,j} = \int_\Omega \sigma v_i \cdot v_j \dd\Omega $$
-
-## Complex or real-valued?
-
-Either discretize the complex system 
-
-$$(\vb A+\imath\omega\vb M) (\vb u_r + \imath \vb u_i) = \vb b_r + \imath \vb b_i$$
-
-by complex shape functions OR transfer into real
-
-$$\vb A\vb u_r + \imath\vb A \vb u_i + \imath\omega\vb M \vb u_i - \omega\vb M \vb u_i = \vb b_r + \imath \vb b_i$$
-
-$$\mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A) \mqty(\vb u_r\\ \vb u_i) = \mqty(\vb b_r\\ \vb b_i) $$
-
-
-## Secondary field approach
-
-Consider the field to consist of a primary (background) and an secondary (anomalous) field $F=F_0+F_a$  (or $F_p+F_s$)
-
-solution for $F_0$ known, e.g. analytically or 1D (semi-analytically)
-
-$\Rightarrow$ form equations for $F_a$, because
-
-* $F_a$ is weaker or smoother (e.g. $F_0\propto 1/r^n$ at sources)
-* boundary conditions easier to set (e.g. homogeneous Dirichlet)
-
-## Example DC resistivity
-
-$$-\div(\sigma\grad u) = \div j_s = I\delta(\vb r-\vb r_s)$$
-
-Problem: point source leads to infinite potential 
-
-$$u(\vb r)=\frac{I}{2\pi\sigma}\frac{1}{|\vb r - \vb r_s|}$$
-
-Approach: $u=u_p(\sigma_0) + u_s(\sigma-\sigma_0)$:
-
-$$-\div(\sigma\grad u_s) = \div((\sigma-\sigma_0)\grad u_p)$$
-
-## Example DC resistivity
-
-$$-\div(\sigma\grad u_s) = \div((\sigma-\sigma_0)\grad u_p)$$
-
-discrete form using unit conductivity $\sigma_1=1$S/m
-
-$$\vb A^\sigma \vb u_s = \vb A^{\delta\sigma}\vb u_p = \vb A^\sigma \vb u_p - \sigma_0 \vb A^1 \vb u_p$$
-
-
-## Secondary field Helmholtz equation
-
-The equation $-\grad^2 F - k^2 F = 0$ is solved by the primary field for $k_0$:
-
-$-\grad^2 F_0 - k_0^2 F_0=0$ and the total field for $k_0+\delta k$:
-
-$$ -\grad^2 (F_0+F_a) -(k_0^2+\delta k^2) (F_0+F_a) = 0 $$
-
-$$ -\grad^2 F_a - k^2 F_a = \delta k^2 F_0 $$
-
-::: {.callout-note}
-Same operator, source terms at anomalies, weighted by the primary field.
-:::
-
-## Secondary field for EM
-
-Maxwells equations $k^2=-\imath\omega\mu\sigma$
-
-$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
-
-leads to
-
-$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
-
-::: {.callout-note}
-Source terms only arise at anomalous conductivities and increase with primary field
-:::
-
-## Secondary field for EM
-
-$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
-
-leads to the discretized form ($\vb A$-stiffness, $\vb M$-mass)
-
-$$ \vb A \vb E_a + \imath\omega\vb M_\sigma E_a = -\imath\omega\vb M_{\delta\sigma} \vb E_0 $$
-
-```{python}
-#| echo: true
-#| eval: false
-A = stiffnessMatrix1DFE(x=z)
-M = massMatrix1DFE(x=z, a=w*mu*sigma)
-dM = massMatrix1DFE(x=z, a=w*mu*(sigma-sigma0))
-u = uAna + solve(A+M*w*1j, dM@uAna * w*1j)
-```
-
-# 2D problems
-Make use of pyGIMLi
-
-See documentation on [pyGIMLi.org](https://pygimli.org)
-
-## The meshtools module
-```{python}
-#| echo: true
-#| eval: true
-import pygimli as pg
-import pygimli.meshtools as mt
-world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
-pg.show(world)
-```
-
-## The meshtools module
-```{python}
-#| echo: true
-#| eval: true
-mesh = mt.createMesh(world, quality=34, area=1e5)
-pg.show(mesh)
-```
-
-## Creating a 2D geometry
-```{python}
-#| echo: true
-#| eval: true
-anomaly = mt.createRectangle(start=[0, -8000], end=[1000, -1000], marker=2)
-pg.show(world+anomaly)
-```
-
-## Creating a 2D mesh
-```{python}
-#| echo: true
-#| eval: true
-mesh = mt.createMesh(world+anomaly, quality=34, smooth=True, area=1e5)
-pg.show(mesh, markers=True, showMesh=True);
-```
-
-
-## Creating a 2D conductivity model
-```{python}
-#| echo: true
-#| eval: true
-sigma0 = 1 / 100  # 100 Ohmm
-sigma = mesh.populate("sigma", {1: sigma0, 2: sigma0*10})
-pg.show(mesh, "sigma", showMesh=True);
-```
-
-## The solver module
+* Maxwells equations (inductive) in time- and frequency domain
+* single frequency approach (decomposition) so far 1D
+* Helmholtz term ($\pdv[2]{u}{x}$ and $u$ term)
+* $u$ term needs mass matrix (like in time-stepping)
+* complex-valued problem: complex or double real matrix
+* secondary field approach: $\sigma$ anomalies as sources
+
+remaining dates: 22.1. (L11), 29.1. (L12), 5.2. (L13 online), 12.2. (TAP)
+
+## Analytical solution
 ```{python}
 #| echo: false
 #| eval: true
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+
+T = 0.1
+w = 2 * np.pi / T
+sigma0 = 1/100  # 1/100
+mu = np.pi * 4e-7
+k = np.sqrt(-1j*w*mu*sigma0)
+z = np.arange(-10000, 00000.1, 200)
+skindepth = np.sqrt(2/w/sigma0/mu)
+uAna = np.exp(1j*k*z)
+fig, ax = plt.subplots(ncols=4, sharey=True)
+ax[0].plot(uAna.real, -z/1000)
+ax[1].plot(uAna.imag, -z/1000)
+ax[2].plot(np.abs(uAna), -z/1000)
+phi = np.rad2deg(np.unwrap(np.angle(uAna)))
+ax[3].plot(phi, -z/1000)
+ax[0].set_ylabel("z (km)")
+ax[0].invert_yaxis()
+tits = ['Real', 'Imag', 'Abs', 'Phase']
+for a, t in zip(ax, tits):
+  a.set_title(t)
+  a.hlines(skindepth/1000, *a.get_xlim(), ls="--", color="C1")
+  a.grid()
 ```
 
-```{python}
-#| echo: true
-#| eval: true
-import pygimli.solver as ps
-mesh["my"] = 4 * np.pi * 1e-7
-A = ps.createStiffnessMatrix(mesh, a=1/mesh["my"])
-M = ps.createMassMatrix(mesh, mesh["sigma"])
-fig, ax = plt.subplots(ncols=2)
-ax[0].spy(pg.utils.toCSR(A), markersize=1)
-ax[1].spy(pg.utils.toCSR(M).todense(), markersize=1)
-```
 
-## The complex problem matrix
+## Complex-to-real in pyGIMLi
 
 $$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+```{python}
+#| echo: false
+#| eval: true
+import pygimli as pg
+import pygimli.meshtools as mt
+import pygimli.solver as ps
+world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
+anomaly = mt.createRectangle(start=[0, -8000], end=[1000, -1000], marker=2)
+mesh = mt.createMesh(world+anomaly, quality=34, smooth=True, area=1e5)
+mesh["my"] = 4 * np.pi * 1e-7
+mesh["sigma"] = sigma0
+```
 
 ```{python}
 #| echo: true
 #| eval: true
 #| output-location: column
-w = 0.1
+A = ps.createStiffnessMatrix(mesh)
+b = np.zeros(mesh.nodeCount())
+ps.assembleBC({'Dirichlet': {-1: 1.0}},
+              mesh, A,  b);
+M = ps.createMassMatrix(
+    mesh, mesh["sigma"]*mesh["my"])
 nd = mesh.nodeCount()
 B = pg.BlockMatrix()
 B.Aid = B.addMatrix(A)
@@ -307,23 +109,255 @@ B.addMatrixEntry(B.Mid, nd, 0, scale=w)
 pg.show(B)
 ```
 
-## Sparse matrices
+## Complex in pyGIMLi
 
-Up to now: regular (dense) array: save every element including 0
+```{python}
+#| echo: true
+#| eval: true
+C = pg.matrix.CSparseMatrix(A.vecColPtr(), A.vecRowIdx(),
+    pg.core.toComplex(A.vecVals(), M.vecVals()*w))
+c = pg.core.toComplex(b, b*0)
+u = ps.linSolve(C, c).array()  # important (bug in pyGIMLi!)
+```
 
-Save only non-zero components (e.g. using `scipy.sparse`)
+![](pics/helmholtz1D.svg)
 
-* COO - coordinate format
-* CSC/CRS - compressed sparse column/row
-* BSR - block sparse row format, ...
+## Secondary field for EM
+Let $E_0$ be the solution to the equation for $\sigma=\sigma_0$
+$$-\grad^2 E_0 +\imath\omega\mu\sigma_0 E_0=0$$
 
-## Solve systems of equations 
+and $E=E_0+E_a$ for $\sigma=\sigma_0+\delta\sigma$
 
-* Gauss elimination (expensive and dense)
-* Cholesky (or ILU) decomposition
-* Iterative solvers (conjugate gradients)
-* incomplete factorizations or factorization of submatrices
+$$-\grad^2 (E_0 + E_a) +\imath\omega\mu(\sigma_0+\delta\sigma) (E_0+E_a)=0$$
+subtracting leads to
+$$-\grad^2 E_a +\imath\omega\mu(\sigma_0+\delta\sigma) E_a=-\imath\omega\mu\delta\sigma E_0$$
 
-## Reordering
 
-![original (left) & reordered (right) matrix (Rücker et al. 2006)](pics/reordering.png)
+## Secondary field for EM
+
+$$ -\grad^2 E_a + \imath\omega\mu\sigma E_a = -\imath\omega\mu\delta\sigma E_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous conductivities and increase with primary field
+:::
+
+is solved for $E_0$($\vb u$) using $\vb A$-stiffness, $\vb M$-mass and $E_0$($\vb u_0$)
+
+$$ (\vb A + \imath\omega\vb M_\sigma) \vb u = -\imath\omega\vb M_{\delta\sigma} \vb u_0 $$
+
+```{python}
+#| echo: true
+#| eval: false
+A = stiffnessMatrix1DFE(x=z)
+M = massMatrix1DFE(x=z, a=w*mu*sigma)
+dM = massMatrix1DFE(x=z, a=w*mu*(sigma-sigma0))
+u = uAna + solve(A+M*w*1j, dM@uAna * w*1j)
+```
+
+## 2D scalar EM - TM polarization
+
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H=\curl\sigma^{-1} \vb j_s$$
+
+
+::: {.callout-note title="Transverse magnetic (TM) mode"}
+Assume the source field is oscillating perpendicular to the modelling plane, i.e.
+
+$\vb H=[H_x, 0, 0]^T e^{\imath\omega t}$.
+:::
+
+Then the PDE holds for the scalar $H_x$
+
+$$-\div \sigma^{-1} \grad H_x(y,z) + \imath\omega\mu H_x(y,z) = 0$$
+
+## 2D scalar EM - TE polarization
+
+$$ \curl \mu^{-1}\curl \vb E + \imath\omega\sigma\vb E = \curl \vb j_s$$
+
+::: {.callout-note title="Transverse electric (TE) mode"}
+Assume the source field is oscillating perpendicular to the modelling plane, i.e.
+
+$\vb E=[E_x, 0, 0]^T e^{\imath\omega t}$.
+:::
+
+Then the PDE holds for the scalar $E_x$
+
+$$-\div \mu^{-1} \grad E_x(y,z) + \imath\omega\sigma E_x(y,z) = 0$$
+
+# EM vector modelling
+
+$$ \curl \mu^{-1}\curl \vb E + \imath\omega\sigma\vb E - \omega^2\epsilon \vb E = -\imath\omega \vb j_s$$
+
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H - \omega^2\mu\epsilon \vb H = \curl \sigma^{-1}\vb j_s$$
+
+
+## History
+
+::: {.callout-note title="James Clerk Maxwell, Treatise on Electricity & Magnetism, 1891"}
+“Physical vector quantities may be divided into two classes, in one of which
+the quantity is defined with reference to a line, while in the other the quantity
+is defined with reference to an area.”
+:::
+* integral equations (IE), finite differences (FD) and elements (FE)
+* nodal and vector basis functions, secondary field
+* decompose 3D source (2D inverse) in wavenumber domain
+* improvement of equation solvers and preconditioners
+* parallel solvers, high-performance computing
+
+## Solving EM problems with staggered grid
+![Staggered grid cell after Yee (1966) (Börner, 2010)](pics/yeeCellRedBlue.png){fig-align="center"}
+
+## Solving EM problems with staggered grid
+![Electric field components from one row of curl-curl (Börner, 2010)](pics/yeeCellRowE.png){fig-align="center"}
+
+## The way from FD to FE
+
+![Orthogonal, non-orthogonal and irregular grids (Rücker et al., 2006)](pics/rueckerGrids.png)
+
+## The weak formulation
+
+$$ \int_\Omega \vb w \curl \mu^{-1}\curl \vb E \dd\Omega - \imath\omega\int\vb w \sigma \vb E \dd\Omega = 0 $$
+
+Integration, Greens identity $\int a\laplacian b = -\int \grad a \vdot \grad b - \int a\pdv*{b}{n}$
+
+$$ \int_\Omega \vb w \ldots = \int_\Omega \curl \vb w \vdot (\mu^{-1}\curl \vb E) \dd\Omega + \int \vb n \cross (\mu^{-1}\curl \vb E) \dd \Gamma $$
+
+choose basis that latter term vanishes
+
+$$ \int_\Omega \curl \vb w \vdot (\mu^{-1}\curl \vb E) \dd\Omega  - \imath\omega\int\vb w \sigma \vb E \dd\Omega = 0 $$
+
+## Galerkins method
+
+$$ \vb E = \sum_i u_i \vb u \qqtext{with} \vb w \in \vb u_i $$
+
+$$ \braket{\curl \vb w}{\mu^{-1}\curl\vb u_i} $$
+
+$$ \vb A\vb u =\vb b \qqtext{with} A_{i,j} = \int_\Omega (\curl u_i)\vdot(\mu^{-1}\curl u_j) \dd\Omega $$
+
+## The Finite Element zoo (1D & 2D)
+
+::: {.columns}
+::: {.column width="75%"}
+![Arnold (2013): Periodic table of elements](pics/element_zoo1d2d.png){fig-align="center"}
+:::
+::: {.column width="25%"}
+* $k$=0 Nodal elements
+* $k$=1 edge elements
+* $k$=2 face elements (Discontinuous Galerkin)
+* $r$/$p$ higher order
+:::
+::::
+
+## The Finite Element zoo (3D)
+
+![Arnold (2013): [Periodic table of elements](https://www-users.cse.umn.edu/~arnold/femtable/)](pics/element_zoo3d.png){fig-align="center"}
+
+## Vectorial solution for EM fields
+
+:::: {.columns}
+::: {.column}
+![Schwarzbach & Haber (2013)](pics/schwarzbachHaber2013.png)
+:::
+::: {.column}
+* $\vb E \in H^\text{curl}(\Omega)$
+* $\vb B \in H^\text{div}(\Omega)$
+* natural BC: Dirichlet $\vb n \cross \vb E=0$
+* Neumann BC: $\vb n \cross \mu^{-1} \curl \vb E=0$
+:::
+::::
+
+## Elements used in EM modelling
+![Types of elements relevant for EM problems (Spitzer, 2024)](pics/EMelements.png)
+
+## Nedelec shape functions
+
+![](pics/curl/curl-element-shapefunctions.png)
+
+## Modelling topography
+
+![Modelling incorporating topography (Rochlitz, 2019)](pics/custem/topomodeling.png)
+
+## Meshing complicated geometries
+
+![Meshing workflow in custEM (Rochlitz et al., 2019)](pics/custem/meshes.png)
+
+## Modelling example
+
+![Modelling example of a conductive dike (Rochlitz et al., 2019)](pics/custem/examples.png)
+
+## Packages
+
+Mesh generation: [TetGen](https://tetgen.org) (3D), [GMsh](https://gmsh.info) (2D/3D)
+
+FE packages: [FEniCS](https://fenicsproject.org), [NETGEN/NGsolve](https://ngsolve.org)
+
+Equation solvers: [Suitesparse](https://doc.sagemath.org/html/en/reference/spkg/suitesparse.html), [MUMPS](https://mumps-solver.org), [SciPy](https://scipy.org)
+
+Computational frameworks: [PetSc](https://petsc.org), [MPI](https://www.mcs.anl.gov/research/projects/mpi/)
+
+EM modelling (and inversion) packages: [Mare2DEM](https://mare2dem.bitbucket.io), [emg3d](https://emg3d.emsig.xyz), GoFEM, [PETGEM](https://petgem.bsc.es/), [custEM](https://custem.readthedocs.io), [SimPEG](https://simpeg.xyz), ModEM, FEMTIC
+
+# Boundary conditions
+
+## Mixed boundary conditions
+So far...
+
+* Dirichlet Boundary conditions $u=u_0$
+* Neumann Boundary conditions $\pdv{u}{n}=g_B$<br>
+
+vectorial problems: $\vb n\cdot \vb E=0$ (Neumann) or $\vb\curl \vb E=0$ (Dirichlet)
+
+In general mixed, also called Robin (or impedance convective) BC
+$$ a u + b \pdv{u}{n} = c $$
+
+## Example DC resistivity with point source
+$$\div \sigma \grad u = \div \vb j = I \delta(\vb r - \vb r_s)$$
+
+solution for homogeneous $\sigma$ on surface: $u=\frac{I}{2\pi\sigma} \frac{1}{|\vb r - \vb r_s|}$
+
+E-field $\vb E=-\frac{I}{2\pi\sigma} \frac{\vb r - \vb r_s}{|\vb r - \vb r_s|^3}$
+
+normal direction $\vb E \cdot \vb n=-\frac{u}{|\vb r - \vb r_s|}\cos \phi$ purely geometric
+
+$$\pdv{u}{n} + \frac{\cos\phi}{|\vb r - \vb r_s|}=0$$
+
+## Perfectly matched layers
+
+::: {.columns}
+::: {.column}
+![](pics/FDTD_TFSF.png)
+:::
+::: {.column}
+$$ \pdv{x} \rightarrow \frac{1}{1+i\sigma/\omega} \pdv{x}  $$
+
+$$ x \rightarrow x + \frac{i}{\omega}\int^x \sigma(x')\dd x' $$
+
+:::
+:::
+
+
+## Absorbing boundary conditions
+wave equation (e.g. in 2D)
+$$ \pdv[2]{u}{t} - v^2 \laplacian u = 0 $$
+
+Fourier transform in $t$ and $y$ (boundary direction) $\Rightarrow \omega, k$
+
+$$ \omega^2 \hat{u} - v^2 \pdv[2]{\hat{u}}{x} + v^2 k^2 \hat{u} = 0 $$
+
+ordinary DE with solution $\hat{u}=\sum a_i e^{\lambda x}$ with $\lambda^2 = k^2 - \omega^2/v^2$
+
+# Time-domain EM
+
+* Fourier transform excitation $\Rightarrow$ solve in FD $\Rightarrow$ backtransform
+* solve with Time-Stepping: Governing equation
+
+$$ \curl\mu^{-1}\curl \vb e + \sigma \pdv{\vb e}{t} = -\pdv{\vb e_s}{t} $$
+
+$$ \vb K \vb u + \vb M \pdv{u}{t} = \vb s $$
+
+## Implicit time stepping
+
+$$ (\Delta t \vb K + \vb M) \vb u^{n+1} = \vb M u^n +\Delta t \vb s^{n+1} $$
+
+second-order
+$$ (2\Delta t \vb K + 3 \vb M) \vb u^{n+2} = \vb M (4 \vb u^{n+1} - \vb u^n) - 2\Delta t \vb s^{n+2} $$
+

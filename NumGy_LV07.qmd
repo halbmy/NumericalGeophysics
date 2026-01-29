@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 7: Finite Elements"
+title: "Numerical Simulation Methods in Geophysics, Part 7: 2D Poisson issues"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -25,254 +25,179 @@ format:
     slide-number: c/t
     transition: slide
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
-## Recap Finite Elements
+# jupyter: python3
+---
+## Recap
 
-* weak form of PDE: integral over product with test function $\vb w$
-* approximate $u$ with shape functions $u=\sum u_i \vb v_i$
-* Galerkin's method: same function space for $\vb w$ and $\vb v$ 
+* finite differences approximate partial derivatives
+* finite elements approximate solution $\Rightarrow$ preferred
+* spatial discretization determines accuracy of solution
+* implicit & mixed time-stepping schemes accurate & stable
+* basic elements in 1D/2D/3D & higher order shape functions
+* numerical integration , e.g. by Gaussian quadrature
 
-:::{.callout-tip icon="false" title="Difference of FE to FD"} 
-Solution $u$ is described on the whole space and approximates the solution, not the PDE!
+## Inner vs. outer nodes
 
-Any source function $f(x)$ can be integrated on the whole space!
-:::
+distinguish dofs into inner and outer $\mqty[\vb u_i, \vb u_o]^T$
 
-## Recap (cont)
+$$ \vb A = \mqty(\vb A_{ii} & \vb A_{io}\\
+                 \vb A_{oi} & \vb A_{oo}) $$
 
-:::{.callout-tip icon="false" title="Generality of FE"} 
-Arbitrary base functions $v_i$ can be used to describe $u$
-:::
+$\vb A \mqty[\vb u_i \\ \vb u_o] = \mqty[\vb f_i \\ \vb f_o]$
 
-* started with piece-wise linear (hat) functions
-* system identical to FD for $\Delta x=$const and $a$=const
-
-## Method of weighted residuals
-
-PDE $\mathfrak{L}(u)=f$ $\Rightarrow$ approximated by $u_h$ 
-
-residual $R=L_h(u)-f$ to be minimized, integrating over modelling domain
-
-$$ \int_\Omega w R \dd\Omega = \int_\Omega w \mathfrak{L}(u_h)\dd\Omega - \int_\Omega w f \dd\Omega = 0 $$
-
-with approximation $u_h(\vb r)=\sum_j^M u_j \vb v_j(\vb r)$
-
-($\vb v$ basis / shape functions, $\vb w$ test / trial functions)
-
-## Bilinear form for Poisson equation
-
-Solve $\vb A \vb x = \vb b$ with $A_{ij}=(\grad v_i, \grad v_j)$ and $b_i=(\vb v_i, f)$, where
-
-$$(\vb a, \vb b)=\int_\Omega \vb a \cdot \vb b\,\dd\Omega = \sum\limits_{c=i}^M \int_{\Omega_c} \vb a \cdot \vb b\,\dd\Omega_c$$
-
-Solve the integrals either analytically or numerically
-
-## The general solution
-
-Solving any integral using (Gaussian) quadrature 
-$$\int g(x) \dd x \approx \sum_q g(x_q) w_q$$ 
-
-$$f_i^c=\int_{\Omega_c} v_i f \dd x \approx \sum_q v(x_q^c)f(x_q^c)w_q^c$$ 
-
-$$a_{ij}^c = \int_c a_c \grad v_i \cdot \grad v_j=\sum a_c \grad v_i(x_q^c)\cdot \grad v_j(x_q^c) w_q^c $$
-
-## Gaussian quadrature 
-
-:::: {.columns}
-::: {.column width="45%"}
-![Quadrature points](pics/triangle_quadrature.svg){width="100%"}
-:::
-::: {.column width="55%"}
-`quadratureRules(c.shape(), 5)`
-
-* optimum quadrature on reference triangle for a given order (5) 
-:::
-::::
-
-## Gaussian quadrature 
-
-:::: {.columns}
-::: {.column width="45%"}
-![Quadrature points](pics/oscar_quadrature_triangle.svg){width="100%"}
-:::
-::: {.column width="55%"}
-`quadratureRules(c, 2)`
-
-* optimum quadrature on arbitrary triangle for order 2
-:::
-::::
-
-## Coordinate transformation
-
-1D: local coordinate $\xi=\frac{x-x_i}{x_{i+1}-x_i}$ (0..1)
-
-$u(\xi)=c_1+c_2\xi$ 
-
-$u_0=u(0)=c_1$, $u_1=u(1)=c_1+c_2$  $c_2=u_1-u_0$
-
-$$\Rightarrow u(\xi)=u_0+\xi(u_1-u_0)=u_0(1-\xi)+u_1\xi=u_i v_i + u_1 v_1$$
-
-## Quadratic elements
-$u(\xi)=c_1+c_2\xi+c_3\xi^2$ 
-
-nodes at $x_0$, $x_{1/2}$, $x_1$
-
-$u_i=u(0)=c_1$, $u_1=c_1+c_2+c_3$
-
-$u_{1/2}=c_1+c_2/2+c_3/4$ 
-
-$$u(\xi)=u_0(1-3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$
-
-
-## Quadratic elements
-
-$$u(\xi)=u_0(3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$
-
-```{python}
-#| output-location: column
-#| eval: true
-#| echo: true
-import numpy as np
-import matplotlib.pyplot as plt
-x=np.linspace(0, 1, 101)
-
-# Plot velocity distribution.
-plt.plot(x, 1-3*x+2*x**2)
-plt.plot(x, 4*x-4*x**2)
-plt.plot(x, -x+2*x**2)
-plt.plot(0, 0, "o", color="C0", ms=8)
-plt.plot(0.5, 0, "o", color="C1", ms=8)
-plt.plot(1, 0, "o", color="C2", ms=8)
-plt.grid()
-```
-
-## Cubic elements
-
-<!-- $$u(\xi)=u_0(3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$ -->
-
-```{python}
-#| output-location: column
-#| eval: true
-#| echo: true
-import numpy as np
-import matplotlib.pyplot as plt
-x=np.linspace(0, 1, 101)
-
-# Plot velocity distribution.
-plt.plot(x, 1-3*x**2+2*x**3)
-plt.plot(x, x-2*x**2+x**3)
-plt.plot(x, -x**2+x**3)
-plt.plot(x, 3*x**2-2*x**3)
-for i in range(4):
-    plt.plot(i/(3), 0, "o", 
-             color=f"C{i}", ms=8)
-plt.grid()
-```
-
-## Triangles with linear shape functions
-
-:::: {.columns}
-::: {.column width="60%"}
-
-$$x=x_1+(x_2-x_1)\xi+(x_3-x_1)\eta$$ 
-$$y=y_1+(y_2-y_1)\xi+(y_3-y_1)\eta$$ 
-:::
-::: {.column width="40%"}
-
-```{python}
-#| eval: true
-#| echo: false
-plt.fill_betweenx([1, 0], [0, 1])
-plt.text(0.05, 0.05, "P1")
-plt.text(1, 0.05, "P2")
-plt.text(0.05, 1, "P3")
-plt.xlabel(r"$\xi$")
-plt.ylabel(r"$\eta$");
-```
-:::
-::::
-
-## Triangle
-
-$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
-
-```{python}
-#| output-location: column
-#| eval: true
-#| echo: true
-import pygimli as pg
-import pygimli.meshtools as mt
-
-shape = mt.createPolygon(
-    [[0, 0], [1, 0],[0, 1]],
-    isClosed=True)
-mesh = mt.createMesh(shape, area=0.01)
-mx = pg.x(mesh)
-my = pg.y(mesh)
-# Plot velocity distribution.
-fig, ax = plt.subplots()
-pg.show(mesh, 1-mx-my, ax=ax, 
-        nLevs=11, label="u");
-```
-
-<!-- ## Triangle
-
-$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
-
-```{python}
-#| output-location: column
-#| eval: true
-#| echo: true
-fig, ax = plt.subplots()
-pg.show(mesh, mx, ax=ax, nLevs=11);
-```
-
-## Triangle
-
-$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
-
-```{python}
-#| output-location: column
-#| eval: true
-#| echo: true
-fig, ax = plt.subplots()
-pg.show(mesh, my, ax=ax, nLevs=11);
-``` 
--->
-
-## Triangle linear shape functions
-
-$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
-
-```{python}
-#| eval: true
-#| echo: false
-fig, ax = plt.subplots(figsize=(12, 6), ncols=3, sharex=True, sharey=True)
-fig.tight_layout()
-pg.show(mesh, 1-mx-my, ax=ax[0], nLevs=11);
-pg.show(mesh, mx, ax=ax[1], nLevs=11);
-pg.show(mesh, my, ax=ax[2], nLevs=11);
-```
-
-
-
-## Verification
-
-1. Method of Manufactured Solutions (MMS)
-  * manufacture a smooth u
-  * generate $f$ matching approximation of $u$
-2. Method of Exact Solutions (MES)
-  * find parameters for which an analytic solution exists
-3. Perform convergence tests for increasingly smaller $h$
-  * approximation error $E(h)\lt C h^n$ test for some $h$
+$$ \Rightarrow \vb A_{ii} \vb u_i = \vb f_i - \vb A_{oi} \vb u_o $$
 
 ## Green's functions
 
 The Green's function $G$ is the solution for a Dirac source $\delta$
-$$ \mathfrak{L} G = \delta $$
+$$ \mathfrak{L} G = \delta(\vb r) $$
 The solution can then be obtained by convolution
-$$u=G*f$$
+$$ u(\vb r) = G(\vb r-\vb r')*f(\vb r') = $$
 
+# Secondary field approach
+
+* singular or highly nonlinear source field
+  - i.e. $1/r$ behaviour of potential fields from point sources
+* boundary conditions require *far-away* boundaries
+* well-known field (*primary field*) for background
+
+## Solution of Poisson's equation in 1D/2D/3D
+
+* point source (fundamental solution = Greens function)
+* 1D: flow is constant (cannot spread)
+* 2D: flow distributes on circle circumference (constant $a$)
+$$q(r)=\frac{Q}{2\pi r} \quad\Rightarrow\quad u=-\frac{Q\rho}{2\pi}\ln r$$
+* 3D: flow distributes on sphere surface
+$$j(r)=\frac{I}{4\pi r^2} \quad\Rightarrow\quad u=\frac{I\rho}{4\pi r}$$
+
+## Spatial 2D and 3D solutions
+
+:::: {.columns}
+::: {.column}
+![2D solution (-ln r)](NB/u2d.svg){width="100%"}
+:::
+::: {.column}
+![3D solution (1/r)](NB/u3d.svg){width="100%"}
+:::
+::::
+
+## Comparison of 2D and 3D solutions
+![](NB/u2d3d.svg)
+
+## Direct current resistivity
+
+$$ \div \sigma\grad u = -\div \vb j_s $$
+
+See notebook for problems
+
+## Secondary field approach
+
+$$ -\div \sigma\grad u = \div \vb j_s $$
+
+$u$ for $\sigma$=const: $u_0=u(\sigma_0)=\frac{I}{2\pi\sigma_0}$ fulfils eq.
+
+Idea: split $\sigma$ solution in $u=u_0+u_a$
+
+<!-- $$ \div (\sigma_0+\sigma_a)\grad (u_0+u_a) = -\div \vb j_s $$ -->
+<!-- -\div \sigma\grad (u_0+u_a)= -->
+$$ -\div\sigma\grad u_0-\div\sigma\grad u_a = \div \vb j_s=-\div\sigma_0\grad u_0 $$
+
+$$ \Rightarrow -\div\sigma\grad u_a = \div (\sigma-\sigma_0)\grad u_0 $$
+
+Anomalies *secondary* sources:
+$\vb A^\sigma\vb u_a=-\vb A^{\delta\sigma}\vb u_0=(\vb A^{\sigma_0}-\vb A^{\sigma})\vb u_0$
+
+
+# 2D/3D problems
+Make use of pyGIMLi
+
+See documentation on [pyGIMLi.org](https://pygimli.org)
+
+## The meshtools module
+```{python}
+#| echo: true
+#| eval: true
+import pygimli as pg
+import pygimli.meshtools as mt
+world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
+pg.show(world, boundaryMarkers=True)
+```
+
+## The meshtools module
+```{python}
+#| echo: true
+#| eval: true
+mesh = mt.createMesh(world, quality=34, area=1e5)
+pg.show(mesh)
+```
+
+## Creating a 2D geometry
+```{python}
+#| echo: true
+#| eval: true
+anomaly = mt.createRectangle(start=[0, -8000], end=[1000, -1000], marker=2)
+pg.show(world+anomaly)
+```
+
+## Creating a 2D mesh
+```{python}
+#| echo: true
+#| eval: true
+mesh = mt.createMesh(world+anomaly, quality=34, smooth=True, area=1e5)
+pg.show(mesh, markers=True, showMesh=True);
+```
+
+
+## Creating a 2D conductivity model
+```{python}
+#| echo: true
+#| eval: true
+sigma0 = 1 / 100  # 100 Ohmm
+sigma = mesh.populate("sigma", {1: sigma0, 2: sigma0*10})
+pg.show(mesh, "sigma", showMesh=True);
+```
+
+## The solver module
+
+
+## The solver module
+```{python}
+#| echo: false
+#| eval: true
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+```{python}
+#| echo: true
+#| eval: true
+import pygimli.solver as ps
+mesh["my"] = 4 * np.pi * 1e-7
+A = ps.createStiffnessMatrix(mesh, a=1/mesh["my"])
+M = ps.createMassMatrix(mesh, mesh["sigma"])
+fig, ax = plt.subplots(ncols=2)
+ax[0].spy(pg.utils.toCSR(A), markersize=1)
+ax[1].spy(pg.utils.toCSR(M).todense(), markersize=1)
+```
+
+## The complex problem matrix
+
+$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+w = 0.1
+nd = mesh.nodeCount()
+B = pg.BlockMatrix()
+B.Aid = B.addMatrix(A)
+B.Mid = B.addMatrix(M)
+B.addMatrixEntry(B.Aid, 0, 0)
+B.addMatrixEntry(B.Aid, nd, nd)
+B.addMatrixEntry(B.Mid, 0, nd, scale=-w)
+B.addMatrixEntry(B.Mid, nd, 0, scale=w)
+pg.show(B)
+```

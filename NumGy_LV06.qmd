@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 6: Finite Elements"
+title: "Numerical Simulation Methods in Geophysics, Part 6: FE in higher dimensions"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -9,7 +9,7 @@ title-slide-attributes:
 format:
   tubaf-revealjs:
     html-math-method: mathjax
-    chalkboard: true
+    chalkboard: false
     include-in-header:
         - text: |
             <script>
@@ -23,266 +23,574 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
-# Finite Differences
+# jupyter: pg
+---
 
-## Recap Finite Differences
+# Finite Elements - Recap
 
-* elliptic (Poisson) or parabolic PDE problems
-* replace partial differential operators $\partial$ by finite differences $\Delta$
-* transfer PDE into a matrix-vector equation $\vb A \vb u = \vb b$
-* finite-difference stencil spatial or temporal
-* spatial derivative $\Rightarrow$ stiffness $\vb A$, temporal $\Rightarrow$ mass matrix $\vb M$
-* time-stepping explicit, implicit or mixed (stable & accurate)
-* accuracy depends on discretization, parameter contrast
+* weak formulation of PDF together with shape & test functions
+* integration over modellling domain (proper choice)
+* hat functions in 1D, localized elements
 
-## Helmholtz equations
-
-e.g. from Fourier assumption $u=u_0 e^{\imath\omega t}$
-
-$$ \div (a\grad u) + k^2 u = f $$
-
-* Poisson operator assembled in stiffness matrix $\vb A$
-* additional terms with $u_i$ $\Rightarrow$ mass matrix $\vb M$
-
-$$ \Rightarrow \vb A + \vb M = \vb b $$
-
-## Hyberbolic equations 
-
-Acoustic wave equation in 1D
-$$ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
-
-$u$..pressure/velocity/displacement, $c$..velocity
-
-Damped (mixed parabolic-hyperbolic) wave equation
-$$ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 $$ 
-
-
-## Discretization
-
-:::: {.columns}
-::: {.column}
-$$ \pdv[2]{u}{t}^{n} \approx \frac{u^{n+1}-u^n}{\Delta t} - \frac{u^{n}-u^{n-1}}{\Delta t}
-$$
-
-$$ = \frac{u^{n+1}+u^{n-1}-2 u^n}{\Delta t^2} = c^2\pdv[2]{u}{x}^n $$
-
-
-$$ u^{n+1} = c^2 \Delta t^2 \pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} $$
-
-<!-- \frac{1}{\Delta t}  -->
-
-$$ \vb M \vb u^{n+1} = (\vb A + 2\vb M) \vb u^n - \vb M \vb u^{n-1} $$ 
-:::
-::: {.column}
-![Second derivative](pics/dtsecond.svg)
-:::
-::::
-
-## Example: velocity distribution
-
-```{python}
-#| output-location: column-fragment
-#| eval: true
-#| echo: true
-import numpy as np
-import matplotlib.pyplot as plt
-x=np.arange(0, 600.01, 0.5)
-c = 1.0*np.ones_like(x) # velocity in m/s
-c[100:300] = 1 + np.arange(0,0.5,0.0025) 
-c[900:1100] = 0.5  # low velocity zone
-
-# Plot velocity distribution.
-plt.plot(x,c,'k')
-plt.xlabel('x [m]')
-plt.ylabel('c [m/s]')
-plt.grid()
-```
-
-
-## Initial displacement
-
-Derivative of Gaussian (Ricker wavelet)
-```{python}
-#| output-location: column-fragment
-#| eval: true
-#| echo: true
-l=5.0
-
-# Initial displacement field [m].
-u=(x-300.0)*np.exp(-(x-300.0)**2/l**2) 
-# Plot initial displacement field.
-plt.plot(x,u,'k')
-plt.xlabel('x [m]')
-plt.ylabel('u [m]')
-plt.title('initial displacement field')
-plt.show()
-```
-
-## Time propagation
-
-```{python}
-#| output-location: column-fragment
-#| eval: true
-#| echo: true
-u_last=u
-dt = 0.5
-ddu = np.zeros_like(u)
-dx = np.diff(x)
-for i in range(100):
-    dudx = np.diff(u)/dx
-    ddu[1:-1] = np.diff(dudx)/dx[:-1]
-    u_next = 2*u-u_last+ddu*c**2 * dt**2 
-    u_last = u
-    u = u_next
-  
-plt.plot(x,u,'k')
-```
-
-## {background-video="notebooks/wave.mp4" background-video-loop="true"}
-
-# The Finite Element Method
-
-## History and background
-
-* [1943] Courant: Variational Method
-* [1956] Turner, Clough, Martin, Topp: Stiffness
-* [1960] Clough: Finite Elements for static elasticity
-* [1970-80] extension to structural, thermic and fluid dynamics
-* [1990] computational improvements 
-* now main method for almost all PDE types
-
-Geophysics: Poisson equation in 1970s, revival in 1990s and predominant in 2000s up to now
-
-## Variational formulation of Poisson equation
-
-$$ -\div a \grad u = f $$
-
-::: {.fragment}
-Multiplication with test function $w$ and integration $\Rightarrow$ weak form
-
-$$ -\int_\Omega w \div a \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::{.callout-tip icon="false" title="Difference of FE to FD"}
+$u$ is described on the whole space and approximates the solution, not the PDE!
 :::
 
-::: {.fragment}
-$$ \div(b\vb c) = b\div \vb c + \grad b \cdot \vb c $$
-:::
+## The stiffness matrix in 1D
 
-::: {.fragment}
-$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega $$
-:::
+Matrix integrating gradients of base functions for neighbors with $a$
 
-## Variational formulation of Poisson equation
-
-$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega $$
-
-::: {.fragment}
-use Gauss' law $\int_\Omega \div \vb A = \int_\Gamma \vb A \cdot \vb n$
-
-$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Gamma a w \grad u \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
-:::
-
-::: {.fragment}
-Let $u$ be constructed by shape functions $v$: $u=\sum_i u_i v_i$
-
-$$ \int_\Omega a \grad w \cdot \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
-:::
-
-## Galerkin's method
-
-$$ \int_\Omega a \grad w \vdot \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
-
-::: {.fragment}
-Test functions the same as shape (trial) functions $w\in  v_i$
-
-$$ \int_\Omega a \grad v_j \vdot \grad v_i \dd\Omega - \int_\Gamma a v_j \grad v_i \vdot \vb n \dd\Gamma = \int_\Omega f v_j \dd\Omega $$
-:::
-
-::: {.fragment}
-* choose $v_i$ so that $\grad v_i$ is simple and $\grad v_i \vdot \grad v_j$ mostly 0
-* divide subsurface in sub-volumes $\Omega_i$ with constant $a_i$ (& $\grad v_j$)
-:::
-
-## Hat functions 
-
-![](pics/shapefunctions1d.svg){width="100%"}
-
-## Gradients for hat functions
-Every element is surrounded by two nodes "carrying" a hat. 
-The gradients are piece-wise constant $\pm 1/\Delta x_i$
-
-Neighboring functions $v_i$ & $v_{i+1}$ only meet between $x_i$ & $x_{i+1}$
-
-$$ \int_\Omega a \grad v_i \vdot \grad v_{i+1} \dd\Omega = \int_{x_i}^{x_{i+1}} a \grad v_i \vdot \grad v_{i+1} \dd\Omega = -\frac{a_i}{\Delta x_i^2} \Delta x_i = -\frac{a_i}{\Delta x_i}$$ 
-
-$$ -\int_\Omega a \grad v_i \vdot \grad v_i \dd\Omega = \frac{a_{i-1}}{\Delta x_{i-1}^2}\Delta x_{i-1} + \frac{a_i}{\Delta x_i^2}\Delta x_i = \frac{a_{i-1}}{\Delta x_{i-1}} + \frac{a_i}{\Delta x_i} $$
-
-<!-- $$ -\int_\Omega a \grad v_i \vdot \grad v_{i+2} \dd\Omega = 0 $$ -->
-
-## Integration
-
-Let's write it up for the first 
-
-$$ \int u_0 a v_0' v_0' + \int u_1 a v_0' v_1' = \int v_0 f $$
-
-$$ \int u_0 a v_0' v_1' + \int u_1 a v_1' v_1' + \int a u_2 v_2' v_1' = \int v_1 f $$
-
-<!-- $$ \int u_1 v_1' v_2' + \int u_2 v_2' v_2' + \int u_3 v_3' v_2' = \int v_1 f $$ -->
-
-$$ u_{i-1} a_{i-1} \int\limits_{x_{i-1}}^{x_{i}} v_i' v_{i-1}' + 
-   u_i a_{i-1} \int\limits_{x_{i-1}}^{x_{i}} v_i' v_i' + 
-   u_i a_i \int\limits_{x_{i}}^{x_{i+1}} v_i' v_i' + 
-   u_{i+1} a_{i} \int\limits_{x_{i}}^{x_{i+1}} v_i' v_{i+1}' $$
-
-
-# System (stiffness) matrix
-
-Matrix integrating gradient of base functions for neighbors
-$A$ 
 $$ \vb A_{i, i+1} = -\frac{a_i}{\Delta x_i^2} \vdot \Delta x_i = -\frac{a_i}{\Delta x_i} $$
 
 $$ A_{i,i} = \int_\Omega a \grad v_i \cdot \grad v_i \dd\Omega = -A_{i,i+1} - A_{i+1,i}  $$
 
-$\Rightarrow$ matrix-vector equation $\vb A \vb u = \vb b$ with conductances in $\vb A$
+$\Rightarrow$ matrix-vector equation $\vb A \vb u = \vb b$ with bending&shear stiffness in $\vb A$
 <!-- $\Rightarrow$ -->
+
+## Right-hand side vector
+
+The right-hand-side vector $b=\int v_i f \dd\Gamma$ also scales with $\Delta x$
+
+e.g. $f=\div \vb j_s$ $\Rightarrow$
+$b=\int v_i \div \vb j_s \dd\Omega = \int_\Gamma v_i \vb j_S \cdot \vb n$
+
+RHS = integrated source function (includes $\Delta x$)
+
+(both $\vb A$ and $\vb b$ identical to FD for $\Delta x$=1)
+
+:::{.callout-tip icon="false" title="Difference of FE to FD"}
+Any source function $f(x)$ can be integrated on the whole space!
+:::
+
+## Right-hand side vector
+
+:::: {.columns}
+::: {.column}
+```{python}
+#| eval: true
+#| echo: false
+import numpy as np
+import matplotlib.pyplot as plt
+x = np.array([-1, 0, 1])
+y = np.array([0, 1, 0])
+fig, ax = plt.subplots()
+ax.plot(x, y, "-")
+ax.set_aspect(1.0)
+ax.set_xticks(x)
+ax.set_xticklabels(["-dx", "0", "dx"])
+ax.grid()
+```
+:::
+::: {.column}
+$$ b_i = \int v_i f dx $$
+
+Area: $\Delta x_{i-1}/2 + \Delta x_i/2$
+:::
+::::
+
+$$ b_i = \int_{-\Delta x}^0 \frac{x+\Delta x}{\Delta x} + \int^{\Delta x}_0 1-\frac{x}{\Delta x} = \Delta x_{i-1}/2 + \Delta x_i/2 $$
 
 ## Boundary conditions
 
 second term
 $$ - \int_\Gamma a v_j \grad v_i \cdot \vb n \dd\Gamma $$
 
-$$ [a v_i v_j']_{x_0}^{x_N} = a_{N-1} u_N v'_N - a_0 u_0 v'_0 $$
+reads in 1D as
 
-Homogeneous Neumann automatically 
+$$ [a v_i v_j']_{x_0}^{x_N} = a_{N-1} u_N v_N' - a_0 u_0 v_0' $$
 
-## Right-hand side vector
+$\Rightarrow$ Homogeneous Neumann BC ($v'_0=0$) are automatically implemented
 
-The right-hand-side vector $b=\int v_i f \dd\Omega$ also scales with $\Delta x$
+# Higher order
 
-e.g. $f=\div \vb j_s$ $\Rightarrow$ 
-$b=\int v_i \div \vb j_s \dd\Omega = \int_\Gamma v_i \vb j_S \cdot \vb n$
+## Quadratic elements
+$u(\xi)=c_1+c_2\xi+c_3\xi^2$
 
-system identical to FD for $\Delta x=$const
+nodes at $x_0$, $x_{1/2}$, $x_1$
 
-:::{.callout-tip icon="false" title="Difference of FE to FD"} 
-Any source function $f(x)$ can be integrated on the whole space!
+$u_i=u(0)=c_1$, $u_1=c_1+c_2+c_3$
+
+$u_{1/2}=c_1+c_2/2+c_3/4$
+
+$$u(\xi)=u_0(1-3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$
+
+## Quadratic elements
+
+$$u(\xi)=u_0(1-3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+import numpy as np
+import matplotlib.pyplot as plt
+x=np.linspace(0, 1, 101)
+
+# Plot velocity distribution.
+plt.plot(x, 1-3*x+2*x**2)
+plt.plot(x, 4*x-4*x**2)
+plt.plot(x, -x+2*x**2)
+plt.plot(0, 0, "o", color="C0", ms=8)
+plt.plot(0.5, 0, "o", color="C1", ms=8)
+plt.plot(1, 0, "o", color="C2", ms=8)
+plt.grid()
+```
+
+## Elements of n-th order
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+n = 4
+A = np.zeros([n, n])
+xis = np.arange(n)/(n-1)
+for i, xi in enumerate(xis):
+    A[i, :] = xis[i]**np.arange(n)
+
+print(A)
+print(np.linalg.inv(A.T))
+```
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+n = 5
+A = np.zeros([n, n])
+xis = np.arange(n)/(n-1)
+for i, xi in enumerate(xis):
+    A[i, :] = xis[i]**np.arange(n)
+
+AI = np.linalg.inv(A.T)
+print(np.round(AI, 2))
+```
+
+## Cubic elements
+
+$$ u(\xi)=u_0(1-5.5\xi+9\xi^2-4.5\xi^3)+u_{1/3}(9\xi-22.5\xi^2+13.5\xi^3)+ $$
+$$ + u_{2/3}(-4.5\xi+18\xi^2-13.5\xi^3) + u_1(\xi-4.5\xi^2+4.5\xi^3) $$
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+
+plt.plot(x, 1-5.5*x+9*x**2-4.5*x**3)
+plt.plot(x, 9*x-22.5*x**2+13.5*x**3)
+plt.plot(x, -4.5*x+18*x**2-13.5*x**3)
+plt.plot(x, x-4.5*x**2+4.5*x**3)
+for i in range(4):
+    plt.plot(i/(3), 0, "o",
+             color=f"C{i}", ms=8)
+plt.grid()
+```
+
+## Fourth-order elements
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+
+for i in range(n):
+    y = np.zeros_like(x)
+    for j in range(n):
+        y += AI[i, j]*x**j
+
+    plt.plot(x, y)
+    plt.plot(i/(n-1), 0, "o",
+             color=f"C{i}", ms=8)
+plt.grid()
+```
+
+# Higher dimensions
+
+## 2D: Rectangular grid
+
+* constructing shape functions from *crossing* 1D shape functions
+
+```{python}
+#| eval: true
+#| echo: false
+import pygimli as pg
+grid = pg.createGrid(11, 11)
+grid.scale([0.1, 0.1])
+gx = pg.x(grid)
+gy = pg.y(grid)
+```
+
+:::: {.columns}
+::: {.column width="25%"}
+$$(1-\xi)\cdot(1-\eta)$$
+```{python}
+#| eval: true
+#| echo: false
+grid.show((1-gx)*(1-gy), nLevs=11);
+```
+:::
+::: {.column width="25%"}
+$$(1-\xi)\cdot\eta$$
+```{python}
+#| eval: true
+#| echo: false
+grid.show((1-gx)*gy, nLevs=11);
+```
+:::
+::: {.column width="25%"}
+$$\xi\cdot(1-\eta)$$
+```{python}
+#| eval: true
+#| echo: false
+grid.show(gx*(1-gy), nLevs=11);
+```
+:::
+::: {.column width="25%"}
+$$\xi\cdot\eta$$
+```{python}
+#| eval: true
+#| echo: false
+grid.show(gx*gy, nLevs=11);
+```
+:::
+::::
+
+## Difference stencils FD vs. FE
+
+:::: {.columns}
+::: {.column width="50%"}
+```{python}
+#| eval: true
+#| echo: false
+
+grid = pg.createGrid(3, 3)
+ax, cb = pg.show(grid)
+ax.plot([0, 1, 2], [1, 1, 1], "bo-", ms=12, lw=4)
+ax.plot([1, 1, 1], [0, 1, 2], "bo-", ms=12, lw=4)
+ax.plot(1, 1, "ro", ms=12)
+ax.set_xticks([0, 1, 2])
+ax.set_xticklabels([r"$x_{i-1}$", r"$x_i$", r"$x_{i+1}$"])
+ax.set_yticks([0, 1, 2])
+ax.set_yticklabels([r"$y_{j-1}$", r"$y_j$", r"$y_{j+1}$"])
+ax.set_xlim(-0.3, 2.3)
+ax.set_ylim(-0.3, 2.3)
+ax.yaxis.tick_right()
+```
+:::
+::: {.column .fragment width="50%"}
+```{python}
+#| eval: true
+#| echo: false
+
+ax, cb = pg.show(grid)
+ax.plot([0, 1, 2], [1, 1, 1], "bo-", ms=12, lw=4)
+ax.plot([1, 1, 1], [0, 1, 2], "bo-", ms=12, lw=4)
+ax.plot([0, 1, 2], [0, 1, 2], "bo-", ms=12, lw=4)
+ax.plot([2, 1, 0], [0, 1, 2], "bo-", ms=12, lw=4)
+ax.plot(1, 1, "ro", ms=12)
+ax.set_xlim(-0.3, 2.3)
+ax.set_ylim(-0.3, 2.3)
+ax.set_xticks([0, 1, 2])
+ax.set_xticklabels([r"$x_{i-1}$", r"$x_i$", r"$x_{i+1}$"])
+ax.set_yticks([0, 1, 2])
+ax.set_yticklabels([r"$y_{j-1}$", r"$y_j$", r"$y_{j+1}$"])
+ax.yaxis.tick_right()
+```
+:::
+::::
+
+## Triangles with linear shape functions
+
+:::: {.columns}
+::: {.column width="60%"}
+
+$$x=x_1+(x_2-x_1)\xi+(x_3-x_1)\eta$$
+$$y=y_1+(y_2-y_1)\xi+(y_3-y_1)\eta$$
+:::
+::: {.column width="40%"}
+
+```{python}
+#| eval: true
+#| echo: false
+fig, ax = plt.subplots()
+ax.fill_betweenx([1, 0], [0, 1])
+ax.set_aspect(1.0)
+ax.text(0.05, 0.05, "P1")
+ax.text(1, 0.05, "P2")
+ax.text(0.05, 1, "P3")
+ax.set_xlabel(r"$\xi$")
+ax.set_ylabel(r"$\eta$");
+```
+:::
+::::
+
+## Triangle
+
+$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+import pygimli as pg
+import pygimli.meshtools as mt
+
+shape = mt.createPolygon(
+    [[0, 0], [1, 0],[0, 1]],
+    isClosed=True)
+mesh = mt.createMesh(shape, area=0.01)
+mx = pg.x(mesh)
+my = pg.y(mesh)
+# Plot velocity distribution.
+fig, ax = plt.subplots()
+pg.show(mesh, 1-mx-my, ax=ax,
+        nLevs=11, label="u");
+```
+
+## Triangle linear shape functions
+
+$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
+
+```{python}
+#| eval: true
+#| echo: false
+fig, ax = plt.subplots(figsize=(12, 6), ncols=3, sharex=True, sharey=True)
+fig.tight_layout()
+pg.show(mesh, 1-mx-my, ax=ax[0], nLevs=11);
+pg.show(mesh, mx, ax=ax[1], nLevs=11);
+pg.show(mesh, my, ax=ax[2], nLevs=11);
+```
+
+## The pyGIMLi solver module
+
+* `div`, `grad` operators
+* `createStiffnessMatrix`, `createMassMatrix` assembling
+* `createLoadVector`
+* `assembleDirichletBC`, `assembleNeumannBC`
+* `solveFiniteElements`, `solveFiniteElements` as ready equation solvers
+
+## 2D rectangular grid coupling coefficients
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+
+grid5 = pg.createGrid(5, 5)
+A = pg.solver.createStiffnessMatrix(grid5)
+one = np.zeros(grid5.nodeCount())
+one[12] = 1
+row = np.reshape(A.dot(one), [5, 5])
+print(np.round(row, 2))
+plt.imshow(row*3, cmap="bwr", vmin=-8, vmax=8)
+plt.colorbar();
+```
+
+
+## 2D rectangular grid scaling
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+
+grid5.scale([1, 0.5])
+A = pg.solver.createStiffnessMatrix(grid5)
+row = A.dot(one)
+rowMat = np.reshape(row, [5, 5])
+print(np.round(rowMat, 2))
+plt.imshow(rowMat, cmap="bwr", vmin=-3, vmax=3)
+plt.colorbar();
+```
+
+## 2D rectangular grid conductivity
+
+```{python}
+#| output-location: column
+#| eval: true
+#| echo: true
+
+grid5.scale([1, 0.5])
+A = pg.solver.createStiffnessMatrix(grid5, 5)
+row = A.dot(one)
+rowMat = np.reshape(row, [5, 5])
+print(np.round(rowMat, 2))
+plt.imshow(rowMat, vmin=-max(row),
+           cmap="bwr", vmax=max(row))
+plt.colorbar();
+```
+
+## The general solution
+
+Solving any integral using (Gaussian) quadrature
+$$\int g(x) \dd x \approx \sum_q g(x_q) w_q$$
+
+$$f_i^c=\int_{\Omega_c} v_i f \dd x \approx \sum_q v(x_q^c)f(x_q^c)w_q^c$$
+
+$$a_{ij}^c = \int_c a_c \grad v_i \cdot \grad v_j=\sum a_c \grad v_i(x_q^c)\cdot \grad v_j(x_q^c) w_q^c $$
+
+## Gaussian quadrature
+
+:::: {.columns}
+::: {.column width="45%"}
+![Quadrature points](pics/triangle_quadrature.svg){width="100%"}
+:::
+::: {.column width="55%"}
+`quadratureRules(c.shape(), 5)`
+
+* optimum quadrature on reference triangle for a given order (5)
+:::
+::::
+
+## Gaussian quadrature
+
+:::: {.columns}
+::: {.column width="45%"}
+![Quadrature points](pics/oscar_quadrature_triangle.svg){width="100%"}
+:::
+::: {.column width="55%"}
+`quadratureRules(c, 2)`
+
+* optimum quadrature on arbitrary triangle for order 2
+:::
+::::
+
+## Verification
+
+1. Method of Manufactured Solutions (MMS)
+  * manufacture a smooth u
+  * generate $f$ matching approximation of $u$
+2. Method of Exact Solutions (MES)
+  * find parameters for which an analytic solution exists
+3. Perform convergence tests for increasingly smaller $h$
+  * approximation error $E(h)\lt C h^n$ test for some $h$
+
+## Green's functions
+
+The Green's function $G$ is the solution for a Dirac source $\delta$
+$$ \mathfrak{L} G = \delta(\vb r) $$
+The solution can then be obtained by convolution
+$$ u(\vb r) = G(\vb r-\vb r')*f(\vb r') = $$
+
+
+# Time-stepping in FE
+
+## Recap time-stepping in FD
+
+| | | | | | |
+|-------------|-------------:|-|-|-:|-|
+|**Explicit**:||$\vb u^{n+1}$|$=$|$(\vb I - \Delta t \vb A)$|$\vb u^n$|
+|**Implicit**:|$(\vb I + \Delta t \vb A)$|$\vb u^{n+1}$|$=$||$\vb u^n$|
+|**Mixed**:|$(2\vb I + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$(2\vb I - \Delta t \vb A)$|$\vb u^n$|
+
+:::: {.columns}
+::: {.column width="33%"}
+![Explicit](pics/dtforward.svg)
+:::
+::: {.column width="33%"}
+![Implicit](pics/dtbackward.svg)
+:::
+::: {.column width="33%"}
+![Mixed](pics/dtmixed.svg)
+:::
+::::
+
+## Variational formulation of Diffusion equation
+
+$$ \pdv{u}{t} - \div a \grad u = f $$
+
+Finite Difference in Time (NOT in space)
+
+$$ \frac{u^{n+1}-u^n}{\Delta t} - \div a \grad u = f $$
+
+## Variational formulation
+$$ \frac{u^{n+1}-u^n}{\Delta t} - \div a \grad u = f $$
+
+::: {.fragment}
+Multiplication with test function $w$ and integration $\Rightarrow$ weak form
+
+$$ 1/\Delta t (\int_\Omega w u^{n+1}\dd\Omega-\int_\Omega w u^{n}\dd\Omega) - \int_\Omega w \div a \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
 :::
 
-## Solution
-
-$\vb u$ holds the coefficient $u_i$ creating $u(x)=\sum u_i v_i(x)$
-
-:::{.callout-tip icon="false" title="Difference of FE to FD"} 
-$u$ is described on the whole space and approximates the solution, not the PDE!
+::: {.fragment}
+$$ 1/\Delta t (\int_\Omega w u^{n+1}\dd\Omega-\int_\Omega w u^{n}\dd\Omega) - \int_\Omega a \grad w \cdot \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
 :::
 
-Hat functions: $u_i$ potentials on nodes, $u$ piece-wise linear
+## Variational formulation of diffusion equation
 
-:::{.callout-tip icon="false" title="Generality of FE"} 
-Arbitrary base functions $v_i$ can be used to describe $u$
+$u$ is constructed of shape functions $\vb v_i$ that are identical to $w$
+
+The integral over the Poisson term
+$$-\int_\Omega a \grad w \cdot \grad u \dd\Omega$$
+
+is represented by $\vb A \vb v$ using the stiffness matrix
+
+$$ \vb A_{i,j} = \int_\Omega \sigma \grad v_i \cdot \grad v_j \dd\Omega $$
+
+## The mass matrix
+
+Weighted integrals over both $u$ are represented by the mass matrix $\vb M \vb v$
+$$ \vb M_{i,j} = \int_\Omega v_i \cdot v_j \dd\Omega $$
+
+explicit method (use $u^n$): $\vb M \vb u^{n+1} = (\vb M - \Delta t \vb A)\vb u^n$
+
+implicit method (use $u^{n+1}$): $(\vb M + \Delta t \vb A) \vb u^{n+1} = \vb M \vb u^n$
+
+mixed method (mix $u^n$/$u^{n+1}$): $(2\vb M + \Delta t \vb A) \vb u^{n+1} = (2\vb M - \Delta t \vb A) \vb u^n$
+
+## Time-stepping in FE
+
+| | | | | | |
+|-------------|-------------:|-|-|-:|-|
+|**Explicit**:|$\vb M$|$\vb u^{n+1}$|$=$|$(\vb M - \Delta t \vb A)$|$\vb u^n$|
+|**Implicit**:|$(\vb M + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$\vb M$|$\vb u^n$|
+|**Mixed**:|$(2\vb M + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$(2\vb M - \Delta t \vb A)$|$\vb u^n$|
+
+::: {.callout-tip}
+same as in FD but with FE mass matrix $\vb M$ instead of $\vb I$
 :::
+
+## The mass matrix in 1D
+
+$$ \vb M_{i,j} = \int_\Omega v_i \cdot v_j \dd\Omega $$
+
+$$ \vb M_{i,i+1} = \int_{x_i}^{x_{i+1}}
+\frac{x_{i+1}-x}{\Delta x_i} \frac{x-x_i}{\Delta x_i} \dd x
+= \int_0^1 (1-\xi)\xi \Delta x_i \dd\xi $$
+
+$$ \Rightarrow \vb M_{i,i+1} = \Delta x_i \int_0^1 (\xi-\xi^2) =
+\Delta x_i \left|\frac12 \xi^2 - \frac13 \xi^3\right|_0^1 = \frac{\Delta x_i}{6} $$
+
+## The mass matrix in 1D
+
+$$ \vb M_{i,i} = \Delta x_{i-1} \int_0^1 \xi^2 \dd\xi + \Delta x_i \int_0^1 (1-\xi)^2 \dd\xi $$
+
+$$ \vb M_{i,i} = \Delta x_{i-1} \left|\frac13 \xi^3 \right|_0^1 -
+\Delta x_i \left|\frac13 \xi^3 \right|_1^0 $$
+
+$$ \Rightarrow \vb M_{i,i} = \frac{\Delta x_{i-1}}{3} + \frac{\Delta x_i}{3} = 2(\vb M_{i,i-1}+\vb M_{i,i+1}) $$
+
+$\Delta x=1 \quad\Rightarrow\quad [1, 4, 1]$ (stiffness was [-1, 2, -1])
+
+## Inner vs. outer nodes
+
+distinguish dofs into inner and outer $\mqty[\vb u_i, \vb u_o]^T$
+
+$$ \vb A = \mqty(\vb A_{ii} & \vb A_{io}\\
+                 \vb A_{oi} & \vb A_{oo}) $$
+
+$\vb A \mqty[\vb u_i \\ \vb u_o] = \mqty[\vb f_i \\ \vb f_o]$
+
+$$ \Rightarrow \vb A_{ii} \vb u_i = \vb f_i - \vb A_{oi} \vb u_o $$
+
+## Tasks
+
+1. Write a function computing the FE stiffness matrix for 1D discretization
+1. Test it by solving the Poisson equation with $f=1$ (analytical solution)
+1. Compare with analytical and FD solutions
+1. Write a function computing the FE mass matrix for 1D discretization
+1. Repeat the time-stepping tasks from FD with FE

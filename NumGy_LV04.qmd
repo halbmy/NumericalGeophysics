@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 4: The heat equation"
+title: "Numerical Simulation Methods in Geophysics, Part 4: Other equations"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -23,401 +23,466 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
-
-# Recap last lessons & exercises
-
-## Poisson equation
-
-$$\div(a\grad u)=f$$
-
-(stationary) potential field, e.g., temperature, flux, current
-
-```{python}
-#| eval: true
-#| echo: false
-
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 3)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
-ax.plot(2, 1, "ro", ms=12)
-```
-
-compute each value (red) with the help of its neighbors (blue)
-
-## Boundary conditions (Dirichlet, Neumann)
-
-* remove outside value and move to RHS
-* adjust self-coupling coefficient
-
-## Tasks (1) - done
-
-1. Create a stiffness matrix for unit quantities
-1. Implement Dirichlet BC on one and Neumann on other side
-1. Solve system for different right-hand sides:
-    * no source at all
-    * single source in the middle or at the boundary
-    * several sources with different strengths (& signs)
-    * source on part of the domain
-1. Alwas plot the solution and its Laplacian
-
-## The general case
-
-$\Delta x \ne 1$ & $a \ne 1$ $\Rightarrow$ $a \pdv{u}{x} \approx a_i\frac{u_{i+1}-u_i}{x_{i+1}-x_i}$
-
-```{python}
-#| eval: true
-#| echo: false
-
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-nx = 6
-grid = mt.createGrid(nx, 2)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-for i in range(nx):
-    ax.plot(i, 0, "ko", ms=10)
-for i in range(nx-1):
-    ax.text(i+0.5, 0.5, rf"$a_{i}$", ha="center", va="center", fontsize=18)
-```
-
-$\dv{x}(a \pdv{u}{x}) \approx (a_i\frac{u_{i+1}-u_i}{x_{i+1}-x_i} - a_{i-1}\frac{u_{i}-u_{i-1}}{x_{i}-x_{i-1}}) / (x_{i+1}-x_{i-1}) \cdot 2$
-
-$$ A_{i, i-1} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-## The coupling coefficients
-
-$$ C_{left} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-$$ C_{right} = a_{i+1} / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-$$ \begin{bmatrix}   
-+1 & 0 & 0 & \ldots & &  \\
-C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots & \\
-\vdots & \vdots & \ddots & \vdots &  \\
-\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
-\ldots & \ldots & & 0 & -1 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \\ g_B \end{bmatrix}  $$
-
-## Tasks (2)
-
-1. Derive the coefficients for the general case
-1. Write a function implementing the general case
-1. Divide the "subsurface" in regions with different $a$
-1. Compute the solution for different source fields
-1. Use a non-equidistant discretisation
-1. Always plot solution along with source and Laplacian
-
-## Next spatial dimension
-
-::: {.r-stack}
-![Simple 2D conductivity grid](notebooks/grid32sigma.svg)
-
-![Simple 2D conductivity grid with FD stencil](notebooks/grid32sigmaStencil.svg){.fragment}
-:::
-
-# Parabolic PDEs
-
-## Heat flow in 1D
+# jupyter: python3
+---
+# Finite Differences
 
 :::: {.columns}
-::: {.column width="60%"}
-
-temperature gradient $\Delta T$ $\Rightarrow$ heat flow
-
-$$ Q/\Delta t = \frac{k A}{L} \Delta T $$
-
-$$\vb q = -\frac1A \pdv{Q}{t} = - k \pdv{T}{z} $$
-
-cannot disappear (divergence 0)
-
-$$\div\vb q = -\div (k \grad T) = 0$$
-
+::: {.column width="33%"}
+![Explicit](pics/dtforward.svg)
 :::
-::: {.column width="40%"}
-![](pics/heatResistor.png)
-
-* $T$ [K], $A$ [m²], $L$ [m]
-* $Q$ [J/m/K], $q$ [W/m²]
-* $k$ [W/m] thermal conductivity
-
+::: {.column width="33%"}
+![Implicit](pics/dtbackward.svg)
+:::
+::: {.column width="33%"}
+![Mixed](pics/dtmixed.svg)
 :::
 ::::
 
-## Heat sources
+## Recap Finite Differences
 
-E.g. radioactive elements, heat elements or sinks
+* elliptic (Poisson) or parabolic PDE problems
+* replace partial differential operators $\partial$ by finite differences $\Delta$
+* transfer PDE into a matrix-vector equation $\vb A \vb u = \vb b$
+* finite-difference stencil spatial or temporal
+* spatial derivative $\Rightarrow$ stiffness $\vb A$, temporal $\Rightarrow$ mass matrix $\vb M$
+* time-stepping explicit, implicit or mixed (stable & accurate)
+* accuracy depends on discretization, parameter contrast
 
-$$ \div (\vb q + \vb q_s) = 0 $$
-
-$$ \div \vb q = - \div a \grad T = - \div \vb q_s $$
-
-## Heat conduction equation
+## Time-stepping schemes
 
 :::: {.columns}
-::: {.column width="50%"}
-$$ \dv{Q_z}{z} \dd z = \dv{Q_z}{z} \dd z \dd x \dd y \dd t = k \dv[2]{T}{z} \dd V \dd t $$
-
-with the heat capacity $c_p$ [W/kg/K]
-$$ c_p m \dd T = c_p \rho \dd V \dd T $$ $\Rightarrow$ heat conduction equation
-$$ \dv{T}{t} - \frac{k}{\rho c_p} \dv[2]{T}{z} = - Q_s $$
+::: {.column width="33%"}
+![Explicit](pics/dtforward.svg)
 :::
-::: {.column width="50%"}
-![](pics/heatCube.png)
-
+::: {.column width="33%"}
+![Implicit](pics/dtbackward.svg)
+:::
+::: {.column width="33%"}
+![Mixed](pics/dtmixed.svg)
 :::
 ::::
 
-## Instationary heat flow in 3D
+# Stability of time-stepping
 
-$$ \pdv{T}{t} - \div a \grad T = \div q_s $$
+Consider Newton cooling problem
 
-* $a=\frac{k}{\rho c_p}$ [m²/s] thermal diffusivity - measure of heat transfer
-* $k$ [W/m/K] thermal conductivity - measure of temperature transfer
-* $c_p$ [J/kg/K] - heat capacity - measure of heat storage per mass
-* $\rho$ (kg/m³) density
+$$ \pdv{T}{t} = -\frac{T}{\tau} \approx \dv{T}{t} $$
 
-Water $k$=0.6 W/m/K, $\rho$=1000 kg/m³, $c$=4180 J/kg/K $\Rightarrow$ $a$=1.43e-7 m²/s
+with solution $$ T(t)=T_0 \exp(-t/\tau) $$
 
-## Periodic boundary conditions
+## Explicit Euler method
 
-:::: {.columns}
-::: {.column}
-Upper boundary: daily/yearly variation
+$$ T_{i+1} = T_i - \frac{dt}{\tau} T_i = T_i (1-\frac{dt}{\tau}) = T_0 (1-\frac{dt}{\tau})^{i+1} $$
 
-$$ T_0(t) = T_m + \Delta T \sin \omega t $$
+$T_{i+1} < T_i$ requires $0\le 1-dt/\tau<1$
 
-$T_m$ mean temperature (e.g. 12°C), $\Delta T$ variation, e.g. 8°C
+$$\Rightarrow 0 < dt \le \tau $$
 
-$\omega=2\pi/t_P$ daily ($T_d$=3600*24s) or yearly ($T_y=365 T_d$) cycle
+::: {.callout-important}
+Explicit method simple, but instable for $dt<\tau$
 :::
-::: {.column}
+
+## Implicit Euler method
+
+$$ \frac{T_{i+1}-T_i}{dt} = -\frac{T_{i+1}}{\tau} $$
+
+$$ T_{i+1} = T_i \frac{1}{1+dt/\tau} $$
+
+$$ 0 \le \frac{1}{1+dt/\tau} < 1 $$
+
+::: {.callout-caution}
+unconditionally stable (but maybe still inaccurate)
+:::
+
+## Mixed (Crank-Nicholson) method
+
+$$ \frac{T_{i+1}-T_i}{dt} = -\frac{T_{i+1}+T_i}{2\tau} $$
+
+$$ T_{i+1} (1+dt/2\tau) = T_i (1-dt/2\tau) $$
+
+$$ T_{i+1} = T_i \frac{1-dt/2\tau}{1+dt/2\tau} $$
+
+::: {.callout-tip}
+always stable and decreasing for $dt<2\tau$
+:::
+
+## Numerical comparison
+
 ```{python}
 #| eval: true
 #| echo: false
-from math import sqrt, pi
+
 import numpy as np
 import matplotlib.pyplot as plt
-```
 
-```{python}
-#| eval: true
-#| echo: true
-day = 3600 * 24
-T0, dT = 12, 8
-t = np.arange(100) / 50 * day
-T = T0+dT*np.sin(t/day*2*np.pi)
-plt.plot(t/day*24, T)
-plt.xlabel("t (h)")
-plt.ylabel("T (°C)")
+tau = 0.2
+dt = 0.1
+t = np.arange(0, 2.0, dt)
+Ae = np.ones_like(t)
+for i in range(1, len(t)):
+    Ae[i] = Ae[i-1] * (1-dt/tau)
+Ai = np.ones_like(t)
+for i in range(1, len(t)):
+    Ai[i] = Ai[i-1] / (1+dt/tau)
+Am = np.ones_like(t)
+for i in range(1, len(t)):
+    Am[i] = Am[i-1] * (1-dt/tau/2) / (1+dt/tau/2)
+plt.semilogy(t, np.exp(-t/tau), "-", label="analytic")
+plt.plot(t, Ae, "x", label="explicit")
+plt.plot(t, Ai, "+", label="implicit")
+plt.plot(t, Am, "o", label="mixed")
+plt.legend()
 plt.grid()
 ```
+
+
+# Other equation types
+
+* [x] Poisson equation (elliptic)
+* [x] diffusion equation (parabolic)
+* [ ] wave equation (hyperbolic)
+* [ ] Helmholtz equation (elliptic)
+
+## Hyberbolic equations
+
+Acoustic wave equation in 1D
+$$ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 $$
+
+$u$..pressure/velocity/displacement, $c$..velocity
+
+Damped (mixed parabolic-hyperbolic) wave equation
+$$ \pdv[2]{u}{t} - a\pdv{u}{t} - c^2\pdv[2]{u}{x} = 0 $$
+
+
+## Discretization
+
+:::: {.columns}
+::: {.column}
+$$ \pdv[2]{u}{t}^{n} \approx \frac{u^{n+1}-u^n}{\Delta t} - \frac{u^{n}-u^{n-1}}{\Delta t}
+$$
+
+$$ = \frac{u^{n+1}+u^{n-1}-2 u^n}{\Delta t^2} = c^2\pdv[2]{u}{x}^n $$
+
+
+$$ u^{n+1} = c^2 \Delta t^2 \pdv[2]{u}{x}^{n} + 2 u^n - u^{n-1} $$
+
+<!-- \frac{1}{\Delta t}  -->
+
+$$ \vb u^{n+1} = (2\vb I - \vb A ) \vb u^n - \vb I \vb u^{n-1} $$
+:::
+::: {.column}
+
+```{python}
+#| eval: true
+#| echo: false
+import numpy as np
+import pygimli as pg
+grid = pg.createGrid(5, 5)
+grid.translate([0, -2])
+grid.scale([1, 0.7])
+ax, cb = pg.show(grid)
+ax.set_yticks([])
+ax.set_xticks(np.arange(5))
+ax.plot([1, 2, 3], [0, 0, 0], "bo-", ms=12, lw=4)
+ax.plot([2, 2], [-0.7, 0.7], "g-", lw=4)
+ax.plot(2, 0.7, "ro", ms=12);
+ax.plot(2, -0.7, "go", ms=12);
+ax.plot(2, 0, "go", ms=8);
+```
 :::
 ::::
 
-## Separation of variables
+<!--
+![Second derivative](pics/dtsecond.svg)
+ -->
 
-$$ \pdv{T}{t} = a\pdv[2]{T}{z} $$
-
-$T(t, z)/\Delta T + T_0 = \theta(t) Z(z)$
-
-$$ Z \pdv{\theta}{t} = a \theta \pdv[2]{Z}{z} $$
-
-$$ \frac1\theta \pdv{\theta}{t} = C = a \frac{1}{Z}\pdv[2]{Z}{z} $$
-
-## Solution 
-
-regarding the BC $e^{\imath\omega t}$ leads to $C=\imath\omega$ and thus $\theta=\theta_0 e^{\imath\omega t}$
-
-$$ \pdv[2]{Z}{z} - \imath \frac{\omega}{a} Z = \pdv[2]{Z}{z} + n^2 Z = 0  $$
-
-Helmholtz equation with solution $Z=Z_0 e^{\imath n z}$ ($n^2=\imath\omega/a$)
-
-$$ Z=Z_0 e^{\imath n z} = Z_0 e^{\sqrt{\imath\omega/a}z} = 
-Z_0 e^{\sqrt{\omega/2a}(1+\imath)z} $$
-
-$$ T(t, z)/\Delta T + T_0 = Z(z)\theta(t)=
-Z_0\theta_0 e^{-\sqrt{\omega/2a}z} e^{i(\omega t-\sqrt{\omega/2a}z)} $$
-
-## Interpretation
-
-replacing the term $\sqrt{2a/\omega}=\sqrt{a t_P/\pi}=d$ leads to
-
-$$ T(z, t) = T_0 + \Delta T e^{-z/d} \sin(\omega t - z/d) $$
-
-
-* exponential damping of the temperature variation with decay depth $d$
-* phase lag $z/d$ increases with depth, $z_\pi=\sqrt{2 a/\omega}\pi=\sqrt{a t_P \pi}$
-
-1. Daily cycle: decay depth $d$=6cm, minimum depth=20cm
-2. Yearly cycle: decay depth $d$=1.2m, minimum depth=4m
-
-## Depth profiles
+## Example: velocity distribution
 
 ```{python}
-#| output-location: column
-#| code-line-numbers: false
+#| output-location: column-fragment
+#| eval: true
 #| echo: true
-a = 1.5e-7
-year = day*365
-d = sqrt(a*year/pi)
-t = np.arange(0, 1, 0.1) * year
-z = np.arange(0, 6, 0.1)
-fig, ax = plt.subplots()
-for ti in t:
-    Tz = np.exp(-z/d)*np.sin(ti*2*pi/year-
-                             z/d) * dT + T0
-    ax.plot(Tz, z, label="t={:.1f}".format(
-        ti/year))
+x=np.arange(0, 600.01, 0.5)
+c = 1.0*np.ones_like(x) # velocity in m/s
+c[100:300] = 1 + np.arange(0,0.5,0.0025)
+c[900:1100] = 0.5  # low velocity zone
 
-ax.invert_yaxis()
-ax.legend()
-ax.grid()
+# Plot velocity distribution.
+plt.plot(x,c,'k')
+plt.xlabel('x [m]')
+plt.ylabel('c [m/s]')
+plt.grid()
 ```
 
-## Temporal behaviour
+
+## Initial displacement
+
+Derivative of Gaussian (Ricker wavelet)
 ```{python}
-#| output-location: column
-#| code-line-numbers: false
+#| output-location: column-fragment
+#| eval: true
 #| echo: true
-t = np.arange(0, 1.01, 0.01) * year
-z = np.arange(0, 3, 0.4)
-fig, ax = plt.subplots()
-for zi in z:
-    Tt = np.exp(-zi/d)*np.sin(t*2*pi/year-
-                              zi/d) * dT + T0
-    ax.plot(t/year*12, Tt, label=f"z={zi:.1f}")
+l=5.0
 
-ax.set_xlim(0, 12)
-ax.set_xlabel("t (months)")
-ax.set_ylabel("T (°C)")
-ax.legend()
-ax.grid()
+# Initial displacement field [m].
+u=(x-300.0)*np.exp(-(x-300.0)**2/l**2)
+# Plot initial displacement field.
+plt.plot(x,u,'k')
+plt.xlabel('x [m]')
+plt.ylabel('u [m]')
+plt.title('initial displacement field')
+plt.show()
 ```
 
-## Experimental data from North Sea beach
+## Time propagation
 
-![](pics/temperature2022-2023.svg)
-
-<!-- ## Heat transfer in 1D
-$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
-
-with the periodic boundary conditions:
-* $T(z=0,t)=T_0 + \Delta T \sin \omega t$ (daily/yearly cycle)
-* $\pdv{T}{z}(z=z_1) = 0$ (no change at depth)
-and the initial condition $T(z, t=0)=\sin \pi z$ has the analytical solution
-$$ T(z, t) = \Delta T e^{-\pi^2 t} \sin \pi z $$ -->
-
-## Explicit methods
-
-$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
-
-Finite-difference approximation
-
-$$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T^n}{z} $$
-
-## Explicit
-
-:::: {.columns}
-::: {.column}
-Start $T^0$ with initial condition
-
-Update field by 
-$$ T^{n+1} = T^n + a \pdv[2]{T^n}{z} \cdot \Delta t$$
-
-E.g. by using matrix $A$ from Poisson solver
-:::
-::: {.column}
 ```{python}
+#| output-location: column-fragment
 #| eval: true
-#| echo: false
+#| echo: true
+u_last=u
+dt = 0.5
+ddu = np.zeros_like(u)
+dx = np.diff(x)
+for i in range(100):
+    dudx = np.diff(u)/dx
+    ddu[1:-1] = np.diff(dudx)/dx[:-1]
+    u_next = 2*u-u_last+ddu*c**2 * dt**2
+    u_last = u
+    u = u_next
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 4)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
-ax.plot([2, 2], [1, 2], "b-", lw=4)
-ax.plot(2, 2, "ro", ms=12)
+plt.plot(x,u,'k')
 ```
+
+## {background-video="notebooks/wave.mp4" background-video-loop="true"}
+
+# Helmholtz equations
+
+e.g. from Fourier assumption $u=u_0 e^{\imath\omega t}$
+
+$$ -\div (a\grad u) + k^2 u = f $$
+
+* Laplace operator assembled in FD system matrix $\vb A$
+* additional terms with $u_i$ $\Rightarrow$ add "mass" to stiffness
+
+$$ \Rightarrow (\vb A + k^2\vb I)\vb u = \vb b $$
+
+## Wave equations in frequency domain
+
+$$ \pdv[2]{u}{t} - c^2\pdv[2]{u}{x} = 0 $$
+
+separation approach: $u(z, t)=e^{\imath\omega t} X(x)$
+
+$$ \Rightarrow \pdv[2]{u}{t} = -\omega^2 e^{\imath\omega t} X(x) = -\omega^2 u $$
+
+$$ \Rightarrow -\omega^2 u - c^2\pdv[2]{u}{x} = 0 \Rightarrow a \pdv[2]{X}{x} + \omega^2 X = 0 $$
+
+## Heat transfer in frequency domain
+
+separation approach: $T(z, t)=e^{\imath\omega t} Z(z)$
+
+$$ \Rightarrow \pdv{T}{t} = \imath\omega e^{\imath\omega t} Z(z) = \imath\omega T $$
+
+$$ \pdv{T}{t} - a\pdv[2]{T}{z} \Rightarrow - a\pdv[2]{T}{z} + \imath\omega T = 0 $$
+
+$$ \Rightarrow - a e^{\imath\omega t}\pdv[2]{Z}{z} + \imath\omega e^{\imath\omega t} Z = 0 $$
+
+## Heat transfer in frequency domain
+
+separation approach: $T(z, t)=e^{\imath\omega t} Z(z)$
+
+$$ \Rightarrow \pdv{T}{t} = \imath\omega e^{\imath\omega t} Z(z) = \imath\omega T $$
+
+$$ \pdv{T}{t} - a\pdv[2]{T}{z} \Rightarrow - a\pdv[2]{T}{z} + \imath\omega T = 0 $$
+
+$$ \Rightarrow - a \pdv[2]{Z}{z} + \imath\omega Z = 0 $$
+
+## Maxwells equations
+
+* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field
+$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$
+* Ampere's law: time-varying magnetic fields induce electric field
+$$ \curl\vb E = -\pdv{\vb B}{t}$$
+* $\div\vb D = \varrho$ (charge $\Rightarrow$), $\div\vb B = 0$ (no magnetic charge)
+* material laws $\vb D = \epsilon \vb E$ and $\vb B = \mu \vb H$ (now $\epsilon$/$\mu$ constant)
+
+## Maxwell in frequency domain
+
+$$\vb E = \vb E_0 e^{\imath\omega t} \qq{or} \vb H = \vb H_0 e^{\imath\omega t}$$
+
+$$ \curl \vb H = \imath\omega\epsilon\vb E + \vb \sigma \vb E $$
+
+$$ \curl\vb E = -\imath\omega\mu\vb H$$
+
+## Helmholtz equation
+
+see also [Theory EM](https://ruboerner.github.io/ThEM/mtfields.html)
+
+take curl of one of the equations and insert in the other
+
+$$ \curl\curl \vb E + \imath\omega\mu\sigma\vb E - \omega^2\mu\epsilon \vb E = \curl \vb j_s$$
+
+$$ \curl \rho \curl \vb H + \imath\omega\mu\vb H - \omega^2\mu\epsilon\rho \vb H=0$$
+
+## Quasi-static approximation
+
+Assume: $\omega^2\mu\epsilon<\omega\mu\sigma$,  no sources ($\div\vb j_s=0$), + vector identity
+$$\curl\curl \vb F = \grad \div \vb F - \grad^2 \vb F$$
+leads with $\div \vb E=0=\div\vb B$ to the vector Helmholtz PDE
+
+$$-\grad^2 \vb E + \imath\omega\mu\sigma \vb E=0$$
+
+$$-\div \sigma^{-1} \grad H_{xyz} + \imath\omega\mu H_{xyz}=0$$
+
+## Electromagnetic fields in the Earth
+
+Maxwell equations lead to diffusion equation
+
+$$\pdv[2]{\vb B}{z}=\mu_0\sigma\pdv{\vb B}{t}$$
+
+A periodic excitation ($B_0 e^{\imath\omega t}$) leads to (cf. temperature diffusion)
+
+$$B=B_0 e^{-z/d}\cos(\omega t-z/d)$$
+
+with the skin depth $d=\sqrt{2/(\mu_0 \sigma\omega)}\approx 503\sqrt{\rho/f}$
+
+
+# Equation solvers
+
+$$\vb A \vb u = \vb b $$
+
+$A$ represents PDE (incl. coefficients) and BC equations, $\vb b$ BC values
+
+## Sparse matrices
+
+Up to now: regular (dense) array: save every element including 0
+
+**Sparse**: Save only non-zero components (e.g. using `scipy.sparse`)
+
+* COO - coordinate format
+* CSC/CRS - compressed sparse column/row
+* BSR - block sparse row format, ...
+
+## Solve systems of equations
+**direct solvers**
+
+* Gauss elimination (expensive and dense)
+* Cholesky (or ILU) decomposition
+
+**indirect solvers (fixed-point iteration)**
+
+* gradient methods: steepest descent, conjugate gradients
+* preconditioning: incomplete factorizations (of submatrices)
+
+## Cholesky decomposition
+
+$$\vb A = \vb L \vb L^T \qqtext{or} \vb A = \vb L \vb D \vb L^T $$
+
+::: {.callout-tip title="Particularly important if many right-hand sides need to be computed"}
+- many transmitters (flying helicopter)
+- time-stepping (same matrix in every step)
+- computation of Jacobian matrix (inversion)
+:::
+
+* do decomposition (generate sparse $\vb L$ matrix)
+* back-substitution for every right-hand side
+
+## Reordering
+
+![original (left) & reordered (right) matrix (Rücker et al. 2006)](pics/reordering.png)
+
+## Iterative solvers - fixed-point iteration
+
+$$\vb A \vb x = \vb b$$
+split $\vb A=\vb M - \vb N$ ($\vb M$ easily invertible) and solve
+$$\vb M\vb x = \vb N \vb x + \vb b$$
+iterativily by $\vb x^{k+1}=\vb M^{-1}\left(\vb N\vb x^k + \vb b\right)$
+
+e.g. $\vb M=\mbox{diag}(\vb A)$ (Jacobi method) or<br>
+$\vb M=\mbox{tril}(\vb A)$ (Gauss-Seidel method)
+
+## Gradient methods
+
+minimize residual $\vb r = \vb b - \vb A\vb x$
+
+### Steepest descent method
+$$\vb r_0 = \vb b - \vb A \vb x_0 $$
+
+go towards $\vb r_0$ and minimize step length $\alpha$
+
+$$\vb r_1^T\vb r_0 = 0 = \vb b - \vb A(\vb x_0+\alpha\vb r_0)$$
+
+$$ \Rightarrow \alpha = \frac{\vb r_0^T\vb r_0}{\vb r_0\vb A \vb r_0} $$
+
+## Steepest descent algorithm
+`for i = 0,1, ...`
+$$\vb r_i = \vb b - \vb A \vb x_i $$
+
+$$ \Rightarrow \alpha_i = \frac{\vb r_i^T\vb r_i}{\vb r_i\vb A \vb r_i} $$
+
+$$\vb x_{i+1} = \vb x_i + \alpha_i\vb r_i$$
+
+## Conjugate directions
+
+Set of orthogonalen directions $\vb d$ with
+
+$$ \vb d^T_i \vb A \vb d_j = 0 \qquad \forall i\ne j $$
+
+::: {.callout-note}
+every search direction is only used once
+:::
+
+$$\vb x_{i+1} = \vb x_i + \alpha_i\vb d_i$$
+
+## Conjugate directions
+
+![](pics/conjugate_directions.png)
+
+## Conjugate gradient (Hestenes&Stiefel, 1952)
+
+$$\vb d_0 = \vb r_0 = \vb b - \vb A \vb x_0 $$
+$$ \alpha_i = \frac{\vb r_i^T\vb r_i}{\vb d_i\vb A \vb d_i} $$
+$$\vb x_{i+1} = \vb x_i + \alpha_i\vb d_i$$
+$$\vb r_{i+1} = \vb r_i - \alpha_i\vb A \vb d_i$$
+$$d_{i+1} = \vb r_{i+1} + \vb d_{i+1} \frac{\vb r_{i+1}^T\vb r_{i+1}}{\vb r_i^T\vb r_i}$$
+
+## Steepest descent vs. conjugate gradient
+::::{.columns}
+:::{.column width="50%"}
+![](pics/shewchukSD.png){fig-align="center"}
+:::
+:::{.column width="50%"}
+![](pics/shewchukCG.png){fig-align="center"}
 :::
 ::::
 
+## Preconditioning
 
-## Implicit methods
+$\vb A \vb x=\vb b$ often badly conditioned (elongated) $\Rightarrow$ slow convergence
 
-:::: {.columns}
-::: {.column}
-$$ \pdv{T}{t}^{n+1} \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T}{z} ^{n+1} $$
+**Idea:** transform (precondition) equation system by preconditioner $\vb K$
 
-$$ \frac{1}{\Delta t} T^{n+1} - a \pdv[2]{T}{z} ^{n+1} = \frac{1}{\Delta t} T^n $$
+$$\vb K^{-1} \vb A \vb x = \vb K^{-1}\vb b$$
 
-$$ (\vb M - \vb A) \vb u^{n+1} = \vb M \vb u^n $$ 
+Extreme cases: 1. $\vb K=\vb I$, cheap PC but no gain
+
+2. $\vb K=\vb A$, perfect conditioning but expensive PC<br>
+e.g. $\vb K=\mbox{diag} \vb A$ or $\vb K=\epsilon\mbox{tril} \vb A$
+
+## Incomplete Cholesky decomposition
+::::{.columns}
+:::{.column width="50%"}
+$$\vb A\approx \vb L \vb L^T$$
+
+with certain accuracy or sparsity
 :::
-::: {.column}
-```{python}
-#| eval: true
-#| echo: false
-
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 4)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [2, 2, 2], "bo-", ms=12, lw=4)
-ax.plot([2, 2], [1, 2], "bo-", ms=12, lw=4)
-ax.plot(2, 2, "ro", ms=12)
-```
+:::{.column width="50%"}
+![](pics/preconditioners.png){fig-align="center"}
 :::
 ::::
 
-## Mixed - Crank-Nicholson method
-
-$$ \pdv{T}{t}^{n+1/2} \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$
-
-:::: {.columns}
-::: {.column}
-$$ \frac{2}{\Delta t} T^{n+1} - a \pdv[2]{T^{n+1}}{z} = 
-   \frac{2}{\Delta t} T^n + a \pdv[2]{T^n}{z} $$
-
-$$ (2\vb M - \vb A) \vb u^{n+1} = (2\vb M + \vb A) \vb u^n $$ 
-
-<!-- $$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$ -->
-:::
-::: {.column}
-```{python}
-#| eval: true
-#| echo: false
-
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 4)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
-ax.plot([1, 2, 3], [2, 2, 2], "bo-", ms=12, lw=4)
-ax.plot([2, 2], [1, 2], "bo-", ms=12, lw=4)
-ax.plot(2, 2, "ro", ms=12)
-```
-:::
-::::

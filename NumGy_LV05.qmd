@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 5: Timestepping"
+title: "Numerical Simulation Methods in Geophysics, Part 5: Finite Elements"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -9,7 +9,7 @@ title-slide-attributes:
 format:
   tubaf-revealjs:
     html-math-method: mathjax
-    chalkboard: true
+    chalkboard: false
     include-in-header:
         - text: |
             <script>
@@ -23,402 +23,522 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
+# jupyter: python3
+---
 
-# Recap last lessons & exercises
+## Recap Finite Differences
 
-## The general case
+* elliptic (Poisson) or parabolic PDE problems
+* replace partial differential operators $\partial$ by finite differences $\Delta$
+* transfer PDE into a matrix-vector equation $\vb A \vb u = \vb b$
+* finite-difference stencil spatial or temporal
+* spatial derivative $\Rightarrow$ system matrix $\vb A$, temporal $\Rightarrow$ identity matrix $\vb I$
+* time-stepping explicit, implicit or mixed (stable & accurate)
+* accuracy depends on discretization & parameter contrast
 
-$\Delta x \ne 1$ & $a \ne 1$ $\Rightarrow$ $a \pdv{u}{x} \approx a_i\frac{u_{i+1}-u_i}{x_{i+1}-x_i}$
+# The Finite Element Method
 
+## History and background
+
+* [1943] Courant: Variational Method
+* [1956] Turner, Clough, Martin, Topp: Stiffness
+* [1960] Clough: Finite Elements for static elasticity
+* [1970-80] extension to structural, thermic and fluid dynamics
+* [1990] computational improvements
+* now main method for almost all PDE types
+
+Geophysics: Poisson equation in 1970s, revival in 1990s and predominant from 2000s up to now
+
+## Variational formulation of Poisson equation
+
+$$ -\div a \grad u = f $$
+
+::: {.fragment}
+Multiplication with test function $w$ and integration $\Rightarrow$ weak form
+
+$$ -\int_\Omega w \div a \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::
+
+::: {.fragment}
+$$ \div(b\vb c) = b\div \vb c + \grad b \cdot \vb c $$
+:::
+
+::: {.fragment}
+$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::
+
+## Variational formulation of Poisson equation
+
+$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Omega \div(w a \grad u) \dd\Omega = \int_\Omega w f \dd\Omega $$
+
+::: {.fragment}
+use Gauss' law $\int_\Omega \div \vb A = \int_\Gamma \vb A \cdot \vb n$
+
+$$ \int_\Omega a \grad w \cdot \grad u \dd\Omega - \int_\Gamma a w \grad u \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
+:::
+
+::: {.fragment}
+Let $u$ be constructed by shape functions $v$: $u=\sum_i u_i v_i$
+
+$$ \int_\Omega a \grad w \cdot \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
+:::
+
+## Galerkin's method
+
+$$ \int_\Omega a \grad w \vdot \grad v_i \dd\Omega - \int_\Gamma a w \grad v_i \cdot \vb n \dd\Gamma = \int_\Omega fw \dd\Omega $$
+
+::: {.fragment}
+Test functions the same as shape (trial) functions $w\in  v_i$
+
+$$ \int_\Omega a \grad v_j \vdot \grad v_i \dd\Omega - \int_\Gamma a v_j \grad v_i \vdot \vb n \dd\Gamma = \int_\Omega f v_j \dd\Omega $$
+:::
+
+::: {.fragment}
+* choose $v_i$ so that $\grad v_i$ is simple and $\grad v_i \vdot \grad v_j$ mostly 0
+* divide subsurface in sub-volumes $\Omega_i$ with constant $a_i$ (& $\grad v_j$)
+:::
+
+# FE for 1D Poisson PDE
 ```{python}
 #| eval: true
 #| echo: false
-
 import numpy as np
 import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-nx = 6
-grid = mt.createGrid(nx, 2)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-for i in range(nx):
-    ax.plot(i, 0, "ko", ms=10)
-for i in range(nx-1):
-    ax.text(i+0.5, 0.5, rf"$a_{i}$", ha="center", va="center", fontsize=18)
-ax.set_xticklabels([f"$u_{i}$" for i in range(6)])
-for i in range(5):
-    ax.text(i+0.5, -0.1, "$u'_{"+f"{i}"+".5}$", va="top");
-ax.set_xlabel("")
-ax.set_ylabel("");
+x = np.array([0, 1., 2.1, 3.5, 5.0])
+y = np.zeros_like(x)
+y[2] = 1
+fig, ax = plt.subplots()
+ax.plot(x, y, "-")
+ax.set_aspect(1.0)
+ax.set_xticks(x)
+ax.grid()
 ```
+Every node carries a hat
 
-$\dv{x}(a \pdv{u}{x}) \approx (a_i\frac{u_{i+1}-u_i}{x_{i+1}-x_i} - a_{i-1}\frac{u_{i}-u_{i-1}}{x_{i}-x_{i-1}}) / (x_{i+1}-x_{i-1}) \cdot 2$
-
-$$ A_{i, i-1} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-## The coupling coefficients
-
-$$ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-$$ \begin{bmatrix}   
-+1 & 0 & 0 & \ldots & &  \\
-C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots & \\
-\vdots & \vdots & \ddots & \vdots &  \\
-\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
-\ldots & \ldots & & 0 & -1 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \\ g_B \Delta x_N \end{bmatrix}  $$
-
-## Symmetry
-
-$$ A_{i+1,i} = C_{i+1}^{left} = a_i / (x_{i+1}-x_{i}) / (x_{i+2}-x_{i}) \cdot 2 $$
-
-$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
-
-only symmetric if $\Delta x$ is constant around $x_i$, better take $a_i/(\Delta x_i)^2$
-
-$$ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1})^2 $$
-
-$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i})^2 $$
-
-$\Rightarrow$ inaccuracies expected for non-equidistant discretization
-
-## A closer look at the Dirichlet boundary
-
-$$ \begin{bmatrix}   
-+1 & 0 & 0 & \ldots & &  \\
-C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots & 
-\end{bmatrix} \begin{bmatrix} u_B\\ f_1  \end{bmatrix}$$
-
-1. $C$ can be differently scaled from 1 $\Rightarrow$ multiply with $C_i^L$
-1. Matrix is non-symmetric 
-<!-- $\Rightarrow$ add $C_1^L$ -->
-
-$$ \begin{bmatrix}   
-C_1^L & 0 & 0 & \ldots & &  \\
-C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots & 
-\end{bmatrix} \begin{bmatrix} u_B C_i^L\\ f_1  \end{bmatrix} $$
-
-## A closer look at the Neumann boundary
-
-$$ \begin{bmatrix}
-\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
-\ldots & \ldots & & 0 & -1 & +1
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} f_N \\ g_B \Delta x_N \end{bmatrix}  $$
-
-1. $C$ can be differently scaled from 1 $\Rightarrow$ multiply with $C_N^R$
-1. Matrix is non-symmetric  $\Rightarrow$ multiply with -1
-
-$$ \begin{bmatrix}
-\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
-\ldots & \ldots & & 0 & C_N^R & -C_N^R
-\end{bmatrix} \cdot\vb{u} = 
-\begin{bmatrix} f_N \\ -g_B \Delta x_N C_N^R \end{bmatrix}  $$
-
-## Accuracy
-
-How can we prove the accuracy of our solution?
-
-* compare with analytical solutions
-* single (Point) $f$ lead to piece-wise linear $u$ (correct)
-* what about continuous source terms?<br> (e.g. radioactive elements in the Earth's crust)
-
-## Analytical solution
-
-$a$=1, $f(x)$=1 $\Rightarrow$ double integration $\Rightarrow$ quadratic function
-
-$$u(x) =  C_0 + C_1 x -1/2 x^2 $$
-
-Left BC   | Right BC  | $C_0$                 | $C_1$                
-----------|-----------|-----------------------|-------------------------
-Dirichlet | Dirichlet | $u_L$                 | $L/2 + (u_R-u_L)/ L$ 
-Dirichlet | Neumann   | $u_L$                 | $g_R + L$     
-Neumann   | Dirichlet | $u_R - g_L L + L^2/2$ | $g_L$                
-
-with $L=(x_N-x_0)$
-
-## Tasks stationary heat equation
-
-* finish your implementation so that it can work with any $x$, $a$ and $f$, and at least D-D or D-N boundary conditions
-* make sure you achieve the same (phenomenological) results like in the "collection notebook" (variation of, a, x, f)
-* simulate the two different cases (D-D, D-N) with some choices of uL and uR or gR
-* make sure the N-D case is analog to D-N
-* compute analytical solution and plot it with numerical solution
-* change the discretization and improve the solution
-
-## Next spatial dimension
-
-:::: {.columns}
-::: {.column}
-::: {.r-stack}
-![Simple 2D conductivity grid](notebooks/grid32sigma.svg)
-
-![Simple 2D conductivity grid with FD stencil](notebooks/grid32sigmaStencil.svg){.fragment}
-:::
-:::
-::: {.column}
-:::: {.fragment}
-$$ C_{i,j}^{right} = a_{i,j-1/2} / (x_{i+1}-x_{i})^2 $$
-
-$a_{i,j-1/2}=(a_{i,j-1}+a_{i,j})/2$ ? 
-
-harmonic, geometric? weighting?
-
-$a_{i,j-1/2}=\frac{a_{i,j-1}\Delta y_{j-1}+a_{i,j}\Delta y_{j}}{y_j+1-y_{j-1}}$?
-::::
-:::
-::::
-
-# Parabolic PDEs
-
-## Instationary heat flow in 3D
-
-$$ \pdv{T}{t} - \div (a\grad{T}) = \div q_s $$
-
-* $a=\frac{k}{\rho c_p}$ [m²/s] thermal diffusivity - measure of heat transfer
-* $k$ [W/m/K] thermal conductivity - measure of temperature transfer
-* $c_p$ [J/kg/K] - heat capacity - measure of heat storage per mass
-* $\rho$ (kg/m³) density
-
-Water $k$=0.6 W/m/K, $\rho$=1000 kg/m³, $c$=4180 J/kg/K $\Rightarrow$ $a$=1.43e-7 m²/s
-
-## Periodic boundary conditions
-
-:::: {.columns}
-::: {.column}
-Upper boundary: daily/yearly variation
-
-$$ T_0(t) = T_m + \Delta T \sin \omega t $$
-
-$T_m$ mean temperature (e.g. 12°C), $\Delta T$ variation, e.g. 8°C
-
-$\omega=2\pi/t_P$ daily ($T_d$=3600*24s) or yearly ($T_y=365 T_d$) cycle
-:::
-::: {.column}
+## 1st-order nodal shape functions (hats)
 ```{python}
 #| eval: true
 #| echo: false
-from math import sqrt, pi
-import numpy as np
-import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(8, 4), nrows=2, sharex=True)
+for i in range(len(x)):
+    si = np.zeros_like(x)
+    si[i] = 1
+    ax[0].plot(x, si)
+    dsdx = np.diff(si)/np.diff(x)
+    ax[1].stairs(dsdx, x, ls="--", zorder=10, label=f"i={i}")
+
+ax[0].set_xticks(x)
+ax[0].set_yticks([0, 1])
+ax[1].set_yticks([-1, 0, 1])
+ax[0].grid()
+ax[1].grid()
+ax[1].legend()
+ax[1].set_xlabel("x")
+ax[0].set_ylabel(r"$v_i$(x)")
+ax[1].set_ylabel(r"$\partial v_i/\partial x$");
+fig.tight_layout()
 ```
 
+<!--
+## Hat functions
+
+![](pics/shapefunctions1d.svg){width="100%"}
+ -->
+
+## Gradients for hat functions
+* every element is surrounded by two nodes "carrying" a hat.
+* the gradients $v'_i$ are piece-wise constant $\pm 1/\Delta x_i$
+* neighboring functions $v_i$ & $v_{i+1}$ only meet between $x_i$ & $x_{i+1}$
+
+$$ \int_\Omega a \grad v_i \vdot \grad v_{i+1} \dd\Omega = \int_{x_i}^{x_{i+1}} a_i v'_i v'_{i+1} \dd\Omega = -\frac{a_i}{\Delta x_i^2} \Delta x_i = -\frac{a_i}{\Delta x_i}$$
+
+$$ \int_{x_{i-1}}^{x_{i+1}} a v'_i v'_i \dd\Omega = \frac{a_{i-1}}{\Delta x_{i-1}^2}\Delta x_{i-1} + \frac{a_i}{\Delta x_i^2}\Delta x_i = \frac{a_{i-1}}{\Delta x_{i-1}} + \frac{a_i}{\Delta x_i} $$
+
+<!-- $$ -\int_\Omega a \grad v_i \vdot \grad v_{i+2} \dd\Omega = 0 $$ -->
+
+## Integration
+
+Let's write the equation for the first and second nodes in 1D
+
+$$ \int_{x_0}^{x_1} u_0 a_0 v_0' v_0' + \int_{x_0}^{x_1} u_1 a_1 v_0' v_1' = \int_{x_0}^{x_1} v_0 f $$
+
+$$ \int_{x_0}^{x_1} u_0 a v_0' v_1' + \int_{x_0}^{x_2} u_1 a v_1' v_1' + \int_{x_1}^{x_1} a u_2 v_2' v_1' = \int_{x_0}^{x_2} v_1 f $$
+
+<!-- $$ \int u_1 v_1' v_2' + \int u_2 v_2' v_2' + \int u_3 v_3' v_2' = \int v_1 f $$ -->
+
+$$ u_{i-1} a_{i-1} \int\limits_{x_{i-1}}^{x_{i}} v_i' v_{i-1}' +
+   u_i a_{i-1} \int\limits_{x_{i-1}}^{x_{i}} v_i' v_i' +
+   u_i a_i \int\limits_{x_{i}}^{x_{i+1}} v_i' v_i' +
+   u_{i+1} a_{i} \int\limits_{x_{i}}^{x_{i+1}} v_i' v_{i+1}' $$
+
+
+# The stiffness matrix
+
+Matrix integrating gradients of base functions for neighbors with $a$
+
+$$ \vb A_{i, i+1} = -\frac{a_i}{\Delta x_i^2} \vdot \Delta x_i = -\frac{a_i}{\Delta x_i} $$
+
+$$ A_{i,i} = \int_\Omega a \grad v_i \cdot \grad v_i \dd\Omega = -A_{i,i+1} - A_{i+1,i}  $$
+
+$\Rightarrow$ matrix-vector equation $\vb A \vb u = \vb b$ with bending&shear stiffness in $\vb A$
+<!-- $\Rightarrow$ -->
+
+## Boundary conditions
+
+second term
+$$ - \int_\Gamma a v_j \grad v_i \cdot \vb n \dd\Gamma $$
+
+reads in 1D as
+
+$$ [a v_i v_j']_{x_0}^{x_N} = a_{N-1} u_N v_N' - a_0 u_0 v_0' $$
+
+$\Rightarrow$ Homogeneous Neumann BC ($v'_0=0$) are automatically implemented
+
+## Right-hand side vector
+
+The right-hand-side vector $b=\int v_i f \dd\Omega$ also scales with $\Delta x$
+
+e.g. $f=\div \vb j_s$ $\Rightarrow$
+$b=\int v_i \div \vb j_s \dd\Omega = \int_\Gamma v_i \vb j_S \cdot \vb n$
+
+(system identical to FD for $\Delta x$=1)
+
+:::{.callout-tip icon="false" title="Difference of FE to FD"}
+Any source function $f(x)$ can be integrated on the whole space!
+:::
+
+## Solution
+
+$\vb u$ holds the coefficient $u_i$ creating $u(x)=\sum u_i v_i(x)$
+
+:::{.callout-tip icon="false" title="Difference of FE to FD"}
+$u$ is described on the whole space and approximates the solution, not the PDE!
+:::
+
+Hat functions: $u_i$ potentials on nodes, $u$ piece-wise linear
+
+:::{.callout-tip icon="false" title="Generality of FE"}
+Arbitrary base functions $v_i$ can be used to describe $u$
+:::
+
+## Method of weighted residuals
+
+PDE $\mathfrak{L}(u)=f$ $\Rightarrow$ approximated by $u_h$
+
+residual $R=L_h(u)-f$ to be minimized, integrating over modelling domain
+
+$$ \int_\Omega w R \dd\Omega = \int_\Omega w \mathfrak{L}(u_h)\dd\Omega - \int_\Omega w f \dd\Omega = 0 $$
+
+with approximation $u_h(\vb r)=\sum_j^M u_j \vb v_j(\vb r)$
+
+($\vb v$ basis / shape functions, $\vb w$ test / trial functions)
+
+## Bilinear form for Poisson equation
+
+Solve $\vb A \vb x = \vb b$ with $A_{ij}=(\grad v_i, a \grad v_j)$ and $b_i=(\vb v_i, f)$, where
+
+$$(\vb a, \vb b)=\int_\Omega \vb a \cdot \vb b\,\dd\Omega = \sum\limits_{c=i}^M \int_{\Omega_c} \vb a \cdot \vb b\,\dd\Omega_c$$
+
+Solve the integrals either analytically or numerically
+
+## Coordinate transformation
+
+1D: local coordinate $\xi=\frac{x-x_i}{x_{i+1}-x_i}$ (0..1)
+
+$u(\xi)=c_1+c_2\xi$
+
+$u_0=u(0)=c_1$, $u_1=u(1)=c_1+c_2$  $\Rightarrow c_2=u_1-u_0$
+
+$$\Rightarrow u(\xi)=u_0+\xi(u_1-u_0)=u_0(1-\xi)+u_1\xi=u_0 v_0 + u_1 v_1$$
+
+## Quadratic elements
+$u(\xi)=c_1+c_2\xi+c_3\xi^2$
+
+nodes at $x_0$, $x_{1/2}$, $x_1$
+
+$u_i=u(0)=c_1$, $u_1=c_1+c_2+c_3$
+
+$u_{1/2}=c_1+c_2/2+c_3/4$
+
+$$u(\xi)=u_0(1-3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$
+
+
+## Quadratic elements
+
+$$u(\xi)=u_0(3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$
+
 ```{python}
+#| output-location: column
 #| eval: true
 #| echo: true
-day = 3600 * 24
-T0, dT = 12, 8
-t = np.arange(100) / 50 * day
-T = T0+dT*np.sin(t/day*2*np.pi)
-plt.plot(t/day*24, T)
-plt.xlabel("t (h)")
-plt.ylabel("T (°C)")
+import numpy as np
+import matplotlib.pyplot as plt
+x=np.linspace(0, 1, 101)
+
+# Plot velocity distribution.
+plt.plot(x, 1-3*x+2*x**2)
+plt.plot(x, 4*x-4*x**2)
+plt.plot(x, -x+2*x**2)
+plt.plot(0, 0, "o", color="C0", ms=8)
+plt.plot(0.5, 0, "o", color="C1", ms=8)
+plt.plot(1, 0, "o", color="C2", ms=8)
 plt.grid()
 ```
-:::
-::::
 
-## Separation of variables
+## Cubic elements
 
-$$ \pdv{T}{t} = a\pdv[2]{T}{z} $$
-
-$T(t, z)/\Delta T - T_0 = \theta(t) Z(z)$
-
-$$ Z \pdv{\theta}{t} = a \theta \pdv[2]{Z}{z} $$
-
-$$ \frac1\theta \pdv{\theta}{t} = C = a \frac{1}{Z}\pdv[2]{Z}{z} $$
-
-## Solution 
-
-regarding the BC $e^{\imath\omega t}$ leads to $C=\imath\omega$ and thus $\theta=\theta_0 e^{\imath\omega t}$
-
-$$ \pdv[2]{Z}{z} - \imath \frac{\omega}{a} Z = \pdv[2]{Z}{z} + n^2 Z = 0  $$
-
-Helmholtz equation with solution $Z=Z_0 e^{\imath n z}$ ($n^2=\imath\omega/a$)
-
-$$ Z=Z_0 e^{\imath n z} = Z_0 e^{\sqrt{\imath\omega/a}z} = 
-Z_0 e^{\sqrt{\omega/2a}(1+\imath)z} $$
-
-$$ T(t, z)/\Delta T + T_0 = Z(z)\theta(t)=
-Z_0\theta_0 e^{-\sqrt{\omega/2a}z} e^{i(\omega t-\sqrt{\omega/2a}z)} $$
-
-## Interpretation
-
-replacing the term $\sqrt{2a/\omega}=\sqrt{a t_P/\pi}=d$ leads to
-
-$$ T(z, t) = T_0 + \Delta T e^{-z/d} \sin(\omega t - z/d) $$
-
-* exponential damping of the temperature variation with decay depth $d$
-* phase lag $z/d$ increases with depth, $z_\pi=\sqrt{2 a/\omega}\pi=\sqrt{a t_P \pi}$
-
-1. Daily cycle: decay depth $d$=6cm, minimum depth=20cm
-2. Yearly cycle: decay depth $d$=1.2m, minimum depth=4m
-
-## Depth profiles
+<!-- $$u(\xi)=u_0(3\xi+2\xi^2)+u_{1/2}(4\xi-4\xi^2)+u_1(-\xi+2\xi^2)$$ -->
 
 ```{python}
 #| output-location: column
-#| code-line-numbers: false
+#| eval: true
 #| echo: true
-a = 1.5e-7
-year = day*365
-d = sqrt(a*year/pi)
-t = np.arange(0, 1, 0.1) * year
-z = np.arange(0, 6, 0.1)
-fig, ax = plt.subplots()
-for ti in t:
-    Tz = np.exp(-z/d)*np.sin(ti*2*pi/year-
-                             z/d) * dT + T0
-    ax.plot(Tz, z, label="t={:.1f}".format(
-        ti/year))
+import numpy as np
+import matplotlib.pyplot as plt
+x=np.linspace(0, 1, 101)
 
-ax.invert_yaxis()
-ax.legend()
-ax.grid()
+# Plot velocity distribution.
+plt.plot(x, 1-5.5*x+9*x**2-4.5*x**3)
+plt.plot(x, 9*x-22.5*x**2+13.5*x**3)
+plt.plot(x, -4.5*x+18*x**2-13.5*x**3)
+plt.plot(x, x-4.5*x**2+4.5*x**3)
+for i in range(4):
+    plt.plot(i/(3), 0, "o",
+             color=f"C{i}", ms=8)
+plt.grid()
 ```
 
-## Temporal behaviour
+## Triangles with linear shape functions
+
+:::: {.columns}
+::: {.column width="60%"}
+
+$$x=x_1+(x_2-x_1)\xi+(x_3-x_1)\eta$$
+$$y=y_1+(y_2-y_1)\xi+(y_3-y_1)\eta$$
+:::
+::: {.column width="40%"}
+
+```{python}
+#| eval: true
+#| echo: false
+plt.fill_betweenx([1, 0], [0, 1])
+plt.text(0.05, 0.05, "P1")
+plt.text(1, 0.05, "P2")
+plt.text(0.05, 1, "P3")
+plt.xlabel(r"$\xi$")
+plt.ylabel(r"$\eta$");
+```
+:::
+::::
+
+## Triangle
+
+$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
+
 ```{python}
 #| output-location: column
-#| code-line-numbers: false
+#| eval: true
 #| echo: true
-t = np.arange(0, 1.01, 0.01) * year
-z = np.arange(0, 3, 0.4)
+import pygimli as pg
+import pygimli.meshtools as mt
+
+shape = mt.createPolygon(
+    [[0, 0], [1, 0],[0, 1]],
+    isClosed=True)
+mesh = mt.createMesh(shape, area=0.01)
+mx = pg.x(mesh)
+my = pg.y(mesh)
+# Plot velocity distribution.
 fig, ax = plt.subplots()
-for zi in z:
-    Tt = np.exp(-zi/d)*np.sin(t*2*pi/year-
-                              zi/d) * dT + T0
-    ax.plot(t/year*12, Tt, label=f"z={zi:.1f}")
-
-ax.set_xlim(0, 12)
-ax.set_xlabel("t (months)")
-ax.set_ylabel("T (°C)")
-ax.legend()
-ax.grid()
+pg.show(mesh, 1-mx-my, ax=ax,
+        nLevs=11, label="u");
 ```
 
-<!-- ## Experimental data from North Sea beach
+## Triangle linear shape functions
 
-![](pics/temperature2022-2023.svg) -->
+$$u(\xi)=u_1(1-\xi-\eta)+u_2\xi+u_3\eta$$
 
-## Time stepping - explicit method
-
-$$ \pdv{T}{t} - a \pdv[2]{T}{z} = 0 $$
-
-Finite-difference approximation
-
-$$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T^n}{z} $$
-
-## Explicit
-
-:::: {.columns}
-::: {.column}
-Start $T^0$ with initial condition (e.g. 0)
-
-Update field by 
-$$ T^{n+1} = T^n + a \pdv[2]{T^n}{z} \cdot \Delta t$$
-
-E.g. by using the matrix $A$
-:::
-::: {.column}
 ```{python}
 #| eval: true
 #| echo: false
-
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 4)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
-ax.plot([2, 2], [1, 2], "g-", lw=4)
-ax.plot(2, 2, "ro", ms=12)
+fig, ax = plt.subplots(figsize=(12, 6), ncols=3, sharex=True, sharey=True)
+fig.tight_layout()
+pg.show(mesh, 1-mx-my, ax=ax[0], nLevs=11);
+pg.show(mesh, mx, ax=ax[1], nLevs=11);
+pg.show(mesh, my, ax=ax[2], nLevs=11);
 ```
-:::
-::::
 
-## Implicit methods
+## The general solution
+
+Solving any integral using (Gaussian) quadrature
+$$\int g(x) \dd x \approx \sum_q g(x_q) w_q$$
+
+$$f_i^c=\int_{\Omega_c} v_i f \dd x \approx \sum_q v(x_q^c)f(x_q^c)w_q^c$$
+
+$$a_{ij}^c = \int_c a_c \grad v_i \cdot \grad v_j=\sum a_c \grad v_i(x_q^c)\cdot \grad v_j(x_q^c) w_q^c $$
+
+## Gaussian quadrature
 
 :::: {.columns}
-::: {.column}
-$$ \pdv{T}{t}^{n+1} \approx \frac{T^{n+1}-T^n}{\Delta t} = a \pdv[2]{T}{z} ^{n+1} $$
-
-$$ \frac{1}{\Delta t} T^{n+1} - a \pdv[2]{T}{z} ^{n+1} = \frac{1}{\Delta t} T^n $$
-
-$$ (\vb M - \vb A) \vb u^{n+1} = \vb M \vb u^n $$ 
-
-$\vb M$ - mass matrix
+::: {.column width="45%"}
+![Quadrature points](pics/triangle_quadrature.svg){width="100%"}
 :::
-::: {.column}
-```{python}
-#| eval: true
-#| echo: false
+::: {.column width="55%"}
+`quadratureRules(c.shape(), 5)`
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 4)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [2, 2, 2], "bo-", ms=12, lw=4)
-ax.plot([2, 2], [1, 2], "go-", ms=12, lw=4)
-ax.plot(2, 2, "ro", ms=12)
-```
+* optimum quadrature on reference triangle for a given order (5)
 :::
 ::::
 
-## Mixed - Crank-Nicholson method
-
-$$ \pdv{T}{t}^{n+1/2} \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$
+## Gaussian quadrature
 
 :::: {.columns}
-::: {.column}
-$$ \frac{2}{\Delta t} T^{n+1} - a \pdv[2]{T^{n+1}}{z} = 
-   \frac{2}{\Delta t} T^n + a \pdv[2]{T^n}{z} $$
-
-$$ (2\vb M - \vb A) \vb u^{n+1} = (2\vb M + \vb A) \vb u^n $$ 
-
-<!-- $$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$ -->
+::: {.column width="45%"}
+![Quadrature points](pics/oscar_quadrature_triangle.svg){width="100%"}
 :::
-::: {.column}
-```{python}
-#| eval: true
-#| echo: false
+::: {.column width="55%"}
+`quadratureRules(c, 2)`
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pygimli as pg
-import pygimli.meshtools as mt
-grid = mt.createGrid(5, 4)
-ax, cb = pg.show(grid)
-ax.set_yticks([])
-ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
-ax.plot([1, 2, 3], [2, 2, 2], "bo-", ms=12, lw=4)
-ax.plot([2, 2], [1, 2], "g-", ms=12, lw=4)
-ax.plot(2, 2, "ro", ms=12)
-```
+* optimum quadrature on arbitrary triangle for order 2
 :::
 ::::
 
-## Tasks instationary heat equation
+## Verification
 
-* setup a discretization and compute the stiffness matrix $A$ for some $a$
-* choose an initial condition (e.g. homogeneous)
-* choose a time step $\Delta t$ and perform the explicit method using the surface temperature 
-* change the spatial/temporal discretization and observe the solution
-* setup mass matrix and implement the implicit method for diff. $\Delta t$
-* implement the Crank-Nicholson method and compare all three
-* compare the solutions with the analytical solution
+1. Method of Manufactured Solutions (MMS)
+  * manufacture a smooth u
+  * generate $f$ matching approximation of $u$
+2. Method of Exact Solutions (MES)
+  * find parameters for which an analytic solution exists
+3. Perform convergence tests for increasingly smaller $h$
+  * approximation error $E(h)\lt C h^n$ test for some $h$
+
+## Green's functions
+
+The Green's function $G$ is the solution for a Dirac source $\delta$
+$$ \mathfrak{L} G = \delta(\vb r) $$
+The solution can then be obtained by convolution
+$$ u(\vb r) = G(\vb r-\vb r')*f(\vb r') = $$
+
+
+# Time-stepping in FE
+
+## Recap time-stepping in FD
+
+| | | | | | |
+|-------------|-------------:|-|-|-:|-|
+|**Explicit**:||$\vb u^{n+1}$|$=$|$(\vb I - \Delta t \vb A)$|$\vb u^n$|
+|**Implicit**:|$(\vb I + \Delta t \vb A)$|$\vb u^{n+1}$|$=$||$\vb u^n$|
+|**Mixed**:|$(2\vb I + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$(2\vb I - \Delta t \vb A)$|$\vb u^n$|
+
+:::: {.columns}
+::: {.column width="33%"}
+![Explicit](pics/dtforward.svg)
+:::
+::: {.column width="33%"}
+![Implicit](pics/dtbackward.svg)
+:::
+::: {.column width="33%"}
+![Mixed](pics/dtmixed.svg)
+:::
+::::
+
+## Variational formulation of Diffusion equation
+
+$$ \pdv{u}{t} - \div a \grad u = f $$
+
+Finite Difference in Time (NOT in space)
+
+$$ \frac{u^{n+1}-u^n}{\Delta t} - \div a \grad u = f $$
+
+## Variational formulation
+$$ \frac{u^{n+1}-u^n}{\Delta t} - \div a \grad u = f $$
+
+::: {.fragment}
+Multiplication with test function $w$ and integration $\Rightarrow$ weak form
+
+$$ 1/\Delta t (\int_\Omega w u^{n+1}\dd\Omega-\int_\Omega w u^{n}\dd\Omega) - \int_\Omega w \div a \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::
+
+::: {.fragment}
+$$ 1/\Delta t (\int_\Omega w u^{n+1}\dd\Omega-\int_\Omega w u^{n}\dd\Omega) - \int_\Omega a \grad w \cdot \grad u \dd\Omega = \int_\Omega w f \dd\Omega $$
+:::
+
+## Variational formulation of diffusion equation
+
+$u$ is constructed of shape functions $\vb v_i$ that are identical to $w$
+
+The integral over the Poisson term
+$$-\int_\Omega a \grad w \cdot \grad u \dd\Omega$$
+
+is represented by $\vb A \vb v$ using the stiffness matrix
+
+$$ \vb A_{i,j} = \int_\Omega \sigma \grad v_i \cdot \grad v_j \dd\Omega $$
+
+## Variational formulation of diffusion equation
+
+Weighted integrals over both $u$ are represented by the mass matrix $\vb M \vb v$
+$$ \vb M_{i,j} = \int_\Omega v_i \cdot v_j \dd\Omega $$
+
+explicit method (use $u^n$): $\vb M \vb u^{n+1} = (\vb M - \Delta t \vb A)\vb u^n$
+
+implicit method (use $u^{n+1}$): $(\vb M + \Delta t \vb A) \vb u^{n+1} = \vb M \vb u^n$
+
+mixed method (mix $u^n$/$u^{n+1}$): $(2\vb M + \Delta t \vb A) \vb u^{n+1} = (2\vb M - \Delta t \vb A) \vb u^n$
+
+## Time-stepping in FE
+
+| | | | | | |
+|-------------|-------------:|-|-|-:|-|
+|**Explicit**:|$\vb M$|$\vb u^{n+1}$|$=$|$(\vb M - \Delta t \vb A)$|$\vb u^n$|
+|**Implicit**:|$(\vb M + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$\vb M$|$\vb u^n$|
+|**Mixed**:|$(2\vb M + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$(2\vb M - \Delta t \vb A)$|$\vb u^n$|
+
+::: {.callout-tip}
+same as in FD but with FE mass matrix $\vb M$ instead of $\vb I$
+:::
+
+## The mass matrix in 1D
+
+$$ \vb M_{i,j} = \int_\Omega v_i \cdot v_j \dd\Omega $$
+
+$$ \vb M_{i,i+1} = \int_{x_i}^{x_{i+1}}
+\frac{x_{i+1}-x}{\Delta x_i} \frac{x-x_i}{\Delta x_i} \dd x
+= \int_0^1 (1-\xi)\xi \Delta x_i \dd\xi $$
+
+$$ \Rightarrow \vb M_{i,i+1} = \Delta x_i \int_0^1 (\xi-\xi^2) =
+\Delta x_i \left|\frac12 \xi^2 - \frac13 \xi^3\right|_0^1 = \frac{\Delta x_i}{6} $$
+
+## The mass matrix in 1D
+
+$$ \vb M_{i,i} = \Delta x_{i-1} \int_0^1 \xi^2 \dd\xi + \Delta x_i \int_0^1 (1-\xi)^2 \dd\xi $$
+
+$$ \vb M_{i,i} = \Delta x_{i-1} \left|\frac13 \xi^3 \right|_0^1 -
+\Delta x_i \left|\frac13 \xi^3 \right|_1^0 $$
+
+$$ \Rightarrow \vb M_{i,i} = \frac{\Delta x_{i-1}}{3} + \frac{\Delta x_i}{3} = 2(\vb M_{i,i-1}+\vb M_{i,i+1}) $$
+
+$\Delta x=1 \quad\Rightarrow\quad [1, 4, 1]$ (stiffness was [-1, 2, -1])
+
+## Inner vs. outer nodes
+
+distinguish dofs into inner and outer $\mqty[\vb u_i, \vb u_o]^T$
+
+$$ \vb A = \mqty(\vb A_{ii} & \vb A_{io}\\
+                 \vb A_{oi} & \vb A_{oo}) $$
+
+$\vb A \mqty[\vb u_i \\ \vb u_o] = \mqty[\vb f_i \\ \vb f_o]$
+
+$$ \Rightarrow \vb A_{ii} \vb u_i = \vb f_i - \vb A_{oi} \vb u_o $$
+
+## Tasks
+
+1. Write a function computing the FE stiffness matrix for 1D discretization
+1. Test it by solving the Poisson equation with $f=1$ (analytical solution)
+1. Compare with analytical and FD solutions
+1. Write a function computing the FE mass matrix for 1D discretization
+1. Repeat the time-stepping tasks from FD with FE

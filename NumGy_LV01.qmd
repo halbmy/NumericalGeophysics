@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 1: Foundations"
+title: "Numerical Simulation Methods in Geophysics, Part 1:<br/> Equations & Finite Differences"
 subtitle: "1. MGPY+MGIN, 3. MDRS+MGEX-CMG"
 author: "Thomas Günther, thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -23,39 +23,39 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
+# jupyter: python3
+---
 
 # Introduction
+![](pics/EMelements.png)
 
 ## Content
 
-0. Some introduction
+0. Introduction
 1. Partial differential equations in geophysics
 2. Finite Differences
-3. Numerical integration
+1. The Finite element method
 4. Integral equations and Method of Moments
 1. Solving linear systems
-1. Finite element method
-1. Finite Volume method
-1. High-performance computing 
+1. The Finite Volume method
+1. High-performance computing
 
 ## Schedule
 
 ::: block
-**Lectures** Wednesday, 11:30, MEI-2122 $\Rightarrow$ Meeting room MEI-211
+**Lectures** Thursday, 09:45-11:15, MEI-0150
 
-14 slots : 16.10., 23.10., 30.10., 06.11., (13.11.), 27.11., 04.12., 11.12., 18.12., 08.01., 15.01., 22.01., 28.01., 05.02.
+14 slots: 23.10., 30.10., 06.11., 13.11., 20.11., 27.11., 04.12., 11.12., 18.12., 08.01., 22.01., 28.01., 05.02., 06.02. (15.01. dies)
 
-**Exercises** Thursday, 08:00-09:30, CIP pool MEI1203a 
+**Exercises** Wednesday, 09:45-11:15, CIP pool MEI1203a
 
-14 slots : 17.10., 24.10., 07.11., 14.11., 21.11., 28.11., 05.12., 12.12., 19.12., 09.01., 16.01., 23.01., 29.01., 06.02.
+14 slots: 22.10., 29.10., 05.11., 12.11., 26.11., 03.12., 10.12., 17.12., 07.01., 14.01., 21.01., 28.01., 04.02., 11.02. (19.11. holiday)
 
-**Grade:** submitting a report including codes
+**Grade:** submitting two reports including codes
 :::
 
 ## What should you know already?
@@ -65,41 +65,55 @@ format:
 * Numerics for engineers (2. BSc)
 * Programming (1. BSc), Software development (3. BSc)
 * Geophysics: feeling for physical fields & methods
-* Electromagnetics (5. BSc), Theory EM, 
+* Electromagnetics (5. BSc), Theory EM,
 * now: Scientific programming, HPC, seismic imaging
 
 ## Topics to be covered
 
 * recap on partial differential equations
-* (1D) heat equation: stationary and instationary (Geothermics course)
-* 2D: magnetotellurics 
-* 3D DC modelling (content of Spitzer videos)
+* (1D) heat equation: stationary and instationary
+* 2D electromagnetic fields in the Earth
+* (3D DC modelling - see Spitzer videos)
 * 2D ground-penetrating radar (EM) and pressure waves (seismics)
 * excurse to hydrodynamic modelling
 * modelling the Eikonal equation (the travelling saleman)
 * exercises: code FD & FE by hand, use packages to obtain feeling
 
-## Literature 
+## Learning goal
 
-* Haber (2015): Computational methods geophysical electromagnetics
-* Morra (2018): Pythonic Geodynamics - Implementations for fast computing, frei verfügbar unter <https://doi.org/10.1007/978-3-319-55682-6>, zum Eintauchen ins Programmieren (MSc)
-* Warnick: Numerical Methods for Engineering : An Introduction Using MATLAB® and Computational Electromagnetics Examples [Link](https://ebookcentral.proquest.com/lib/freiberg-ebooks/detail.action?docID=6468440)
-* Igel (2007): Numerical modelling in geophysics, short course
-<https://www.geophysik.uni-muenchen.de/~igel/nmg-short/>
-<https://www.geophysik.uni-muenchen.de/~igel/downloads/>
+::: {.columns}
+::: {.column}
+![](pics/learning-pyramid.jpg)
+:::
+::: {.column}
+- basic understanding of the common modelling techniques
+- feeling for strengths and weaknesses of numerical solutions
+- ability to write your own modelling codes in Python
+:::
+::::
+
+## Literature
+
+* Morra (2018): Pythonic Geodynamics - Implementations for fast computing, [frei verfügbar](https://doi.org/10.1007/978-3-319-55682-6), Dive into Python programming
+* Warnick: Numerical Methods for Engineering : [An Introduction Using MATLAB® and Computational Electromagnetics Examples](https://ebookcentral.proquest.com/lib/freiberg-ebooks/detail.action?docID=6468440)
+* Igel (2007): [Numerical modelling in geophysics](https://www.geophysik.uni-muenchen.de/~igel/downloads/), [short course](https://www.geophysik.uni-muenchen.de/~igel/nmg-short/)
 * Logg et al. (2011): Automated Solution of Differential Equations by the Finite Element Method: [Link](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)
-* Press (2007): Numerical recipes: the art of scientific computing, <https://numerical.recipes/book.html>
-
+* Press (2007): [Numerical recipes: the art of scientific computing](https://numerical.recipes/book.html)
+* Haber (2015): Computational methods geophysical electromagnetics
 
 ## Further links
 
-* pyGIMLi: Python Geophysical Inversion and Modelling Library <https://pygimli.org>
-* Geoscience.XYZ: <https://geosci.xyz>
-* Fenics handbook 
-* Theory of electromagnetics <https://ruboerner.github.io/ThEM/>
+* [Course notes](https://halbmy.github.io/NumericalGeophysics/)
+* [pyGIMLi](https://pygimli.org): Python Geophysical Inversion and Modelling Library
+* [Homepage of Oskar](https://www.base-fn.de/oscar/) package
+* [Geoscience.XYZ](https://geosci.xyz)
+* Fenics handbook
+* [Theory of electromagnetics](https://ruboerner.github.io/ThEM/)
 
 
-# Some mathematical background
+# Numerical Simulation
+![](pics/gravityPotential.png){fig-align="center"}
+
 ## Differential operators
 
 * single derivative in space $\pdv{x}$ or time $\pdv t$
@@ -141,33 +155,61 @@ $$\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl$$
 :::
 
 :::{.fragment}
-* potential fields have no curl $\curl (\grad u)=0$ 
+* potential fields have no curl $\curl (\grad u)=0$
 :::
 
-## Numerical simulation
+## Partial differential equations (PDEs)
 
 Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities
 
-PDE Types ($u$-function, $f$-source, $a$/$c$-parameter):
- 
-* elliptic PDE: $\nabla^2 u=f$
-* parabolic PDE $\nabla^2 u - a \frac{\partial u}{\partial t}=f$
-* hyperbolic  $\nabla^2 u - c^2 \frac{\partial^2 u}{\partial t^2}=f$ (plus diffusive term)
-$$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$
+derived by $\vb\div \vb F=f$ with potential field $\vb F=-a\nabla u$
+
+Assume the Poisson equation (source $f$, conductivity $a$)
+$$\div(a\grad u)=f$$
+
+solution $u$: potential, e.g. temperature $T$, gravity or electric potential, hydraulic head
+
+
+## PDE Types in geophysics
+
+($u$-function, $f$-source, $a$/$b$/$c$-parameter):
+
+::: {.fragment}
+* elliptic PDE: $\nabla^2 u=f$ or $\nabla^2 u + k^2 u=f$
+:::
+::: {.fragment}
+* parabolic PDE $\nabla^2 u - b \frac{\partial u}{\partial t}=f$
+:::
+::: {.fragment}
+* hyperbolic  $\nabla^2 u - c^2 \frac{\partial^2 u}{\partial t^2}=f$
+  - or $\nabla^2 u - b \frac{\partial u}{\partial t} - c^2 \frac{\partial^2 u}{\partial t^2}=f$
+:::
+::: {.fragment}
+* nonlinear $(\nabla u)^2=s^2$ (Eikonal equation - first arrivals)
+:::
+::: {.fragment}
 * coupled $\nabla\cdot u=f$ & $u = K \nabla p=0$ (Darcy flow)
-* nonlinear $(\nabla u)^2=s^2$ (Eikonal equation)
+:::
+
+<!-- $$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$ -->
 
 ## Poisson equation
-potential field $u$ generates field $\vec{F}=-\nabla u$
+:::: {.columns}
+::: {.column width="70%"}
+potential field $u$ generates field $\vb F=-\nabla u$
 
-causes some flow $\vec{j}=a \vec{F}$ 
+causes some flow $\vb j=a \vb F$
 
-$a$ is some sort of conductivity (electric, hydraulic, thermal)
+$a$: conductivity (electric, hydraulic, thermal)
 
 continuity of flow: divergence of total current $\vb j + \vb j_s$ is zero
 
-$$ \div (a \nabla u) = - \div \vb j_s $$
-
+$$ -\div (a \nabla u) = \div \vb j_s $$
+:::
+::: {.column width="30%"}
+![](pics/gravityPotential.png)
+:::
+::::
 ## Darcy's law
 
 :::: {.columns}
@@ -184,10 +226,14 @@ $$\div\vb q = -\div (k/\mu \grad p) = 0$$
 :::
 ::: {.column width="45%"}
 ![Darcy's law](pics/darcy_law.svg)
+
+$k$ permeability
+
+$\mu$ viscosity
 :::
 ::::
 
-## The heat equation in 1D
+## The heat equation
 
 sought: Temperature $T$ as a function of space and time
 
@@ -199,29 +245,28 @@ Fourier's law: $\pdv{T}{t} - a \nabla^2 T = s$  ($s$ - heat source)
 
 temperature conduction $a=\frac{\lambda}{\rho c}$ ($\rho$ - density, $c$ - heat capacity)
 
-## Stokes equation
-
+## Stoke equations
 $$ \mu \nabla^2 \vb v - \grad p + f = 0 $$
 
 $$\div\vb v = 0 $$
 
-## Navier-Stokes equations
+### Navier-Stokes equation
 (incompressible, uniform viscosity)
 
 $$ \pdv{\vb u}{t} +(\vb u \vdot \grad) \vb u = \nu \nabla^2 \vb u - 1/\rho \grad p + f $$
 
 ## Maxwell's equations
 
-* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field 
-$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$ 
+* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field
+$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$
 * Ampere's law: time-varying magnetic fields induce electric field
-$$ \curl\vb E = -\pdv{\vb B}{t}$$ 
+$$ \curl\vb E = -\pdv{\vb B}{t}$$
 * $\div\vb D = \varrho$ (charge $\Rightarrow$), $\div\vb B = 0$ (no magnetic charge)
-* material laws $\vb D = \epsilon \vb E$ and $\vec B = \mu \vb H$
+* material laws $\vb D = \epsilon \vb E$ and $\vb B = \mu \vb H$
 
 ## Helmholtz equations
 
-$$ \nabla^2 u + k^2 u = f $$
+$$ \nabla^2 u + k^2 u = f \qquad \nabla^2 \vb F + k^2 \vb F = f $$
 
 results from wavenumber decomposition of diffusion or wave equations
 
@@ -249,4 +294,145 @@ $$ |\grad t| = s = 1/v $$
 ![](pics/tt4.png){.fragment width="458" height="420"}
 :::
 
+# Finite Differences (FD)
+![](pics/finite-difference.png)
+
 ## Taylor expansion
+
+$$f(x)=f(x_0)+f'(x0)(x-x_0)+f''(x_0)(x-x_0)^2/2+\ldots$$
+
+![Forward, backward and central difference for 1D FD grid](pics/finite-difference.png)
+
+
+## Poisson equation in 1D
+$$\div(a\grad u)=f$$
+
+reads in 1D as
+
+$$-\pdv{(a\pdv{u}{x})}{x}=f$$
+
+:::{.callout-tip icon="false" title="Approximate derivative operators by differences"}
+$$ \pdv{u}{x}\approx\fdv{u}{x} $$
+:::
+
+## Finite differences
+
+:::{.callout-tip icon="false" title="Approximate derivative operators by differences"}
+$$ \pdv{u}{x}\approx\fdv{u}{x} \qquad
+\pdv[2]{u}{x}\approx\fdv{\fdv{u}{x}}{x} \qquad
+\pdv{x}(a\pdv{u}{x}) \approx \fdv{a}{x}\fdv{u}{x} + a
+\fdv{\fdv{u}{x}}{x}$$
+:::
+and solution $u$ by finite values $u_i$ at points $x_i$, e.g.
+$$ \dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) $$
+
+<!-- $$ \dv*[2]{u}{x}_{3} :=   -->
+$$\pdv[2]{u_3}{x}\approx
+\frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}
+= \frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} $$
+
+## Summarize in a matrix
+Assumption: equidistant discretization $\Delta x$, conductivity 1
+
+1st derivative: $[-1, +1] / \Delta x$, 2nd derivative $[+1, -2, +1] / \Delta x^2$
+
+Matrix-Vector product $\vb{A}\cdot\vb{u}=\vb{f}$ with
+
+$$ \vb{A} = \begin{bmatrix}
++1 & -2 & +1 & 0 & \ldots & &  \\
+0 & +1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & +1 & -2 & +1
+\end{bmatrix}  $$
+
+<!-- ## FD for general Poisson equation in 1D
+Assume the Poisson equation $$-\div(a\grad u)=f$$
+
+in one dimension, e.g. depth ($z$)
+
+$$ -\fdv{(a \fdv{u})}{z} = -a\fdv[2]{u}{z} - \fdv{a}{z} \fdv{u}{z} $$ -->
+
+## Finite difference stencil
+![compute each value (red) using its neighbors (blue)](pics/fd1dstencil.svg)
+
+# Boundary conditions
+
+Dirichlet conditions: $u_0=u_B$ (homogeneous if 0)
+
+Neumann conditions (homogeneous if 0)
+$$ \pdv*{u}{x}_0=g_B $$
+
+Mixed boundary conditions $u_0+\alpha \pdv*{u}{x}=\gamma$
+
+## Dirichlet BC implementation way 1
+$u_0 = u_B$
+
+$$ \begin{bmatrix}
++1 & 0 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  $$
+
+## Dirichlet BC implementation way 2
+$u_B - 2 u_1 + u_2 = f_1$
+
+$$ \begin{bmatrix}
+-2 & +1 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & 0 & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_1 - u_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} $$
+
+## Neumann BC implementation way 1
+$$ u_1 - u_0 = g_B$$
+
+$$ \begin{bmatrix}
+-1 & +1 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+\ldots & \ldots & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_0+g_B\\ f_1 \\ \vdots \\ f_N \end{bmatrix}  $$
+
+## Neumann BC implementation way 2
+$$u_0 - 2 u_1+u_2 = f_1 \qquad u_1 - u_0 = g_B \Rightarrow u_2-u_1=f_1+g_B $$
+<!-- $-u_1 + u_2 = f_1 - g_B$ -->
+
+$$ \begin{bmatrix}
+-1 & +1 & 0 & \ldots & &  \\
++1 & -2 & +1 & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & 0 & +1 & -2 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_1 + g_B\\ f_2 \\ \vdots \\ f_N \end{bmatrix} $$
+
+## Accuracy: analytical solution
+
+Assume $a$=1 & $f(x)=1$ $\Rightarrow$ $-\pdv[2]{u}{x}=1$ can be integrated twice:
+
+$$\pdv{u}{x}=-x+C_1$$
+
+$$u(x) = -\frac{1}{2} x^2 + C_1 x + C_0$$
+
+For $x$=0, $u_0=C_0$, for $x$=$X$?
+
+## Solutions
+
+$$u(x) = -\frac{1}{2} x^2 + C_1 x + C_0$$
+
+| BC $x$=0 | BC $x=X$ |$C_0$ |$C_1$               |
+|----------|----------|------|--------------------|
+|Dirichlet |Dirichlet |$u_0$ |$X/2+(u_X-u_0)/X$   |
+|Dirichlet |Neumann   |$u_0$ |$u'_X+X$            |
+|Neumann   |Dirichlet |$u'_0$|$u_X-u'_0 X + X^2/2$|
+
+## FD in 2D: discretization
+![](pics/grid32a.svg)
+
+## FD in 2D: difference stencil
+![](pics/grid32stencil.svg)
+
+# The end

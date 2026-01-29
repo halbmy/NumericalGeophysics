@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 11: Solving problems"
+title: "Numerical Simulation Methods in Geophysics, Lecture 11:<br/>3D EM modelling"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -9,7 +9,7 @@ title-slide-attributes:
 format:
   tubaf-revealjs:
     html-math-method: mathjax
-    chalkboard: true
+    # chalkboard: true
     include-in-header:
         - text: |
             <script>
@@ -23,248 +23,163 @@ format:
             };
             </script>
     slide-number: c/t
-    transition: slide
+    transition: fade
     transition-speed: fast
-    menu: 
+    menu:
       side: left
-# jupyter: python3 
---- 
+jupyter: python3
+---
 # Recap
 
-1. Types of PDEs in geophysics
-1. The Finite Difference (FD) method
-   * Poisson equation in 1D, look into 2D/3D
-   * Heat transfer (diffusion equation) in 1D, time-stepping 
-1. Solving the hyperbolic (acoustic) wave equation in 1D
-1. The Finite Element (FE) method
-   * Poisson and diffusion equation in 1D
-   * (complex) Helmholtz equation in 2D for EM problems
+* Maxwells equations (inductive) in time- and frequency domain
+* FD: $u$ term needs mass matrix (like in time-stepping)
+* from staggered grids (curl) to curl-conforming Nédélec elements
+* today: finish modern FE methods for Maxwell, HPC
 
-## Topics yet to be covered
+remaining: 29.1. (FV+advection), 5./6.2. (summary, online), 12.2. (TAP)
 
-* solving vectorial EM problems in 2D/3D
-  * staggered grid techniques 2D/3D
-  * 2.5D solution techniques
-  * 3D vector solution using Nedelec elements
-* The Finite Volume (FV) method
-* solving advection-dispersion problems
-* equation solvers and high-performance computing
+## Governing equations
 
-Three lectures (22/1, 29/1, 5/2) and exercises (23+30/1, 6/2)
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H=\curl\sigma^{-1} \vb j_s$$
 
-## The solver module
-```{python}
-#| echo: false
-#| eval: true
-import numpy as np
-import pygimli as pg
-import pygimli.meshtools as mt
-world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
-mesh = mt.createMesh(world, quality=34, area=1e5)
-mesh["my"] = 4 * np.pi * 1e-7
-sigma0 = 1 / 100  # 100 Ohmm
-sigma = mesh.populate("sigma", {1: sigma0, 2: sigma0*10})
+$$ \curl \mu^{-1}\curl \vb E + \imath\omega\sigma\vb E = -\imath\omega \vb j_s$$
 
-```
-```{python}
-#| echo: false
-#| eval: true
-import matplotlib.pyplot as plt
-import numpy as np
-```
+* air ($\sigma$ small): $H$ linear (or constant)
 
-```{python}
-#| echo: true
-#| eval: true
-import pygimli.solver as ps
-mesh["my"] = 4 * np.pi * 1e-7
-A = ps.createStiffnessMatrix(mesh, a=1/mesh["my"])
-M = ps.createMassMatrix(mesh, mesh["sigma"])
-fig, ax = plt.subplots(ncols=2)
-ax[0].spy(pg.utils.toCSR(A), markersize=1)
-ax[1].spy(pg.utils.toCSR(M).todense(), markersize=1)
-```
+#### TE and TM polarizations: scalar problems
 
-## The complex problem matrix
+$$-\div \sigma^{-1} \grad H_x(y,z) + \imath\omega\mu H_x(y,z) = 0$$
 
-$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+$$-\div \mu^{-1} \grad E_x(y,z) + \imath\omega\sigma E_x(y,z) = 0$$
 
-```{python}
-#| echo: true
-#| eval: true
-#| output-location: column
-w = 0.1
-nd = mesh.nodeCount()
-B = pg.BlockMatrix()
-B.Aid = B.addMatrix(A)
-B.Mid = B.addMatrix(M)
-B.addMatrixEntry(B.Aid, 0, 0)
-B.addMatrixEntry(B.Aid, nd, nd)
-B.addMatrixEntry(B.Mid, 0, nd, scale=-w)
-B.addMatrixEntry(B.Mid, nd, 0, scale=w)
-pg.show(B)
-```
+## Original source for Nédélec
 
-## Sparse matrices
+![](pics/curl/nedelec_paper.png)
 
-Up to now: regular (dense) array: save every element including 0
+Designed for streaming problems ($p$-pressure, $\vb u$-velocity)
 
-Save only non-zero components (e.g. using `scipy.sparse`)
+$$ -v\laplacian \vb u + \grad p = \vb f \qquad \div \vb u=0 $$
 
-* COO - coordinate format
-* CSC/CRS - compressed sparse column/row
-* BSR - block sparse row format, ...
+Approach: $\vb w=\curl\vb u=-\laplacian \vb \phi$ $\Rightarrow$ $\vb u=\curl\vb\phi\qquad \div\vb \phi=0$
 
-# Equation solvers
-## Solve systems of equations 
-direct solvers
+# EM vector modelling
 
-* Gauss elimination (expensive and dense)
-* Cholesky (or ILU) decomposition
+$$ \curl \mu^{-1}\curl \vb E + \imath\omega\sigma\vb E - \omega^2\epsilon \vb E = -\imath\omega \vb j_s$$
 
-indirect solvers (fixed point iteration)
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H - \omega^2\mu\epsilon \vb H = \curl \sigma^{-1}\vb j_s$$
 
-* gradient methods: steepest descent, conjugate gradients
-* preconditioning: incomplete factorizations (of submatrices)
+* air ($\sigma$ small): $H$ linear (or constant)
 
-## Cholesky decomposition
+## The weak formulation
 
-$$\vb A = \vb L \vb L^T \qqtext{or} \vb A = \vb L \vb D \vb L^T $$
+$$ \int_\Omega \vb w \curl \mu^{-1}\curl \vb E \dd\Omega - \imath\omega\int\vb w \sigma \vb E \dd\Omega = 0 $$
 
-## Reordering
+Integration, Greens identity $\int a\laplacian b = -\int \grad a \vdot \grad b - \int a\pdv*{b}{n}$
 
-![original (left) & reordered (right) matrix (Rücker et al. 2006)](pics/reordering.png)
+$$ \int_\Omega \vb w \ldots = \int_\Omega \curl \vb w \vdot (\mu^{-1}\curl \vb E) \dd\Omega + \int \vb n \cross (\mu^{-1}\curl \vb E) \dd \Gamma $$
 
-## Iterative solvers - Fixpunktverfahren
+choose basis that latter term vanishes
 
-$$\vb A \vb x = \vb b$$
-decompose $\vb A=\vb M - \vb N$ and solve
-$$\vb M\vb x = \vb N \vb x + \vb b$$
-iterativily by $\vb x^{k+1}=\vb M^{-1}\left(\vb N\vb x^k + \vb b\right)$
+$$ \int_\Omega \curl \vb w \vdot (\mu^{-1}\curl \vb E) \dd\Omega  - \imath\omega\int\vb w \sigma \vb E \dd\Omega = 0 $$
 
-e.g. $\vb M=\mbox{diag}(\vb A)$ (Jacobi method) or<br> 
-$\vb M=\mbox{tril}(\vb A)$ (Gauss-Seidel method)
+## Galerkins method
 
-## Gradient methods
+$$ \vb E = \sum_i u_i \vb u \qqtext{with} \vb w \in \vb u_i $$
 
-minimize residual $\vb r = \vb b - \vb A\vb x$
+$$ \braket{\curl \vb w}{\mu^{-1}\curl\vb u_i} $$
 
-## Steepest descent method
-$$\vb r_0 = \vb b - \vb A \vb x_0 $$
+$$ \vb A\vb u =\vb b \qqtext{with} A_{i,j} = \int_\Omega (\curl u_i)\vdot(\mu^{-1}\curl u_j) \dd\Omega $$
 
-go towards $\vb r_0$ and minimize step length $\alpha$
+## Vectorial solution for EM fields
 
-$$\vb r_1^T\vb r_0 = 0 = \vb b - \vb A(\vb x_0+\alpha\vb r_0)$$
-
-$$ \Rightarrow \alpha = \frac{\vb r_0^T\vb r_0}{\vb r_0\vb A \vb r_0} $$
-
-## Steepest descent algorithm
-`for i = 0,1, ...`
-$$\vb r_i = \vb b - \vb A \vb x_i $$
-
-$$ \Rightarrow \alpha_i = \frac{\vb r_i^T\vb r_i}{\vb r_i\vb A \vb r_i} $$
-
-$$\vb x_{i+1} = \vb x_i + \alpha_i\vb r_i$$
-
-## Conjugate directions
-
-Set of orthogonalen directions $\vb d$ with
-
-$$ \vb d^T_i \vb A \vb d_j = 0 \qquad \forall i\ne j $$
-
-::: {.callout-note}
-every search direction is only used once
+:::: {.columns}
+::: {.column}
+![Schwarzbach & Haber (2013)](pics/schwarzbachHaber2013.png)
 :::
-
-$$\vb x_{i+1} = \vb x_i + \alpha_i\vb d_i$$
-
-## Conjugate directions
-
-![](pics/conjugate_directions.png)
-
-## Conjugate gradient (Hestenes&Stiefel, 1952)
-
-$$\vb d_0 = \vb r_0 = \vb b - \vb A \vb x_0 $$
-$$ \alpha_i = \frac{\vb r_i^T\vb r_i}{\vb d_i\vb A \vb d_i} $$
-$$\vb x_{i+1} = \vb x_i + \alpha_i\vb d_i$$
-$$\vb r_{i+1} = \vb r_i - \alpha_i\vb A \vb d_i$$
-$$d_{i+1} = \vb r_{i+1} + \vb d_{i+1} \frac{\vb r_{i+1}^T\vb r_{i+1}}{\vb r_i^T\vb r_i}$$
-
-## Steepest descent vs. conjugate gradient
-::::{.columns}
-:::{.column width="50%"}
-![](pics/shewchukSD.png){fig-align="center"}
-:::
-:::{.column width="50%"}
-![](pics/shewchukCG.png){fig-align="center"}
+::: {.column}
+* $\vb E \in H^\text{curl}(\Omega)$
+* $\vb B \in H^\text{div}(\Omega)$
+* natural BC: Dirichlet $\vb n \cross \vb E=0$
+* Neumann BC: $\vb n \cross \mu^{-1} \curl \vb E=0$
 :::
 ::::
-
-## Preconditioning
-
-$\vb A \vb x=\vb b$ often badly conditioned (elongated) $\Rightarrow$ slow convergence 
-
-Idea: transform (precondition) equation system by preconditioner $\vb K$
-
-$$\vb K^{-1} \vb A \vb x = \vb K^{-1}\vb b$$
-
-Extreme cases: 1. $\vb K=\vb I$, cheap PC but no gain
-
-2. $\vb K=\vb A$, perfect conditioning but expensive PC<br>
-e.g. $\vb K=\mbox{diag}A$ or $\vb K=\epsilon\mbox{tril}A$
-
-## Incomplete Cholesky decomposition
-::::{.columns}
-:::{.column width="50%"}
-$$\vb A\approx \vb L \vb L^T$$
-
-with certain accuracy or sparsity
-:::
-:::{.column width="50%"}
-![](pics/preconditioners.png){fig-align="center"}
-:::
-::::
-
-## Preconditioning 
-
-EM problem
-$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
-
-$$\vb K = \mqty(\vb A + \omega\vb M & 0 \\ 0 & \vb A + \omega\vb M)$$
-
-or Schur complement. E.g., hold factorization of $\vb A$ and $\vb M$ in memory
-
-# Development of EM modelling
-* approaches: integral equations (IE), finite differences (FD) and elements (FE)
-* decompose 3D source (2D inverse) problems in wavenumber domains
-* improvement of equation solvers and preconditioners
-* 
-
-## Solving EM problems with staggered grid
-![Staggered grid cell after Yee (1966)](pics/yeeCell.png){fig-align="center"}
-
-## The way from FD to FE
-
-![Orthogonal, non-orthogonal and irregular grids (Rücker et al., 2006)](pics/rueckerGrids.png)
-
-## The Finite Element zoo (1D & 2D)
-
-![](pics/element_zoo1d2d.png){fig-align="center"}
-
-## The Finite Element zoo (3D)
-
-![Arnold, Periodic table of elements](pics/element_zoo3d.png){fig-align="center"}
 
 ## Elements used in EM modelling
 ![Types of elements relevant for EM problems (Spitzer, 2024)](pics/EMelements.png)
 
-## Meshing complicated geometries
+## Mesh entities on triangle
+![Nodes (yellow), edges (blue) and cells (green) of a triangle](pics/curl/ref-triangle.svg)
 
-![Meshing workflow in custEM (Rochlitz et al., 2019)](pics/custem/meshes.png)
+[Documentation of DefElements.org](https://defelement.org/elements/raviart-thomas.html)
 
-## Modelling example
+## Nédélec elements (first kind) on triangle
+:::: {.columns}
+::: {.column width="33%"}
+![](pics/curl/element-Nedelec-variant-equispaced-triangle-0-0.svg)
+:::
+::: {.column width="33%"}
+![](pics/curl/element-Nedelec-variant-equispaced-triangle-0-1.svg)
+:::
+::: {.column width="33%"}
+![](pics/curl/element-Nedelec-variant-equispaced-triangle-0-2.svg)
+:::
+::::
 
-![Modelling example of a conductive dike (Rochlitz et al., 2019)](pics/custem/examples.png)
+## Nedelec shape functions
+
+![](pics/curl/curl-element-shapefunctions.png)
+
+## Raviart-Thomas on the triangle
+
+:::: {.columns}
+::: {.column width="33%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-triangle-0-0.svg)
+:::
+::: {.column width="33%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-triangle-0-1.svg)
+:::
+::: {.column width="33%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-triangle-0-2.svg)
+:::
+::::
+
+
+## Mesh entities tetrahedron
+![Nodes (orange), edges (blue), faces (green) & cells (purple)](pics/curl/ref-tetrahedron.svg)
+
+[Documentation of DefElements.org](https://defelement.org/elements/raviart-thomas.html)
+
+## Nédélec elements (first kind) on tetrahedron
+:::: {.columns}
+::: {.column width="23%"}
+![](pics/curl/element-Nedelec-variant-equispaced-tetrahedron-0-0.svg)
+![](pics/curl/element-Nedelec-variant-equispaced-tetrahedron-0-3.svg)
+:::
+::: {.column width="23%"}
+![](pics/curl/element-Nedelec-variant-equispaced-tetrahedron-0-1.svg)
+![](pics/curl/element-Nedelec-variant-equispaced-tetrahedron-0-4.svg)
+:::
+::: {.column width="23%"}
+![](pics/curl/element-Nedelec-variant-equispaced-tetrahedron-0-2.svg)
+![](pics/curl/element-Nedelec-variant-equispaced-tetrahedron-0-5.svg)
+:::
+::::
+
+## Raviart-Thomas elements on tetrahedron
+:::: {.columns}
+::: {.column width="25%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-tetrahedron-0-0.svg)
+:::
+::: {.column width="25%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-tetrahedron-0-1.svg)
+:::
+::: {.column width="25%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-tetrahedron-0-2.svg)
+:::
+::: {.column width="25%"}
+![](pics/curl/element-Raviart-Thomas-variant-equispaced-tetrahedron-0-3.svg)
+:::
+::::
 
 ## Packages
 
@@ -276,29 +191,180 @@ Equation solvers: [Suitesparse](https://doc.sagemath.org/html/en/reference/spkg/
 
 Computational frameworks: [PetSc](https://petsc.org), [MPI](https://www.mcs.anl.gov/research/projects/mpi/)
 
-EM modelling (and inversion) packages: [Mare2DEM](https://mare2dem.bitbucket.io), [emg3d](https://emg3d.emsig.xyz), GoFEM, [PETGEM](https://petgem.bsc.es/), [custEM](https://custem.readthedocs.io), [SimPEG](https://simpeg.xyz), ModEM, FEMTIC 
+EM modelling (and inversion) packages: [Mare2DEM](https://mare2dem.bitbucket.io), [emg3d](https://emg3d.emsig.xyz), GoFEM, [PETGEM](https://petgem.bsc.es/), [custEM](https://custem.readthedocs.io), [SimPEG](https://simpeg.xyz), ModEM, FEMTIC
 
-# Performance on Parallel machines
+## FEniCS for pressure & flow
 
-## Amdahlsches Gesetz
-Zerlegung in seriellen und parallelen Anteil $t=t_s+t_p/N(+t_c(N))$
+$$ -v\laplacian \vb u + \grad p = \vb f \qquad \div \vb u=0 $$
 
-![](pics/amdahl.png){fig-align="center"}
+```
+import dolfinx as dfx  # API to FEniCS
+import ufl  # Unified form language
 
-## Computational size
-![](pics/EMdatasets.png){fig-align="center"}
+lagrange = element("P", mesh.basix_cell(), p) # shape=(3,)
+nedelec = element("N1curl", mesh.basix_cell(), p)
 
-## Perfomance analysis - Memory
-![](pics/presb/memoryComplexity.png){fig-align="center"}
+u = ufl.TestFunctions(nedelev)
+v = ufl.TrialFunctions(nedelec)
 
-## Perfomance analysis - Time
-![](pics/presb/timeComplexity.png){fig-align="center"}
+var_form = dfx.fem.form((ufl.curl(ur), ufl.curl(vr)) * ufl.dx))
 
-## Perfomance analysis - MPI scaling
-![](pics/presb/mpiPerformance.png){fig-align="center"}
+mixed_ele = mixed_element([lagrange, nedelec]) # real imag
+MixedSpace = dfx.fem.functionspace(mesh, mixed_ele)
 
-## Perfomance analysis - MPI scaling
-![](pics/presb/speedup.png){fig-align="center"}
+A = dfx.fem.petsc.assemble_matrix(var_form, bcs=self.bcs)
+A.assemble()
+```
 
-## Multiple right-hand sides
-![](pics/presb/rhs.png){fig-align="center" width="50%"}
+
+## FEniCS for EM
+
+```
+# E lives on edges
+ele = element("N1curl", mesh.basix_cell(), p)
+# real and imaginary part of E combined
+mixed_ele = mixed_element([ele, ele])
+MixedSpace = dfx.fem.functionspace(mesh, mixed_ele)
+# Sigma lives on Cells
+dg_space = dfx.fem.functionspace(mesh, ("DG", 0)) # sigma
+para = dfx.fem.Function(dg_space)
+para.x.array[:] = sigma_vector
+# Trial and test function
+vr, vi = ufl.TrialFunctions(MixedSpace)
+ur, ui = ufl.TestFunctions(MixedSpace)
+# variational form
+var_form = dfx.fem.form((
+    ufl.inner(mu1 * ufl.curl(ur), ufl.curl(vr)) * ufl.dx -
+    omega * ufl.inner(sig * ui, vr) * ufl.dx - omega * ufl.inner(sig * ur, vi) * ufl.dx -
+    ufl.inner(mu1 * ufl.curl(ui), ufl.curl(vi)) * ufl.dx))
+```
+
+## Post-processing
+
+```
+raviart_thomas = dfx.fem.functionspace(
+    mesh, element("RT", mesh.basix_cell(), p))
+
+```
+
+## Modelling topography
+
+![Modelling incorporating topography (Rochlitz, 2019)](pics/custem/topomodeling.png)
+
+## Meshing complicated geometries
+
+![Meshing workflow in custEM (Rochlitz et al., 2019)](pics/custem/meshes.png)
+
+## Modelling example
+
+![Modelling example of a conductive dike (Rochlitz et al., 2019)](pics/custem/examples.png)
+
+# Accuracy and refinement
+
+![h and p refinement (Schwarzbach et al. 2011)](pics/schwarzbach_refinement.png)
+
+# Boundary conditions
+
+**Neumann** (implicitly by choice of shape functions)
+
+$\pdv{u}{n}=0$ $\Rightarrow$ $\vb n\cross \curl \vb E = 0$ $\Rightarrow$ $\vb n \cross \vb B=0$
+
+**Dirichlet**
+
+$u=0$ $\Rightarrow$ $\vb n\cross \vb E = 0$ $\Rightarrow$ $\vb n\dotproduct \vb B=0$
+
+
+## Mixed boundary conditions
+So far...
+
+* Dirichlet Boundary conditions $u=u_0$
+* Neumann Boundary conditions $\pdv{u}{n}=g_B$<br>
+
+vectorial problems: $\vb n\cdot \vb E=0$ (Neumann) or $\vb\curl \vb E=0$ (Dirichlet)
+
+In general mixed, also called Robin (or impedance convective) BC
+$$ a u + b \pdv{u}{n} = c $$
+
+## Example DC resistivity with point source
+$$\div \sigma \grad u = \div \vb j = I \delta(\vb r - \vb r_s)$$
+
+solution for homogeneous $\sigma$ on surface: $u=\frac{I}{2\pi\sigma} \frac{1}{|\vb r - \vb r_s|}$
+
+E-field $\vb E=-\frac{I}{2\pi\sigma} \frac{\vb r - \vb r_s}{|\vb r - \vb r_s|^3}$
+
+normal direction $\vb E \cdot \vb n=-\frac{u}{|\vb r - \vb r_s|}\cos \phi$ purely geometric
+
+$$\pdv{u}{n} + \frac{\cos\phi}{|\vb r - \vb r_s|}=0$$
+
+## Perfectly matched layers
+
+::: {.columns}
+::: {.column}
+![](pics/FDTD_TFSF.png)
+:::
+::: {.column}
+$$ \pdv{x} \rightarrow \frac{1}{1+i\sigma/\omega} \pdv{x}  $$
+
+$$ x \rightarrow x + \frac{i}{\omega}\int^x \sigma(x')\dd x' $$
+
+:::
+:::
+
+
+## Absorbing boundary conditions
+wave equation (e.g. in 2D)
+$$ \pdv[2]{u}{t} - v^2 \laplacian u = 0 $$
+
+Fourier transform in $t$ and $y$ (boundary direction) $\Rightarrow \omega, k$
+
+$$ \omega^2 \hat{u} - v^2 \pdv[2]{\hat{u}}{x} + v^2 k^2 \hat{u} = 0 $$
+
+ordinary DE with solution $\hat{u}=\sum a_i e^{\lambda x}$ with $\lambda^2 = k^2 - \omega^2/v^2$
+
+# Time-domain EM
+
+* Fourier transform excitation $\Rightarrow$ solve in FD $\Rightarrow$ backtransform
+* solve with Time-Stepping: Governing equation
+
+$$ \curl\mu^{-1}\curl \vb e + \sigma \pdv{\vb e}{t} = -\pdv{\vb e_s}{t} $$
+
+$$ \vb K \vb u + \vb M \pdv{u}{t} = \vb s $$
+
+## Implicit time stepping
+
+$$ (\Delta t \vb K + \vb M) \vb u^{n+1} = \vb M u^n +\Delta t \vb s^{n+1} $$
+
+second-order
+$$ (2\Delta t \vb K + 3 \vb M) \vb u^{n+2} = \vb M (4 \vb u^{n+1} - \vb u^n) - 2\Delta t \vb s^{n+2} $$
+
+# Appendix
+
+## 2D scalar EM - TM polarization
+
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H=\curl\sigma^{-1} \vb j_s$$
+
+
+::: {.callout-note title="Transverse magnetic (TM) mode"}
+Assume the source field is oscillating perpendicular to the modelling plane, i.e.
+
+$\vb H=[H_x, 0, 0]^T e^{\imath\omega t}$.
+:::
+
+Then the PDE holds for the scalar $H_x$
+
+$$-\div \sigma^{-1} \grad H_x(y,z) + \imath\omega\mu H_x(y,z) = 0$$
+
+## 2D scalar EM - TE polarization
+
+$$ \curl \mu^{-1}\curl \vb E + \imath\omega\sigma\vb E = \curl \vb j_s$$
+
+::: {.callout-note title="Transverse electric (TE) mode"}
+Assume the source field is oscillating perpendicular to the modelling plane, i.e.
+
+$\vb E=[E_x, 0, 0]^T e^{\imath\omega t}$.
+:::
+
+Then the PDE holds for the scalar $E_x$
+
+$$-\div \mu^{-1} \grad E_x(y,z) + \imath\omega\sigma E_x(y,z) = 0$$
+

@@ -1,0 +1,249 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 2: Finite Differences"
+subtitle: "1. MGPY+MGIN, 3. MDRS+MGEX-CMG"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: fade
+    transition-speed: fast
+    menu:
+      side: left
+jupyter: python3
+---
+
+
+## Finite differences
+
+:::{.callout-tip icon="false" title="Approximate derivative operators by differences"}
+$$ \pdv{u}{x}\approx\frac{\Delta u}{\Delta x} $$
+:::
+and solution $u$ by finite values $u_i$ at points $x_i$, e.g.
+$$ \dv*{u}{x}_{2.5} := (u_3-u_2) / (x_3-x_2) $$
+
+<!-- $$ \dv*[2]{u}{x}_{3} :=   -->
+$$\pdv[2]{u_3}{x}\approx
+\frac{\dv*{u}{x}_{3.5}-\dv*{u}{x}_{2.5}}{(x_4-x_2)/2}
+= \frac{(u_4-u_3)/(x_4-x_3)-(u_3-u_2)/(x_3-x_2)}{(x_4-x_2)/2} $$
+
+## Summarize in a matrix
+Assumption: equidistant discretization $\Delta x$=1, conductivity $a$=1
+
+1st derivative: $[-1, +1] / dx$, 2nd derivative $[+1, -2, +1] / dx^2$
+
+Matrix-Vector product $\vb{A}\cdot\vb{u}=\vb{f}$ with matrix $A\in R^{N-2\times N}$
+
+$$ \vb{A} = \begin{bmatrix}
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1
+\end{bmatrix}  $$
+
+## Dirichlet BC implementation
+$u_0 = u_L$ & $u_N = u_R$
+
+$$ \begin{bmatrix}
++1 & 0 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & 0 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} u_B\\ f_1 \\ f_2 \\ \vdots \\ f_{N-1} \\ f_N \end{bmatrix}  $$
+
+## Neumann BC implementation
+$$ u_1 - u_0 = g_L$$
+
+$$ \begin{bmatrix}
++1 & -1 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} g_L\\ f_1 \\ f_2 \\ \vdots \\ f_{N-1} \\ g_R \end{bmatrix}
+$$
+
+## Analytical solution for $f$=1
+
+$$u(x) = -\frac{1}{2} x^2 + C_1 x + C_0 \quad\Rightarrow\quad
+u'(x) = -x+C_1$$
+
+| BC $x$=0 | BC $x=X$ |$C_0$ |$C_1$               |
+|----------|----------|------|--------------------|
+|Dirichlet |Dirichlet |$u_0$ |$X/2+(u_X-u_0)/X$   |
+|Dirichlet |Neumann   |$u_0$ |$u'_X+X$            |
+|Neumann   |Dirichlet |$u'_0$|$u_X-u'_0 X + X^2/2$|
+
+## Tasks (last exercise)
+
+1. Create a system matrix for unit quantities
+1. Implement Dirichlet BC on one and Neumann on other side
+1. Solve system for different right-hand sides:
+    * no source at all
+    * single source in the middle or at the boundary
+    * several sources with different strengths (& signs)
+    * source on part of the domain
+1. Alwas plot the solution and its Laplacian
+
+<!-- ## FDM on the general Poisson equation
+Assume the Poisson equation $$-\div(a\grad u)=f$$
+
+$$ \pdv{(a \dv*{u})}{z} = a\pdv[2]{u}{z} + \pdv{a}{z} \pdv{u}{z}  $$ -->
+
+## The general case
+
+$\Delta x \ne 1$ & $a \ne 1$ with $\bf x\in R^N$ and $a\in R^{N-1}$ (in-between)
+
+```{python}
+#| output-location: column-fragment
+#| eval: true
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pygimli as pg
+import pygimli.meshtools as mt
+nx = 6
+grid = mt.createGrid(nx, 2)
+ax, cb = pg.show(grid)
+ax.set_yticks([])
+for i in range(nx):
+    ax.plot(i, 0, "ko", ms=10)
+for i in range(nx-1):
+    ax.text(i+0.5, 0.5, rf"$a_{i}$", ha="center", va="center", fontsize=18)
+```
+
+$\pdv{u}{x}$ live on .5 space like $a$ $\Rightarrow$ `a/np.diff(x)`
+
+second derivative: `np.diff(a*np.diff(x))/...`
+
+
+## Coupling coefficients
+
+$$ A_{i,i-1} = C_i^{left} = -a_{i-1} / (x_{i}-x_{i-1}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
+
+$$ A_{i,i+1} = C_i^{right} = -a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
+
+$$ \begin{bmatrix}
++1 & 0 & 0 & \ldots & &  \\
+C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots & \\
+\vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
+\ldots & \ldots & & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} u_B\\ f_1 \\ \vdots \\ f_N \\ g_B \Delta x_N \end{bmatrix}  $$
+
+
+## Tasks for today
+
+1. Write a function solving the general Poisson equation in 1D with FD
+    * Boundary conditions: Dirichlet left, Neumann right
+    * Input: $\vb x$ vector, $\vb a$ vector, source vector $\vb f$, boundary terms
+    * Output: system matrix $\vb A$, right-hand-side vector $\vb b$
+1. Test the function with $\Delta x=1$ and $a=1$ and compare with above
+1. Play around with different boundary terms (values, gradients)
+1. Divide the "subsurface" in regions with different $a$ and play
+1. Compute the solution for different source fields
+1. Test whether a non-equidistant discretisation works likewise
+
+
+## Symmetry
+
+$$ A_{i+1,i} = C_{i+1}^{left} = a_i / (x_{i+1}-x_{i}) / (x_{i+2}-x_{i}) \cdot 2 $$
+
+$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i}) / (x_{i+1}-x_{i-1}) \cdot 2 $$
+
+only symmetric if $\Delta x$ is constant around $x_i$, better take $a_i/(\Delta x_i)^2$
+
+$$ A_{i,i-1} = C_i^{left} = a_{i-1} / (x_{i}-x_{i-1})^2 $$
+
+$$ A_{i,i+1} = C_i^{right} = a_i / (x_{i+1}-x_{i})^2 $$
+
+$\Rightarrow$ inaccuracies expected for non-equidistant discretization
+
+## A closer look at the Dirichlet boundary
+
+$$ \begin{bmatrix}
++1 & 0 & 0 & \ldots & &  \\
+C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots &
+\end{bmatrix} \begin{bmatrix} u_B\\ f_1  \end{bmatrix}$$
+
+1. $C$ can be differently scaled from 1 $\Rightarrow$ multiply with $C_i^L$
+1. Matrix is non-symmetric
+<!-- $\Rightarrow$ add $C_1^L$ -->
+
+$$ \begin{bmatrix}
+C_1^L & 0 & 0 & \ldots & &  \\
+C_1^L & -(C_1^L+C_1^R) & C_1^R & 0 & \ldots &
+\end{bmatrix} \begin{bmatrix} u_B C_i^L\\ f_1  \end{bmatrix} $$
+
+## A closer look at the Neumann boundary
+
+$$ \begin{bmatrix}
+\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
+\ldots & \ldots & & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_N \\ g_B \Delta x_N \end{bmatrix}  $$
+
+1. $C$ can be differently scaled from 1 $\Rightarrow$ multiply with $C_N^R$
+1. Matrix is non-symmetric  $\Rightarrow$ multiply with -1
+
+$$ \begin{bmatrix}
+\ldots & \ldots & 0 & C_N^L & -(C_N^L+C_N^R) & C_N^R \\
+\ldots & \ldots & & 0 & C_N^R & -C_N^R
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_N \\ -g_B \Delta x_N C_N^R \end{bmatrix}  $$
+
+
+
+
+## Dirichlet BC implementation way 2
+$-u_L + 2 u_1 - u_2 = f_1 \Rightarrow 2 u_1 - u_2 = f_1+u_L$
+
+$$ \begin{bmatrix}
++2 & -1 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & -1 & +2
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_1 + u_L\\ f_2 \\ f_3 \\ \vdots \\ f_{N-2} \\ f_{N-1} + u_R \end{bmatrix}
+$$
+
+## Neumann BC implementation way 2
+$$-u_L +2 u_1-u_2 = f_1 \qquad u_1-u_0=g_L \Rightarrow u_2-u_1=f_1+g_L $$
+
+$$ \begin{bmatrix}
++1 & -1 & 0 & \ldots & &  \\
+-1 & +2 & -1 & 0 & \ldots & &  \\
+0 & -1 & +2 & -1 & 0 & \ldots & \\
+\vdots & \vdots & \vdots & \ddots & \vdots &  \\
+\ldots & \ldots & 0 & -1 & +2 & -1\\
+\ldots & \ldots & \ldots & 0 & -1 & +1
+\end{bmatrix} \cdot\vb{u} =
+\begin{bmatrix} f_1 + g_L\\ f_2 \\ f_3 \\ \vdots \\ f_{N-1} \\ f_{N-1} + g_R \end{bmatrix}
+$$
+

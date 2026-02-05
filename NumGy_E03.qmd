@@ -1,0 +1,260 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Part 3: Time-stepping"
+subtitle: "1. MGPY+MGIN, 3. MDRS+MGEX-CMG"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics', 'textcomp']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: fade
+    transition-speed: fast
+    menu:
+      side: left
+# jupyter: pgdev
+---
+
+# Recap
+
+* Poisson's equation, solved with FD in 1D
+* boundary conditions determine shift (Dirichlet) and flow (Neumann)
+* no sources: linear potential (constant flow)
+* sources: positive curvature (max), continuous: parabola
+* slope changes with conductivity ($a$ contrasts act like source)
+
+```{python}
+#| eval: true
+#| echo: false
+from math import sqrt, pi
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+# Parabolic PDEs
+
+* describe diffusion problems (of potential fields)
+* second spatial and first temporal derivative, e.g. in 1D
+$$ \pdv{T}{t} - a \pdv[2]{T}{z} = \div\bf q_s $$
+
+# Time-stepping with FD
+
+$$ \pdv{u}{t} - a \pdv[2]{u}{z} = 0 $$
+
+Finite-difference approximation ($^n$ means time step $n$)
+
+$$ \pdv{u}{t}^n \approx \frac{u^{n+1}-u^n}{\Delta t} = a \pdv[2]{u^n}{z} $$
+
+## Explicit (forward) Euler method
+
+:::: {.columns}
+::: {.column}
+Start $T^0$ with initial condition
+
+Update field by
+$$ u^{n+1} = u^n + a \pdv[2]{u^n}{z} \cdot \Delta t $$
+
+E.g. by using the matrix $\vb A$:
+
+$$\vb u^{n+1}=\vb u^n-\Delta t \vb A \vb u^n=(\vb I - \Delta t \vb A)\vb u^n$$
+:::
+::: {.column}
+```{python}
+#| eval: true
+#| echo: false
+
+import pygimli as pg
+import pygimli.meshtools as mt
+grid = mt.createGrid(5, 4)
+ax, cb = pg.show(grid)
+ax.set_yticks([])
+ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
+ax.plot([2, 2], [1, 2], "g-", lw=4)
+ax.plot(2, 2, "ro", ms=12)
+ax.set_ylabel("")
+ax.set_xticks([1, 2, 3])
+ax.set_xticklabels([r"$x_{i-1}$", r"$x_i$", r"$x_{i+1}$"])
+ax.set_yticks([1, 2])
+ax.set_yticklabels([r"$t^n$", r"$t^{n+1}$"])
+ax.yaxis.tick_right()
+```
+:::
+::::
+
+## Implicit (backward) Euler method
+
+:::: {.columns}
+::: {.column}
+$$ \pdv{u}{t}^{n+1} \approx \frac{u^{n+1}-u^n}{\Delta t} = a \pdv[2]{u}{z} ^{n+1} $$
+
+$$ \frac{1}{\Delta t} u^{n+1} - a \pdv[2]{u}{z}^{n+1} = \frac{1}{\Delta t} u^n $$
+
+$$ (\vb I + \Delta t \vb A) \vb u^{n+1} = \vb u^n $$
+
+Solving an equation system
+:::
+::: {.column}
+```{python}
+#| eval: true
+#| echo: false
+
+grid = mt.createGrid(5, 4)
+ax, cb = pg.show(grid)
+ax.set_yticks([])
+ax.plot([1, 2, 3], [2, 2, 2], "bo-", ms=12, lw=4)
+ax.plot([2, 2], [1, 2], "go-", ms=12, lw=4)
+ax.plot(2, 2, "ro", ms=12)
+ax.set_ylabel("")
+ax.set_xticks([1, 2, 3])
+ax.set_xticklabels([r"$x_{i-1}$", r"$x_i$", r"$x_{i+1}$"])
+ax.set_yticks([1, 2])
+ax.set_yticklabels([r"$t^n$", r"$t^{n+1}$"])
+ax.yaxis.tick_right()
+```
+:::
+::::
+
+## Mixed (Crank-Nicholson) method
+
+$$ \pdv{u}{t}^{n+\textonehalf} \approx \frac{u^{n+1}-u^n}{\Delta t} = \frac12 a \pdv[2]{u}{z} ^n + \frac12 a \pdv[2]{u}{z} ^{n+1} $$
+
+:::: {.columns}
+::: {.column width="65%"}
+$$ \frac{2}{\Delta t} u^{n+1} - a \pdv[2]{u^{n+1}}{z} =
+   \frac{2}{\Delta t} u^n + a \pdv[2]{u^n}{z} $$
+
+$$ (2\vb I + \Delta t\vb A) \vb u^{n+1} = (2\vb I - \Delta t \vb A) \vb u^n $$
+
+<!-- $$ \pdv{T}{t}^n \approx \frac{T^{n+1}-T^n}{\Delta t} = \frac12 a \pdv[2]{T}{z} ^n + \frac12 a \pdv[2]{T}{z} ^{n+1} $$ -->
+:::
+::: {.column width="35%"}
+```{python}
+#| eval: true
+#| echo: false
+
+grid = mt.createGrid(5, 4)
+ax, cb = pg.show(grid)
+ax.set_yticks([])
+ax.plot([1, 2, 3], [1, 1, 1], "bo-", ms=12, lw=4)
+ax.plot([1, 2, 3], [2, 2, 2], "bo-", ms=12, lw=4)
+ax.plot([2, 2], [1, 2], "g-", ms=12, lw=4)
+ax.plot(2, 2, "ro", ms=12)
+ax.set_ylabel("")
+ax.set_xticks([1, 2, 3])
+ax.set_xticklabels([r"$x_{i-1}$", r"$x_i$", r"$x_{i+1}$"])
+ax.set_yticks([1, 2])
+ax.set_yticklabels([r"$t^n$", r"$t^{n+1}$"])
+ax.yaxis.tick_right()
+```
+:::
+::::
+
+# Dive into time-stepping
+
+Consider *Newtonian cooling* (a 0D toy problem)
+
+$$ \pdv{T}{t} = -\frac{T}{\tau} \approx \dv{T}{t} $$
+
+with solution $$ T(t)=T_0 \exp(-t/\tau) $$
+
+## Explicit and Implicit Euler methods
+
+**Explicit**
+$$ T_{i+1} = T_i - \frac{dt}{\tau} T_i = T_i (1-\frac{dt}{\tau}) = T_0 (1-\frac{dt}{\tau})^{i+1} $$
+
+
+**Implicit**
+
+$$ \frac{T_{i+1}-T_i}{dt} = -\frac{T_{i+1}}{\tau} $$
+
+$$ T_{i+1} = T_i \frac{1}{1+dt/\tau} $$
+
+## Mixed (Crank-Nicholson) method
+
+$$ \frac{T_{i+1}-T_i}{dt} = -\frac{T_{i+1}+T_i}{2\tau} $$
+
+$$ T_{i+1} (1+dt/2\tau) = T_i (1-dt/2\tau) $$
+
+$$ T_{i+1} = T_i \frac{1-dt/2\tau}{1+dt/2\tau} $$
+
+**Task:** simulate Newtonian cooling using all three methods
+
+## Numerical comparison
+
+```{python}
+#| eval: true
+#| echo: false
+
+tau = 0.2
+dt = 0.1
+t = np.arange(0, 2.0, dt)
+Ae = np.ones_like(t)
+for i in range(1, len(t)):
+    Ae[i] = Ae[i-1] * (1-dt/tau)
+Ai = np.ones_like(t)
+for i in range(1, len(t)):
+    Ai[i] = Ai[i-1] / (1+dt/tau)
+Am = np.ones_like(t)
+for i in range(1, len(t)):
+    Am[i] = Am[i-1] * (1-dt/tau/2) / (1+dt/tau/2)
+plt.semilogy(t, np.exp(-t/tau), "-", label="analytic")
+plt.plot(t, Ae, "x", label="explicit")
+plt.plot(t, Ai, "+", label="implicit")
+plt.plot(t, Am, "o", label="mixed")
+plt.legend()
+plt.grid()
+```
+
+# Periodic BC
+
+:::: {.columns}
+::: {.column}
+Upper boundary: daily/yearly variation
+
+$$ T(z=0) = T_0 + \Delta T \sin \omega t $$
+
+$T_0$ mean temperature (e.g. 12°C), $\Delta T$ variation, e.g. 8°C
+
+$\omega=2\pi/\tau$ daily ($\tau_d$=3600*24s) or yearly ($\tau_y=365 \tau_d$) cycle
+:::
+::: {.column}
+```{python}
+#| eval: true
+#| echo: true
+day = 3600 * 24
+T0, dT = 12, 8
+t = np.arange(100) / 50 * day
+T = T0+dT*np.sin(t/day*2*np.pi)
+plt.plot(t/day*24, T)
+plt.xlabel("t (h)")
+plt.ylabel("T (°C)")
+plt.grid()
+```
+:::
+::::
+
+## Tasks for today
+
+1. Complete the stationary tasks from last exercise
+1. Keep using the FD matrix for the time-stepping
+1. Start with zero temperature distribution
+1. Set upper temperature to higher value (source)
+1. Choose $\Delta t$ and step up in time with explicit method
+1. Change $\Delta t$ and observe solution
+1. Repeat last steps with implicit and mixed methods
+1. Compare with analytical solution

@@ -1,0 +1,121 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Exercise 7:<br> 2D problems with pyGIMLi"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    # chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu:
+      side: left
+jupyter: python3
+---
+## Recap Poisson & heat PDE
+
+* [x] solved the Poisson equation for arbitrary $x$ and $a$
+* [x] accuracy (compare analytical) depends on discretization
+* [x] time stepping for instationary (parabolic) problem
+* [x] FE integrates curvature (stiffness) and solution (mass)
+
+* Report 1 as task in OPAL, deadline January 31, 2026
+* questions or problems? additional exercise time needed?
+
+## Tasks for today
+
+* dive into pyGIMLi
+* solve 2D Poisson problem with singular source
+
+$$ -\div \sigma \grad u = I \delta(\vb r - \vb r_s) $$
+
+Analytical solution: $u=-\frac{I}{2\pi\sigma}\ln r$
+
+## Secondary field approach
+
+* split $\sigma$ solution in $u=u_0+u_a$
+
+$$ \Rightarrow -\div\sigma\grad u_a = \div (\sigma-\sigma_0)\grad u_0 $$
+
+* anomalies are *secondary* sources:
+* equation represented by matrix vector equation
+
+$$\vb A^\sigma\vb u_a=-\vb A^{\delta\sigma}\vb u_0=(\vb A^{\sigma_0}-\vb A^{\sigma})\vb u_0$$
+
+# 2D/3D with pyGIMLi
+
+* `pg.createGrid(x, y)` for regular grids (also 3D)
+* create geometry (PLC - piecewise linear complex) with `meshtools`
+  - lots of functions for different shapes etc.
+* meshing by [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) algorithm (J. Shewchuk) or [TetGen](https://tetgen.org)
+
+
+## Generate a geometry
+```{python}
+#| echo: true
+#| eval: true
+import pygimli as pg
+import pygimli.meshtools as mt
+world = mt.createWorld(start=[-10, -10], end=[10, 0])
+world += mt.createCircle(pos=[-2, -4], radius=1, marker=2)
+print(world)
+pg.show(world, boundaryMarkers=True);
+```
+
+## Generate a mesh
+```{python}
+#| echo: true
+#| eval: true
+sourceA, sourceB = [-3, 0], [3, 0]
+world.createNode(sourceA)
+world.createNode(sourceB)
+mesh = mt.createMesh(world, quality=34, area=1)
+pg.show(mesh, markers=True, showMesh=True);
+```
+
+
+## Attribute 2D conductivity
+```{python}
+#| echo: true
+#| eval: true
+sigma0 = 1 / 100  # 100 Ohmm
+sigma = mesh.populate("sigma", {1: sigma0, 2: sigma0*10})
+pg.show(mesh, "sigma", showMesh=True);
+```
+
+
+## The pyGIMLi solver module
+
+* ready PDE solvers `solveFiniteElements`, `solveFiniteElements`
+* `createStiffnessMatrix`, `createMassMatrix` assembling
+* `createLoadVector`
+* `assembleDirichletBC`, `assembleNeumannBC`
+* `linSolve` for linear equation solvers
+* `div`, `grad` operators
+
+## Tasks
+
+* write function for analytical solution and plot
+* generate a model with two electrodes at the surface
+* start with homogeneous conductivity
+* create stiffness matrix and load vector
+* solve the matrix-vector equation
+* plot solution and compare with analytical solution
+* use inhomogeneous conductivity and try secondary field approach

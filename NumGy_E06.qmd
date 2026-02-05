@@ -1,0 +1,141 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Exercise 6:<br> Timestepping with FE"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu:
+      side: left
+# jupyter: python3
+---
+# Recap Poisson & heat PDE
+
+$$ \pdv{T}{t} - \div a \grad T = \div q_s $$
+
+## Recap
+
+* [x] solve the Poisson equation for arbitrary $x$ and $a$
+* [x] sources and $a$ contrasts cause curvature in $u$<br>
+  * positive source or $a$ increase $\Rightarrow$ negative u" $\Rightarrow$ maximum
+  * single $f$ $\Rightarrow$ piecewise linear, full $f$ $\Rightarrow$ parabola
+* [x] BC: Dirichlet determine shift, Neumann BC determine slope of $u$
+* [x] accuracy (compare analytical) depends on discretization
+* [x] now go for instationary (parabolic) problem by time stepping
+  * curvature in $u$ causes negative change of $u$ (diffusion)
+* [x] FE integrates curvature (stiffness) and solution (mass)
+
+## The stiffness matrix
+
+Matrix integrating gradients of base functions for neighbors with $a$
+
+$$ \vb A_{i, i+1} = -\frac{a_i}{\Delta x_i^2} \vdot \Delta x_i = -\frac{a_i}{\Delta x_i} $$
+
+$$ A_{i,i} = \int_\Omega a \grad v_i \cdot \grad v_i \dd\Omega = -A_{i,i+1} - A_{i+1,i}  $$
+
+$\Rightarrow$ matrix-vector equation $\vb A \vb u = \vb b$ with bending&shear stiffness in $\vb A$
+
+## The mass matrix
+
+Matrix integrating base functions for neighbors
+
+$$ \vb M_{i,j} = \int_\Omega v_i \cdot v_j \dd\Omega \quad\Rightarrow\quad
+\vb M_{i,i+1}=\int_{x_i}^{x_{i+1}} v_i v_{i+1}$$
+
+$$ \vb M_{i,i+1} = \Delta x_i \int_0^1 (\xi-\xi^2) =
+\Delta x_i \left|\frac12 \xi^2 - \frac13 \xi^3\right|_0^1 = \frac{\Delta x_i}{6} $$
+
+$$ \vb M_{i,i} = \frac{\Delta x_{i-1}}{3} + \frac{\Delta x_i}{3} = 2(\vb M_{i-1,i}+\vb M_{i,i+1}) $$
+
+# Time stepping
+
+:::: {.columns}
+::: {.column width="33%"}
+![Explicit](pics/dtforward.svg)
+:::
+::: {.column width="33%"}
+![Implicit](pics/dtbackward.svg)
+:::
+::: {.column width="33%"}
+![Mixed](pics/dtmixed.svg)
+:::
+::::
+
+## Time-stepping in FE
+
+| | | | | | |
+|-------------|-------------:|-|-|-:|-|
+|**Explicit**:|$\vb M$|$\vb u^{n+1}$|$=$|$(\vb M - \Delta t \vb A)$|$\vb u^n$|
+|**Implicit**:|$(\vb M + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$\vb M$|$\vb u^n$|
+|**Mixed**:|$(2\vb M + \Delta t \vb A)$|$\vb u^{n+1}$|$=$|$(2\vb M - \Delta t \vb A)$|$\vb u^n$|
+
+:::: {.columns}
+::: {.column width="33%"}
+![Explicit](pics/dtforward.svg)
+:::
+::: {.column width="33%"}
+![Implicit](pics/dtbackward.svg)
+:::
+::: {.column width="33%"}
+![Mixed](pics/dtmixed.svg)
+:::
+::::
+
+## Tasks for today
+
+1. Code functions stiffness matrix, mass matrix & RHS vector for FE
+1. Make sure it corresponds with analytical solution (f=1) for static case
+1. check whether it works with different discretizations
+1. Start time-stepping with different methods ($\vb B \vb u^{n+1}=\vb C \vb u^n$)
+  - make sure the boundary conditions are on the total matrix $B$
+  - start with homogeneous initial conditions
+  - use different but constant potential at upper (left) boundary
+1. test different time steps and observe behaviour
+
+# Report 1
+
+**Objective:** Use Finite Elements to solve heat transfer into the Earth caused by periodic surface temperature (upper BC)
+
+$$ T(z=0) = T_0 + \Delta T \sin \omega t $$
+
+initial condition: $T(z)=T_0$ (ignoring the previous heat!)
+
+## Task
+1. Implement functions stiffness matrix, mass matrix and right-hand-side vector using FE
+1. Use a non-equidistant discretization of the Earth with increasing layer thicknesses (choose and substantiate).
+1. Solve instationary heat equation with periodic boundary condition (yearly cycle) for the Earth using a constant but meaningfull thermal diffusivity.
+1. Compare the solutions using explicit, implicit and mixed timestepping methods with the analytical solution.
+
+## Questions
+
+* Interpret the results in terms of physical behaviour. How does a change in the diffusivity affect the result?
+* Is there a difference between FD and FE discretizations? Why (not)?
+* Make a statement about the stability and accuracy of the methods.
+* After which time approaches the numeric solution the analytical one?
+* How can you evaluate the numerical accuracy if there is no analytical solution?
+
+## Deliverables
+
+Format can be Jupyter Notebook and/or PDF
+
+Complete codes to run the results

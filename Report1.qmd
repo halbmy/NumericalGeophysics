@@ -1,0 +1,58 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Report 1"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu:
+      side: left
+# jupyter: python3
+---
+# Report 1
+
+**Objective:** Use Finite Elements to solve heat transfer into the Earth caused by periodic surface temperature (upper BC)
+
+$$ T(z=0) = T_0 + \Delta T \sin \omega t $$
+
+initial condition: $T(z)=T_0$ (ignoring the previous heat!)
+
+## Tasks
+
+1. Implement functions for stiffness matrix & mass matrix using FE (including BC)
+1. Use a non-equidistant discretization of the Earth with increasing layer thicknesses (choose and substantiate).
+1. Solve instationary heat equation with periodic boundary condition (yearly cycle) for the Earth using a constant but meaningfull thermal diffusivity.
+1. Compare the solutions using explicit, implicit and mixed timestepping methods with the analytical solution.
+
+## Questions
+
+* Interpret the results in terms of physical behaviour. How does a change in the diffusivity affect the result?
+* After which time approaches the numeric solution the analytical one?
+* Make a statement about the stability and accuracy of the methods.
+* Is there a difference between FD and FE discretizations? Why (not)?
+* How can you evaluate the numerical accuracy if there is no analytical solution?
+
+## Deliverables
+
+* Format can be Jupyter Notebook and/or PDF
+* Complete codes to run the results

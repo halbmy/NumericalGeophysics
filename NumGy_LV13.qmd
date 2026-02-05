@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Part 12: Advection problems and the Finite Volume Method"
+title: "Numerical Simulation Methods in Geophysics, Part 13: Summary"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -27,9 +27,19 @@ format:
     transition-speed: fast
     menu:
       side: left
-jupyter: python3
+jupyter: pgdev
 ---
 # Recap
+
+* learned basics of FD, FE and FV methods
+* solved different PDE types:
+  - elliptic Poisson (potential): heat, flow, DC, gravity, mag)
+  - parabolic (diffusion): heat transfer, time-domain EM
+  - hyperbolic (waves): seismics, GPR (just 1D)
+  - elliptic Helmholtz: frequency-domain EM (or heat)
+* script in development on [tubaf-em.github.io/Numerical_Simulation](https://tubaf-em.github.io/Numerical_Simulation/)
+
+## The methods
 
 1. The Finite Difference (FD) method
    * elliptic: Poisson equation in 1D, look into 2D/3D
@@ -39,240 +49,7 @@ jupyter: python3
    * Poisson equation in 1D & 2D
    * complex Helmholtz equation in 2D for EM problems
    * solving EM problems and computational aspects
-
-# Boundary conditions
-
-**Neumann** (implicitly by choice of shape functions)
-
-$\pdv{u}{n}=0$ $\Rightarrow$ $\vb n\cross \curl \vb E = 0$ $\Rightarrow$ $\vb n \cross \vb B=0$
-
-**Dirichlet**
-
-$u=0$ $\Rightarrow$ $\vb n\cross \vb E = 0$ $\Rightarrow$ $\vb n\dotproduct \vb B=0$
-
-
-## Mixed boundary conditions
-So far...
-
-* Dirichlet Boundary conditions $u=u_0$
-* Neumann Boundary conditions $\pdv{u}{n}=g_B$<br>
-
-vectorial problems: $\vb n\cdot \vb E=0$ (Neumann) or $\vb\curl \vb E=0$ (Dirichlet)
-
-In general mixed, also called Robin (or impedance convective) BC
-$$ a u + b \pdv{u}{n} = c $$
-
-## Example DC resistivity with point source
-$$\div \sigma \grad u = \div \vb j = I \delta(\vb r - \vb r_s)$$
-
-solution for homogeneous $\sigma$ on surface: $u=\frac{I}{2\pi\sigma} \frac{1}{|\vb r - \vb r_s|}$
-
-E-field $\vb E=-\frac{I}{2\pi\sigma} \frac{\vb r - \vb r_s}{|\vb r - \vb r_s|^3}$
-
-normal direction $\vb E \cdot \vb n=-\frac{u}{|\vb r - \vb r_s|}\cos \phi$ purely geometric
-
-$$\pdv{u}{n} + \frac{\cos\phi}{|\vb r - \vb r_s|}=0$$
-
-## Perfectly matched layers
-
-::: {.columns}
-::: {.column}
-![](pics/FDTD_TFSF.png)
-:::
-::: {.column}
-$$ \pdv{x} \rightarrow \frac{1}{1+i\sigma/\omega} \pdv{x}  $$
-
-$$ x \rightarrow x + \frac{i}{\omega}\int^x \sigma(x')\dd x' $$
-
-:::
-:::
-
-
-## Absorbing boundary conditions
-wave equation (e.g. in 2D)
-$$ \pdv[2]{u}{t} - v^2 \laplacian u = 0 $$
-
-Fourier transform in $t$ and $y$ (boundary direction) $\Rightarrow \omega, k$
-
-$$ \omega^2 \hat{u} - v^2 \pdv[2]{\hat{u}}{x} + v^2 k^2 \hat{u} = 0 $$
-
-ordinary DE with solution $\hat{u}=\sum a_i e^{\lambda x}$ with $\lambda^2 = k^2 - \omega^2/v^2$
-
-## No-slip boundary condition
-
-![](pics/slip-bc-03.png)
-
-# Time-domain EM
-
-* Fourier transform excitation $\Rightarrow$ solve in FD $\Rightarrow$ backtransform
-* solve with Time-Stepping: Governing equation
-
-$$ \curl\mu^{-1}\curl \vb e + \sigma \pdv{\vb e}{t} = -\pdv{\vb j_s}{t} $$
-
-$$ \vb K \vb u (t) + \vb M \partial_t \vb u(t) = \vb s(t) $$
-
-## Implicit time stepping
-
-$$ \vb K \vb u^{n+1} + \vb M \frac{\vb u^{n+1}-\vb u^n}{\Delta t} = \vb s(t) $$
-
-$$ (\Delta t \vb K + \vb M) \vb u^{n+1} = \vb M \vb u^n +\Delta t \vb s^{n+1} $$
-
-second-order
-$$ (2\Delta t \vb K + 3 \vb M) \vb u^{n+2} = \vb M (4 \vb u^{n+1} - \vb u^n) - 2\Delta t \vb s^{n+2} $$
-
-
-## Solution in pyGIMLi
-
-:::: {.columns}
-::: {.column}
-step by step
-```python
-import pygimli.solver as ps
-A = ps.createStiffnessMatrix(mesh, a)
-M = ps.createMassMatrix(mesh, b)
-f = ps.createLoadVector(mesh, f)
-ps.assembleNeumannBC(b, boundaries)
-ps.assembleDirichletBC(A, b)
-ps.assembleRobinBC(A, boundaries, b)
-u = ps.linSolve(A, b)
-```
-:::
-::: {.column}
-or shortly
-
-```python
-from pygimli.physics.seismics import solvePressureWave
-bc = {'Dirichlet': {4: 1.0, 3: 0.0},
-      'Neumann': {2: 1.0}}
-u = ps.solveFiniteElements(mesh, a, b, f,
-                           bc=bc, t=times, c)
-u = solvePressureWave(mesh, velocities, times,
-                      sourcePos, uSource)
-```
-:::
-::::
-
-$$ c\pdv{u}{t}= \div(a\grad u) + b u + f(\vb r, t)$$
-
-# Advection problems
-
-Volume elements move with velocity $\vb v$ and take (advectio=move with)
-
-$$\pdv{T}{t} \Rightarrow \pdv{T}{t} + \dv{z}{t}\pdv{T}{z}$$
-in 3D $\vb{v}\cdot\grad{T}$ $\Rightarrow$ advection-dispersion equation
-
-$$\pdv{T}{t} - \div a\grad{T} + \vb{v}\cdot\grad{T} = \div q_s$$
-
-## Continuity equation
-
-$$ \dv{t}\int_V u(\vb r, t) \dd V = \int_V \pdv{u(\vb r, t)}{t} + \int_V \vb v \vdot \grad u(\vb r, t) \dd V $$
-
-$$ \dv{t}\int_V u(\vb r, t) \dd V = \int_V \pdv{u(\vb r, t)}{t} + \int_{\partial V} u(\vb r, t) \vb v\vdot \vb n $$
-
-Conservation of mass ($u$=$\varrho$) $\Rightarrow$ divergence of flux $u\vb v$
-
-$$ \pdv{u}{t} + \div(u \vb v) = 0 $$
-
-can also be conservation of impuls or energy
-
-## Advection-dispersion equation (general)
-$$ \pdv{u}{t}+\vb v\cdot\grad u - \div(a\grad u) = b u + f(\vb r, t)$$
-
-flux $\vb v\cdot\grad u$ (Advection), stiffness $-\div(a\grad u)$ (Dispersion=Diffusion)
-
-arising in *Computational Fluid Dynamics*
-
-Solve, e.g., by [`pyGIMLi.solver.solveFiniteVolume` (Link)](https://www.pygimli.org/pygimliapi/_generated/pygimli.solver.html#pygimli.solver.solveFiniteVolume)
-
-```
-bc = dict(Dirichlet={4: 1.0, 3: 0.0}, Neumann={2: 1.0})
-u = ps.solveFiniteVolume(mesh, a, b, f, bc=bc, t=times, c)
-```
-
-## Computational magnetohydrodynamics
-
-Magnetohydrodynamic induction equation
-
-$$\pdv{\vb B}{t} =  \curl \frac{1}{\mu\sigma} \curl \vb B + \curl(\vb v \cross \vb B)$$
-
-Forces on fluid (induction, Coriolis, pressure, gravity, Lorentz)
-$$ \rho \pdv{\vb v}{t} + \rho (\vb v \cdot \grad) \vb v + \grad p = -2\omega\cross\vb v+\alpha T \vb g + \vb j \cross \vb B / \rho $$
-
-## FE solution can bear instabilities
-
-![](pics/morra10_1.png){fig-align="center"}
-
-## Simple 1D advection problem
-
-$$\pdv{u}{t} + \pdv{v(u)}{x}=0$$
-
-Solution $u_i$ at node $i$ represents average value over cell
-
-$$ \overline{u}_i(t) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}} u(x, t)\dd x $$
-
-$$ \int_{t_1}^{t_2} \pdv{u}{t} = u(x, t_2)-u(x, t_1) = - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$
-
-## Finite Volume schemes
-
-:::: {.columns}
-::: {.column}
-![](pics/finite_volume.png)
-:::
-::: {.column}
-upwind method:
-
-$$Q_i^{n+1} = Q_i^n - a\frac{\Delta t}{\Delta x} (Q_i^n-Q_{i-1}^N)$$
-
-Lax-Wendroff (2nd order)
-
-$$Q_i^{n+1} = Q_i^n - a\frac{\Delta t}{2\Delta x} (Q_{i+1}^n-Q_{i-1}^N)$$
-
-$$+\frac12 (a\frac{\Delta t}{2\Delta x})^2 (Q_{i+1}^n-2Q_{i}^N+Q_{i-1}^N)$$
-
-:::
-::::
-
-## Simple 1D advection problem
-
-$$ u(x, t_2) = u(x, t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x} $$
-
-$$ \overline{u}(t_2) = \frac{1}{x_{i+1/2}-x_{i-1/2}} \int_{x_{i-1/2}}^{x_{i+1/2}}\qty\Big(u(x,t_1) - \int_{t_1}^{t_2} \pdv{v(u)}{x})  $$
-
-$$ \overline{u}(t_2) = \overline{u}(t_1) - \frac{1}{x_{i+1/2}-x_{i-1/2}}
-\qty\Big(\int_{t_1}^{t_2} v_{i+1/2} \dd t - \int_{t_1}^{t_2} v_{i-1/2} \dd t) $$
-
-## Result
-
-$$ \pdv{\overline{u}_i}{t} +\frac{1}{\Delta x_i} (v_{i+1/2}-v_{i-1/2}) = 0 $$
-
-::: {.callout-note}
-Finite volume schemes are conservative as cell averages change through the edge fluxes. In other words, one cell's loss is always another cell's gain!
-:::
-
-## Visualization
-
-![](pics/ave_demo.png){fig-align="center"}
-
-## Similarity to staggered (E, B) grid methods
-
-![](pics/morra10_2.png){fig-align="center"}
-
-## Conservation law (3D) problem
-
-$$\pdv{\vb u}{t} + \div\vb v(u)= 0$$
-
-volume integral over cell, using Gauss' law
-
-$$\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Omega_i} \div\vb v(u) \dd\Omega = 0 =
-\int_{\Omega_i} \pdv{\vb u}{t}\dd\Omega+\int_{\Gamma_i} \vb v(u) \cdot \vb n \dd{\Gamma} $$
-
-$$\Rightarrow \pdv{\overline{u}}{t} +\frac{1}{V_i}\int_{\Gamma_i}\vb v(u)\cdot \vb n \dd{\Gamma} =0  $$
-
-## Godunov's scheme
-
-1. Define piece-wise constant approximation $u^{n+1}$
-1. Obtain solution for local Riemann problem at cell interfaces
-1. Average state variables from 2. over
+1. The Finite volume method: just looking
 
 ## The methods
 
@@ -288,12 +65,188 @@ approximates the solution through base functions in integrative sense
 approximates the solution by piecewise constant values and ensures conservation law by fluxes
 :::
 
-## Discontinuous Galerkin scheme
+## Take-aways
 
-* use Galerkin method (multiply test function and take as basis)
-* discretize fields by piece-wise constant functions
-  - fields are becoming discontinuous
-* communicate flux between elements by Riemann problem scheme
+1. You always get a numerical solution but it can be crap.
+1. FE is the most flexible and wide-spread method.
+1. FD & FV simple to implement, FV keeps continuity (transport!).
+1. FD parameter weighting in 2D/3D problems $\Rightarrow$ inaccuracies
+1. Spatial refinement or higher polynomial order improve accuracy, particularly at source positions with strong curvature.
+1. Sometimes the boundaries need to be set really far away.
+1. Secondary field computation partly overcomes the latter two.
+1. Implicit or mixed time-stepping more accurate and stable than explicit
 
-* every element independent (also mesh size)
-* fully parallelized (element-wise)
+## Next-generation FE: [Oskar](https://base-fn.gitlab.io/oskar/index.html)
+
+- built upon pyGIMLi v2.0
+
+#### Simplest modelling example
+```
+from oskar ScalarSpace, VectorSpace, laplace, div, grad
+s = ScalarSpace(mesh, name='T', p=2)
+T = solve(-laplace(s) == 1, bc={'Dirichlet':{'*':0}})
+```
+
+#### Step by step
+```
+PDE = lambda u: -div(alpha*grad(u))
+A, rhs = (PDE(s) == f).weakForm.assemble()
+```
+
+#### Post-processing
+```
+j = a * grad(u)
+```
+
+
+
+# What's left to mention?
+
+**Accuracy**
+
+1. Verification methods
+1. Error estimation and goal-oriented refinement
+
+## Discontinuous Galerkin method
+
+typical for hyperbolic problems
+
+weak form of wave equation with fluxes (FV)
+
+$$M\partial_t q(t) - A^T q(t) = -F(a, q(t))$$
+$$\Rightarrow \partial_t q=\vb M^{-1}(A^T q(t) - F(a, q(t)))$$
+
+locally for each element & communication through fluxes (like in FV)
+
+## Spectral element method
+
+typically used for global wave phenomena
+
+::: {.columns}
+::: {.column}
+$u=\sum u_i\phi_i(\pv r)$
+
+$\phi$ Lagrangian polynoms $l_i^N=\prod\limits_k^N \frac{\xi-\xi_k}{\xi_i-\xi_k}$
+
+or Chebychev polynoms
+:::
+::: {.column}
+![First six Lagrangian polynomials](pics/Legendrepolynomials6.svg)
+:::
+:::
+
+## Infinite Elements
+
+![](pics/infiniteelements.png)
+
+## Meshless modelling
+
+![](pics/meshless.png)
+
+## Meshless divergence operator (Wittke, 2017)
+
+![](pics/meshlessDivergence.png)
+
+## The method of exact solutions (MES)
+
+:::: {.columns}
+::: {.column}
+* find domain or condition for which an analytical solution exists
+* often for Dirac type sources $\Rightarrow$ solution is a **Green's function**
+* integrate over Greens function for extended sources
+* convergency tests (refine spatially and polynomially)
+
+[MES example from Oskar](https://base-fn.gitlab.io/oskar/_tutorials/plot_20_mes_heat_equation.html)
+:::
+::: {.column}
+![](pics/schwarzbach_refinement.png)
+:::
+::::
+
+
+## The method of manufactured solutions (MMS)
+
+* use any function or distribution for solution $\vb u$
+* create right-hand-side vector $\vb f$ using FEM
+* solve for $\vb u$ and compare with
+
+[MMS example from Oskar](https://base-fn.gitlab.io/oskar/_tutorials/plot_10_mms_basics.html)
+
+# Error estimation and mesh refinement
+
+* get idea of accuracy of the solution
+* refinement of cells with high error (e.g. large gradients)
+* comparison between successive refinement solutions
+
+## Error estimation (residual-based)
+
+Poisson problem $-\nabla^2=f$ with bilinear form $a(u,v)=\int \grad u \grad v \dd\Omega$
+
+finite-dimensional function space $V_h$: $a(u_h, v_h)=l(v_h)$
+
+estimate error $e_h$ in bilinear form $a(e_h,v)=a(u, v)-a(u_h, v)$
+
+residual $R=f+\nabla^2 u_h$ leads to $a(e_h,v)=\sum\limits_c\int\limits_{\Omega_c} R v \dd\Omega_c$
+
+## Error estimation (recovery-based)
+
+gradients across element boundaries tend to be discontinuous
+
+compare original (unsmoothed) gradient of the solution with improved
+$$(E_h)^2 = \int |M(u_h)-\grad u_h|^2\dd\Omega $$
+
+$M$ obtained by smoothing over patch of elements around each element
+
+## Goal-oriented mesh refinement
+
+primal and dual (adjoint) problem (with receiver as hypothetical source)
+
+inner product of solutions
+$$\Phi_{lmn}=\int_{c_n} \vb F^l \vb F^m \dd\Omega_n$$
+
+
+# Performance in Parallel
+
+:::: {.columns}
+::: {.column width="60%"}
+* Desktop computers (1 CPU with many cores)
+* fat node (shared memory) architecture
+* cluster (distributed) architectures:
+  - NUMA (non-uniform memory access)
+:::
+::: {.column width="40%"}
+![&nbsp;](pics/NUMA_Architecture.png)
+:::
+::::
+
+
+## Computational size
+![](pics/EMdatasets.png){fig-align="center"}
+
+## Amdahl's law
+Distribute runtime into serial and parallel part $t=t_s+t_p/N(+t_c(N))$
+
+![](pics/amdahl.png){fig-align="center"}
+
+## Perfomance analysis - Memory
+![](pics/presb/memoryComplexity.png){fig-align="center"}
+
+## Perfomance analysis - Time
+![](pics/presb/timeComplexity.png){fig-align="center"}
+
+## Perfomance analysis - MPI scaling
+![](pics/presb/mpiPerformance.png){fig-align="center"}
+
+## Perfomance analysis - MPI scaling
+![](pics/presb/speedup.png){fig-align="center"}
+
+## Multiple right-hand sides
+![](pics/presb/rhs.png){fig-align="center" width="50%"}
+
+
+<!--
+## Tips for further studying
+
+-
+- [Oskar website](https://base-fn.gitlab.io/oskar/index.html) for everything around FE
+- -->

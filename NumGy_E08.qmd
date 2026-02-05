@@ -1,0 +1,203 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Exercise 8:<br> 1D/2D EM"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    # chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu:
+      side: left
+jupyter: python3
+---
+## Tasks for today
+
+* have some drinks and sweets
+* finish 2D Poisson problem with singular source
+$$ -\div \sigma \grad u = I \delta(\vb r - \vb r_s) $$
+
+Analytical solution: $u=-\frac{I}{2\pi\sigma}\ln r$
+
+* 1D EM problem $\Rightarrow$ 2D EM problem
+
+## Tasks
+
+* write function for analytical solution and plot
+* generate a model with two electrodes at the surface
+* start with homogeneous conductivity
+* create stiffness matrix and load vector
+* solve the matrix-vector equation
+* plot solution and compare with analytical solution
+* use inhomogeneous conductivity and try secondary field approach
+
+## Complex or real-valued?
+
+The complex-valued system
+
+$$(\vb A+\imath\omega\vb M)\vb u = (\vb A+\imath\omega\vb M) (\vb u_r + \imath \vb u_i) = \vb b_r + \imath \vb b_i$$
+
+
+can be transferred into a doubled real-valued system
+
+$$\vb A\vb u_r + \imath\vb A u_i + \imath\omega\vb M \vb u_r - \omega\vb M \vb u_i = \vb b_r + \imath \vb b_i$$
+
+$$\mqty(A & -\omega M\\ \omega M & A) \mqty(u_r\\ u_i) = \mqty(b_r\\ b_i) $$
+
+
+## The problem in 1D
+```{python}
+#| echo: true
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+from poisson1d import stiffnessMatrix1DFE, massMatrix1DFE
+T = 0.1  # 0.1
+w = 2 * np.pi / T
+sigma0 = 1/100  # 1/100
+mu = np.pi * 4e-7
+z = np.arange(-10000, 0.1, 200)
+A, b = stiffnessMatrix1DFE(x=z, uR=1)
+M = massMatrix1DFE(x=z, a=mu*sigma0)
+AM = A + M * 1j * w
+u = np.linalg.solve(AM, b)
+```
+
+## Complex-to-real conversion
+
+$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+D = np.vstack([np.hstack([A, -M*w]), np.hstack([M*w, A])])
+plt.imshow(D)
+d = np.hstack([b, b*0])
+uri = np.linalg.solve(D, d)
+u = uri[:len(z)] + uri[len(z):] * 1j
+```
+
+## Complex-to-real conversion
+
+$$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
+
+```{python}
+#| echo: false
+#| eval: true
+import pygimli as pg
+import pygimli.meshtools as mt
+import pygimli.solver as ps
+world = mt.createWorld(start=[-10000, -10000], end=[10000, 0])
+anomaly = mt.createRectangle(start=[0, -8000], end=[1000, -1000], marker=2)
+mesh = mt.createMesh(world+anomaly, quality=34, smooth=True, area=1e5)
+mesh["my"] = 4 * np.pi * 1e-7
+mesh["sigma"] = sigma0
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+A = ps.createStiffnessMatrix(mesh)
+M = ps.createMassMatrix(
+    mesh, mesh["sigma"]*mesh["my"])
+nd = mesh.nodeCount()
+B = pg.BlockMatrix()
+B.Aid = B.addMatrix(A)
+B.Mid = B.addMatrix(M)
+B.addMatrixEntry(B.Aid, 0, 0)
+B.addMatrixEntry(B.Aid, nd, nd)
+B.addMatrixEntry(B.Mid, 0, nd, scale=-w)
+B.addMatrixEntry(B.Mid, nd, 0, scale=w)
+pg.show(B)
+```
+
+# Secondary field approach
+
+Consider the field to consist of a primary (background) and an secondary (anomalous) field $F=F_0+F_a$
+
+solution for $F_0$ known, e.g. analytically or 1D (semi-analytically)
+
+$\Rightarrow$ form equations for $F_a$, because
+
+* $F_a$ is weaker or smoother (e.g. $F_0\propto 1/$ at sources)
+* boundary conditions easier to set (e.g. homogeneous Dirichlet)
+
+## Secondary field Helmholtz equation
+
+The equation $-\grad^2 F - k^2 F = 0$ is solved by the primary field for $k_0$:
+
+$-\grad^2 F_0 - k_0^2 F_0=0$ and the total field for $k_0+\delta k$:
+
+$$ -\grad^2 (F_0+F_a) -(k_0^2+\delta k^2) (F_0+F_a) = 0 $$
+
+$$ -\grad^2 F_a - k^2 F_a = \delta k^2 F_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous terms, weighted by the primary field.
+:::
+
+## Secondary field for EM
+
+Maxwells equations $k^2=-\imath\omega\mu\sigma$
+
+$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
+
+leads to
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous conductivities and increase with primary field
+:::
+
+## Secondary field for EM
+
+Maxwells equations $k^2=-\imath\omega\mu\sigma$
+
+$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
+
+leads to
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+::: {.callout-note}
+Source terms only arise at anomalous conductivities and increase with primary field
+:::
+
+## Secondary field for EM
+
+$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
+
+leads to the discretized form ($\vb A$-stiffness, $\vb M$-mass)
+
+$$ \vb A \vb E_a + \imath\omega\vb M_\sigma E_a = -\imath\omega\vb M_{\delta\sigma} \vb E_0 $$
+
+```{python}
+#| echo: true
+#| eval: false
+A = stiffnessMatrix1DFE(x=z)
+M = massMatrix1DFE(x=z, a=w*mu*sigma)
+dM = massMatrix1DFE(x=z, a=w*mu*(sigma-sigma0))
+u = uAna + solve(A+M*w*1j, dM@uAna * w*1j)
+```
+

@@ -1,0 +1,266 @@
+---
+title: "Numerical Simulation Methods in Geophysics, Exercise 0"
+subtitle: "1. MGPY+MGIN, 3. MDRS+MGEX-CMG"
+author: "Thomas Günther, thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu:
+      side: left
+# jupyter: python3
+---
+
+# Introduction
+
+![](pics/EMelements.png)
+
+## Content
+
+0. Introduction
+1. Partial differential equations in geophysics
+2. Finite Differences
+1. The Finite element method
+4. Integral equations and Method of Moments
+1. Solving linear systems
+1. The Finite Volume method
+1. High-performance computing
+
+## Schedule
+
+::: block
+**Lectures** Thursday, 09:45-11:15, MEI-0150
+
+14 slots: 23.10., 30.10., 06.11., 13.11., 20.11., 27.11., 04.12., 11.12., 18.12., 08.01., 22.01., 28.01., 05.02., 06.02. (15.01. dies)
+
+**Exercises** Wednesday, 09:45-11:15, CIP pool MEI1203a
+
+14 slots: 22.10., 29.10., 05.11., 12.11., 26.11., 03.12., 10.12., 17.12., 07.01., 14.01., 21.01., 28.01., 04.02., 11.02. (19.11. holiday)
+
+**Grade:** submitting two reports including codes
+:::
+
+## What should you know already?
+
+* Higher mathematics: differential equations, algebra (1.-2. BSc)
+* Experimental and theoretical physics: governing equations
+* Numerics for engineers (2. BSc)
+* Programming (1. BSc), Software development (3. BSc)
+* Geophysics: feeling for physical fields & methods
+* Electromagnetics (5. BSc), Theory EM,
+* now: Scientific programming, HPC, seismic imaging
+
+## Topics to be covered
+
+* recap on partial differential equations
+* (1D) heat equation: stationary and instationary
+* 2D electromagnetic fields in the Earth
+* (3D DC modelling - see Spitzer videos)
+* 2D ground-penetrating radar (EM) and pressure waves (seismics)
+* excurse to hydrodynamic modelling
+* modelling the Eikonal equation (the travelling saleman)
+* exercises: code FD & FE by hand, use packages to obtain feeling
+
+## Learning goal
+
+::: {.columns}
+::: {.column}
+![](pics/learning-pyramid.jpg)
+:::
+::: {.column}
+- basic understanding of the common modelling techniques
+- feeling for strengths and weaknesses of numerical solutions
+- ability to write your own modelling codes in Python
+:::
+::::
+
+## Literature
+
+* Haber (2015): Computational methods geophysical electromagnetics
+* Morra (2018): Pythonic Geodynamics - Implementations for fast computing, frei verfügbar [hier](https://doi.org/10.1007/978-3-319-55682-6), Eintauchen ins Programmieren
+* Warnick: Numerical Methods for Engineering : An Introduction Using MATLAB® and Computational Electromagnetics Examples [Link](https://ebookcentral.proquest.com/lib/freiberg-ebooks/detail.action?docID=6468440)
+* Igel (2007): [Numerical modelling in geophysics](https://www.geophysik.uni-muenchen.de/~igel/downloads/), [short course](https://www.geophysik.uni-muenchen.de/~igel/nmg-short/)
+* Logg et al. (2011): Automated Solution of Differential Equations by the Finite Element Method: [Link](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)
+* Press (2007): Numerical recipes: the art of scientific computing, <https://numerical.recipes/book.html>
+
+
+## Further links
+
+* [Course notes](https://halbmy.github.io/NumericalGeophysics/)
+* pyGIMLi: Python Geophysical Inversion and Modelling Library <https://pygimli.org>
+* [Homepage of Oskar](https://www.base-fn.de/oscar/) package
+* [Geoscience.XYZ](https://geosci.xyz)
+* Fenics handbook
+* [Theory of electromagnetics](https://ruboerner.github.io/ThEM/)
+
+
+# Some mathematical background
+## Differential operators
+
+* single derivative in space $\pdv{x}$ or time $\pdv t$
+
+* gradient $\grad=(\pdv x, \pdv y, \pdv z)^T$
+
+* divergence $\div \vb F = \pdv{F_x}{x} + \pdv{F_y}{y} + \pdv{F_z}{z}$
+
+::::: {.fragment}
+:::: {.columns}
+::: {.column width="70%"}
+Gauss': *what's in (volume) comes out (surface)*
+$$\int_V \div\vb F\ dV = \iint_S \vb F \vdot \vb n\ dS$$
+:::
+::: {.column width="25%"}
+![Gauss's theorem in EM](pics/Divergence_theorem_in_EM.svg)
+:::
+::::
+:::::
+
+## Curl (rotation)
+
+* curl $\curl \vb F = (\pdv{F_z}{y}-\pdv{F_y}{z}, \pdv{F_x}{z}-\pdv{F_z}{x}, \pdv{F_y}{x}-\pdv{F_x}{y})^T$
+
+::::: {.fragment}
+:::: {.columns}
+::: {.column width="70%"}
+Stoke: *what goes around comes around*
+$$\int_S \curl \vb F \vdot \vb dS = \iint_S \vb F \vdot \vb dl$$
+:::
+::: {.column width="25%"}
+![Stokes' theorem in EM](pics/Curl_theorem_in_EM.svg)
+:::
+::::
+:::::
+
+:::{.fragment}
+* curls have no divergence: $\div (\curl \vb F)=0$
+:::
+
+:::{.fragment}
+* potential fields have no curl $\curl (\grad u)=0$
+:::
+
+## Numerical simulation
+
+Mostly: solution of partial differential equations (PDEs) for either scalar (potentials) or vectorial (fields) quantities
+
+PDE Types ($u$-function, $f$-source, $a$/$c$-parameter):
+
+* elliptic PDE: $\nabla^2 u=f$
+* parabolic PDE $\nabla^2 u - a \frac{\partial u}{\partial t}=f$
+* hyperbolic  $\nabla^2 u - c^2 \frac{\partial^2 u}{\partial t^2}=f$ (plus diffusive term)
+$$\frac{\partial^2\ u}{{\partial x}^2} - c^2\frac{\partial^2 u}{\partial t^2} = 0$$
+* coupled $\nabla\cdot u=f$ & $u = K \nabla p=0$ (Darcy flow)
+* nonlinear $(\nabla u)^2=s^2$ (Eikonal equation)
+
+## Poisson equation
+potential field $u$ generates field $\vec{F}=-\nabla u$
+
+causes some flow $\vec{j}=a \vec{F}$
+
+$a$ is some sort of conductivity (electric, hydraulic, thermal)
+
+continuity of flow: divergence of total current $\vb j + \vb j_s$ is zero
+
+$$ \div (a \nabla u) = - \div \vb j_s $$
+
+## Darcy's law
+
+:::: {.columns}
+::: {.column width="50%"}
+
+volumetric flow rate $Q$ caused by gradient of pressure $p$
+
+$$ Q = \frac{k A}{\mu L} \Delta p $$
+
+$$\vb q = -\frac{k}{\mu} \nabla p $$
+
+$$\div\vb q = -\div (k/\mu \grad p) = 0$$
+
+:::
+::: {.column width="45%"}
+![Darcy's law](pics/darcy_law.svg)
+:::
+::::
+
+## The heat equation in 1D
+
+sought: Temperature $T$ as a function of space and time
+
+heat flux density $\vb q = \lambda\grad T$
+
+$q$ in W/m², $\lambda$ - heat conductivity/diffusivity in W/(m.K)
+
+Fourier's law: $\pdv{T}{t} - a \nabla^2 T = s$  ($s$ - heat source)
+
+temperature conduction $a=\frac{\lambda}{\rho c}$ ($\rho$ - density, $c$ - heat capacity)
+
+## Stokes equation
+
+$$ \mu \nabla^2 \vb v - \grad p + f = 0 $$
+
+$$\div\vb v = 0 $$
+
+## Navier-Stokes equations
+(incompressible, uniform viscosity)
+
+$$ \pdv{\vb u}{t} +(\vb u \vdot \grad) \vb u = \nu \nabla^2 \vb u - 1/\rho \grad p + f $$
+
+## Maxwell's equations
+
+* Faraday's law: currents & varying electric fields $\Rightarrow$ magnetic field
+$$ \curl \vb H = \pdv{\vb D}{t} + \vb j $$
+* Ampere's law: time-varying magnetic fields induce electric field
+$$ \curl\vb E = -\pdv{\vb B}{t}$$
+* $\div\vb D = \varrho$ (charge $\Rightarrow$), $\div\vb B = 0$ (no magnetic charge)
+* material laws $\vb D = \epsilon \vb E$ and $\vec B = \mu \vb H$
+
+## Helmholtz equations
+
+$$ \nabla^2 u + k^2 u = f $$
+
+results from wavenumber decomposition of diffusion or wave equations
+
+approach: $\vb F = \vb{F_0}e^{\imath\omega t} \quad\Rightarrow\quad \pdv{\vb F}{t}=\imath\omega\vb F \quad\Rightarrow\quad \pdv[2]{\vb F}{t}=-\omega^2\vb F$
+
+$$ \nabla^2 \vb F - a \nabla_t \vb F - c^2 \nabla^2_t \vb F = 0 $$
+
+$$ \Rightarrow \nabla^2\vb F - a\imath\omega\vb F + c^2 \omega^2\vb F = 0 $$
+
+## The eikonal equation
+
+Describes first-arrival times $t$ as a function of velocity ($v$) or slowness ($s$)
+
+$$ |\grad t| = s = 1/v $$
+
+:::{.r-stack}
+![](pics/tt0.png){.fragment width="458" height="420"}
+
+![](pics/tt1.png){.fragment width="458" height="420"}
+
+![](pics/tt2.png){.fragment width="458" height="420"}
+
+![](pics/tt3.png){.fragment width="458" height="420"}
+
+![](pics/tt4.png){.fragment width="458" height="420"}
+:::
+
+<!-- ## Taylor expansion -->

@@ -1,0 +1,128 @@
+---
+title: "Numerical Simulation Methods in Geophysics: Report II"
+subtitle: "1. MGPY+MGIN"
+author: "thomas.guenther@geophysik.tu-freiberg.de"
+title-slide-attributes:
+  data-background-image: pics/tubaf-logo.png
+  data-background-size: 20%
+  data-background-position: 10% 95%
+format:
+  tubaf-revealjs:
+    html-math-method: mathjax
+    chalkboard: true
+    include-in-header:
+        - text: |
+            <script>
+            window.MathJax = {
+            loader: {
+                load: ['[tex]/physics']
+            },
+            tex: {
+                packages: {'[+]': ['physics']}
+            }
+            };
+            </script>
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    menu:
+      side: left
+# jupyter: python3
+---
+
+## Helmholtz equations for $H$
+
+The magnetic field in the frequency domain is governed by the Helmholtz equations (no displacement currents, no sources)
+
+<!-- $$ \curl \mu^{-1} \curl \vb E + \imath\omega\sigma\vb E = 0$$  {#eq-helmE} -->
+
+$$ \curl \sigma^{-1} \curl \vb H + \imath\omega\mu\vb H = 0$$  {#eq-helmH}
+
+2D E/H polarization: $-\div\grad H_x + \imath\omega\sigma\mu H_x = 0$
+
+discretized by FE with $\vb A + \imath\omega \vb M_{\sigma} = \vb b$  ($\vb A$-stiffness, $\vb M$-mass)
+
+$\mu=\mu_0$, upper boundary ($\vb b$): $H_x(z=0)=1$ (Dirichlet BC)
+
+## Plane wave problem and solution
+
+Task: simulate magnetic field in the Earth for a plane wave excitation
+$$ \mathbf H(z, \omega) = \begin{bmatrix} H_x^0\\ 0\\ 0 \end{bmatrix} e^{\imath \omega t}, \quad z < 0 $$
+
+<!-- ## Analytical solution -->
+
+For homogeneous $\sigma=\sigma_0$, the solution is (see [Theory EM](https://ruboerner.github.io/ThEM/mtfields.html))
+
+$$ H_x(z) = H_x^0 e^{- \imath k z} = H_x^0 e^{-\sqrt{2\omega \mu \sigma_0}(1+\imath) z} $$ {#eq-sol-h}
+
+## Secondary field for EM
+
+$$-\grad^2 (\vb H_0 + \vb H_a) +\imath\omega\mu(\sigma_0+\delta\sigma) (\vb H_0 + \vb H_a)=0$$
+
+$$-\grad^2 \vb H_0 +\imath\omega\mu\sigma_0 \vb H_0=0$$
+
+$$ -\grad^2 \vb H_a + \imath\omega\mu\sigma \vb H_a = -\imath\omega\mu\delta\sigma \vb H_0 $$
+
+discretized by
+
+$$ \vb A \vb H_a + \imath\omega\vb M_\sigma \vb H_a = -\imath\omega\vb M_{\delta\sigma} \vb H_0 $$
+
+## Implementation with pyGIMLi solver module
+
+```python
+import pygimli.solver as ps
+
+A = ps.createStiffnessMatrix(mesh)
+M = ps.createMassMatrix(mesh, sigma*mu)
+b = np.zeros(mesh.nodeCount())
+ps.assembleDirichletBC(A, [[grid.boundary(1), 1]], b)
+M.cleanRow(0)  # first row
+# or (otherwise homogeneous Neumann BC)
+bc = dict(Dirichlet={-1: 1.0, -2: 0.0})  # general
+ps.assembleBC(bc, mesh, A,  b)
+```
+
+## Solve complex systems with pyGIMLi
+directly using complex matrix
+```python
+C = pg.core.CSparseMatrix(A.vecColPtr(), A.vecRowIdx(),
+                          pg.core.toComplex(A.vecVals(), M.vecVals()*w))
+c = pg.core.toComplex(b, b*0)
+u = ps.linSolve(C, c)
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+or transform into real system
+$$\mqty(A & -\omega M\\ \omega M & A) \mqty(u_r\\ u_i) = \mqty(b_r\\ b_i) $$
+:::
+::: {.column width="50%"}
+```
+ndof = mesh.nodeCount()
+B = pg.BlockMatrix()
+B.Aid = B.addMatrix(A)
+B.Mid = B.addMatrix(M)
+B.addMatrixEntry(B.Aid, 0, 0)
+B.addMatrixEntry(B.Aid, ndof, ndof)
+B.addMatrixEntry(B.Mid, 0, ndof, scale=-w)
+B.addMatrixEntry(B.Mid, ndof, 0, scale=w)
+```
+:::
+::::
+
+## Report II - 2D plane-wave EM
+
+1. Start with a period of $T=0.1$s and compute skin depth
+1. Create a subsurface 2D model with some bodies
+1. Compute the primary magnetic field analytically and numerically for a homogeneous conductivity
+1. Visualize both and compare numerical & analytical solutions
+1. Investigate the influence of model discretization
+1. Change the period and rerun, compare
+1. Change the conductivity and rerun, compare
+
+## Report II - secondary field
+1. Compute the field with a conductive anomaly
+1. Compute the secondary field
+1. Visualize the secondary and total fields
+1. Replace the good conductor with a bad conductor and rerun
+1. Discuss the boundary conditions for total and secondary fields

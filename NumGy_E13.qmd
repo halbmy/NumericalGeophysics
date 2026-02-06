@@ -1,5 +1,5 @@
 ---
-title: "Numerical Simulation Methods in Geophysics, Exercise 12:<br> 1D/2D EM"
+title: "Numerical Simulation Methods in Geophysics, Exercise 13:<br> 1D/2D EM"
 subtitle: "1. MGPY+MGIN"
 author: "thomas.guenther@geophysik.tu-freiberg.de"
 title-slide-attributes:
@@ -134,7 +134,7 @@ $$\vb A\vb u_r + \imath\vb A u_i + \imath\omega\vb M \vb u_r - \omega\vb M \vb u
 $$\mqty(A & -\omega M\\ \omega M & A) \mqty(u_r\\ u_i) = \mqty(b_r\\ b_i) $$
 
 
-## Complex-to-real conversion
+## Complex-to-real conversion (numpy)
 
 $$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
 
@@ -150,7 +150,7 @@ uri = np.linalg.solve(D, d)
 u = uri[:len(z)] + uri[len(z):] * 1j
 ```
 
-## Complex-to-real conversion
+## Complex-to-real conversion (pyGIMLi)
 
 $$\vb B = \mqty(\vb A & -\omega \vb M\\ \omega \vb M & \vb A)$$
 
@@ -210,11 +210,9 @@ $$ -\grad^2 F_a - k^2 F_a = \delta k^2 F_0 $$
 Source terms only arise at anomalous terms, weighted by the primary field.
 :::
 
-## Secondary field for EM
+## Secondary field for E field
 
-Maxwells equations $k^2=-\imath\omega\mu\sigma$
-
-$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
+$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma_0 \vb E_0=0$$
 
 leads to
 
@@ -224,21 +222,7 @@ $$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sig
 Source terms only arise at anomalous conductivities and increase with primary field
 :::
 
-## Secondary field for EM
-
-Maxwells equations $k^2=-\imath\omega\mu\sigma$
-
-$$-\grad^2 \vb E_0 +\imath\omega\mu\sigma \vb E_0=0$$
-
-leads to
-
-$$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
-
-::: {.callout-note}
-Source terms only arise at anomalous conductivities and increase with primary field
-:::
-
-## Secondary field for EM
+## Secondary field in matrix form
 
 $$ -\grad^2 \vb E_a + \imath\omega\mu\sigma \vb E_a = -\imath\omega\mu\delta\sigma \vb E_0 $$
 
@@ -255,6 +239,17 @@ M = massMatrix1DFE(x=z, a=w*mu*sigma)
 dM = massMatrix1DFE(x=z, a=w*mu*(sigma-sigma0))
 u = uAna + solve(A+M*w*1j, dM@uAna * w*1j)
 ```
+
+## Secondary field for H field
+
+$$-\div \rho_0 \grad \vb H_0 +\imath\omega\mu \vb H_0=0$$
+
+leads to
+
+$$ -\div \rho \grad \vb H_a + \imath\omega\mu \vb H_a = \div \delta\rho_0 \grad \vb H_0 $$
+
+$$ \vb A_\rho \vb u_a + \imath\omega\vb M \vb u_a = (\vb A_\rho + \imath\omega\vb M) \vb u_a =
+-\vb A_{\delta\rho} \vb u_0 $$
 
 ## Task
 
